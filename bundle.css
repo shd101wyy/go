@@ -9,27 +9,39 @@ body {
   background-color: #faf8ef;
 }
 .stone {
-  width: 16px;
-  height: 16px;
+  position: absolute;
+  margin: 0;
+  padding: 0;
+}
+.stone.white {
+  background: #f6f6f6;
+}
+.stone.black {
+  background: black;
 }
 .board {
   position: relative;
   background-color: #ddb45d;
   margin: 0 auto;
+  padding: 48px;
   top: 32px;
+  border-radius: 6px;
+  -webkit-box-shadow: 0px 0px 56px 2px #d9be96;
+  -moz-box-shadow: 0px 0px 56px 2px #d9be96;
+  box-shadow: 0px 0px 56px 2px #d9be96;
 }
 .grid {
   float: left;
   position: relative;
   box-sizing: border-box;
-  border-bottom: 1px solid #000;
-  border-right: 1px solid #000;
+  border-bottom: 2px solid #454545;
+  border-right: 2px solid #454545;
 }
 .grid-row .grid:first-child {
-  border-left: 1px solid #000;
+  border-left: 2px solid #454545;
 }
 .board .grid-row:first-child .grid {
-  border-top: 1px solid #000;
+  border-top: 2px solid #454545;
 }
 .grid-touch {
   position: absolute;
@@ -37,29 +49,26 @@ body {
   height: 32px;
   top: -16px;
   left: -16px;
-  background-color: yellow;
+  cursor: pointer;
 }
-.grid-touch-right-top {
+.grid-touch.grid-touch-right-top {
   position: absolute;
   width: 32px;
   height: 32px;
-  background: red;
   right: -16px;
   top: -16px;
 }
-.grid-touch-left-bottom {
+.grid-touch.grid-touch-left-bottom {
   position: absolute;
-  background: blue;
   width: 32px;
   height: 32px;
   bottom: -16px;
   left: -16px;
 }
-.grid-touch-right-bottom {
+.grid-touch.grid-touch-right-bottom {
   position: absolute;
   width: 32px;
   height: 32px;
-  background: pink;
   bottom: -16px;
   right: -16px;
 }

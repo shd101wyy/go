@@ -1,22 +1,26 @@
 // main: ./entry.less
+
+@grid-border-width: 2px;
+@grid-color: #454545;
+
 .grid {
   float: left;
   position: relative;
   box-sizing: border-box;
-  border-bottom: 1px solid #000;
-  border-right: 1px solid #000;
+  border-bottom: @grid-border-width solid @grid-color;
+  border-right: @grid-border-width solid @grid-color;
 }
 
 .grid-row {
   .grid:first-child {
-    border-left: 1px solid #000;
+    border-left: @grid-border-width solid @grid-color;
   }
 }
 
 .board {
   .grid-row:first-child {
     .grid {
-      border-top: 1px solid #000;
+      border-top: @grid-border-width solid @grid-color;
     }
   }
 }
@@ -27,32 +31,34 @@
   height: 32px;
   top: -16px;
   left: -16px;
-  background-color: yellow;
-}
+  cursor: pointer;
+  // background-color: yellow;
+  //
+  &.grid-touch-right-top {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    // background-color: red;
+    right: -16px;
+    top: -16px;
+  }
 
-.grid-touch-right-top {
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  background: red;
-  right: -16px;
-  top: -16px;
-}
+  &.grid-touch-left-bottom {
+    position: absolute;
+    // background-color: blue;
+    width: 32px;
+    height: 32px;
+    bottom: -16px;
+    left: -16px;
+  }
 
-.grid-touch-left-bottom {
-  position: absolute;
-  background: blue;
-  width: 32px;
-  height: 32px;
-  bottom: -16px;
-  left: -16px;
-}
+  &.grid-touch-right-bottom {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    // background-color: pink;
+    bottom: -16px;
+    right: -16px;
+  }
 
-.grid-touch-right-bottom {
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  background: pink;
-  bottom: -16px;
-  right: -16px;
 }
