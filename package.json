@@ -1,0 +1,16 @@
+{
+  "name": "go",
+  "version": "0.0.1",
+  "description": "Go platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "go"
+  ],
+  "author": "shd101wyy",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

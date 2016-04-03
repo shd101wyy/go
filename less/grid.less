@@ -1,0 +1,58 @@
+// main: ./entry.less
+.grid {
+  float: left;
+  position: relative;
+  box-sizing: border-box;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
+}
+
+.grid-row {
+  .grid:first-child {
+    border-left: 1px solid #000;
+  }
+}
+
+.board {
+  .grid-row:first-child {
+    .grid {
+      border-top: 1px solid #000;
+    }
+  }
+}
+
+.grid-touch {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  top: -16px;
+  left: -16px;
+  background-color: yellow;
+}
+
+.grid-touch-right-top {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: red;
+  right: -16px;
+  top: -16px;
+}
+
+.grid-touch-left-bottom {
+  position: absolute;
+  background: blue;
+  width: 32px;
+  height: 32px;
+  bottom: -16px;
+  left: -16px;
+}
+
+.grid-touch-right-bottom {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: pink;
+  bottom: -16px;
+  right: -16px;
+}
