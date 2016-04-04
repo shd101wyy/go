@@ -2,11 +2,20 @@ html,
 body {
   margin: 0;
   padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans, sans-serif;
 }
 .game {
   width: 100%;
   height: 100%;
   background-color: #faf8ef;
+}
+.game .user-id {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-top: 15px;
+  margin-right: 15px;
+  font-size: 26px;
 }
 .loading-screen {
   width: 100%;
@@ -107,4 +116,39 @@ body {
   background-image: url("images/mark_w.png");
   background-size: contain;
   background-repeat: no-repeat;
+}
+.menu {
+  width: 512px;
+  height: 512px;
+  position: relative;
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #482E46;
+  border-radius: 6px;
+  color: #fff;
+  padding: 50px;
+  box-sizing: border-box;
+}
+.menu .button {
+  position: relative;
+  margin: 6px auto;
+  width: 300px;
+  height: 100px;
+  background: #F0F8FF;
+  border-radius: 6px;
+  color: #482E46;
+  text-align: center;
+  font-size: 42px;
+  cursor: pointer;
+}
+.menu .button:hover {
+  background: #E0EAF2;
+}
+.menu .button span {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }

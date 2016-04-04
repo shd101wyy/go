@@ -80,9 +80,49 @@ app.get('/logout', function(req, res) {
   res.send({success: true})
 })
 
-// socket.io
-io.on('connection', function(socket) {
+// helper functions
+function makeid() {
+    let text = "";
+    let possible = "abcdefghijklmnopqrstuvwxyz0123456789";
 
+    for(let i = 0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+
+// socket.io
+let socketMap = {} // key is userID, value is socket
+io.on('connection', function(socket) {
+  let userID = makeid()
+  console.log('user connect: ' + socket.id + ' ' + userID)
+  socket.userID = userID
+  socketMap[userID] = socket
+
+  socket.emit('generate-user-id', userID)
+
+  socket.on('invite-match', function(opponentID) {
+    if (opponentID === userID) return
+
+    if (socketMap[opponentID]) {
+      // TODO: assume after sent, accpet immediately...
+      /*
+      socketMap[opponentID].emit('receive-match-invitation', socket.userID)
+      socket.emit('invitation-sent', opponentID)
+      */
+      // assume I am black and opponent is white
+      socket.emit('start-match', {size: 9, color: 'black', opponentID: opponentID})
+      socketMap[opponentID].emit('start-match', {size: 9, color: 'white', opponentID: userID})
+    } else { // not found
+      socket.emit('opponent-not-found', opponentID)
+    }
+  })
+
+  socket.on("disconnect", function() {
+    console.log('user disconnect: ' + userID)
+    delete(socketMap[socket.userID])
+  })
 })
 
 

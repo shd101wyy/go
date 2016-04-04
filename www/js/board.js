@@ -40,10 +40,28 @@ class Board {
     }
   }
 
-  addStone(row, col, stone) {
+  getStoneImage() {
+    if (this.turn % 2 === 0) {
+      return './images/b.png'
+    } else {
+      return `./images/w${Math.floor(Math.random() * 15 + 1)}.png`
+    }
+  }
+
+  addStone(row, col) {
+    if (this.board[row][col]) return
+
+    let $stone = $(`<div class="stone ${this.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${this.stoneSize}px; height: ${this.stoneSize}px; border-radius: ${this.stoneSize}px; background-image: url("${this.getStoneImage()}");' data-row=${row} data-col=${col} id="stone-${row}-${col}"> </div>`)
+
+    $(`#grid-touch-${row}-${col}`).append($stone)
+
+    let stone = new Stone($stone, this)
+
     this.board[row][col] = stone // set to Go board
 
     this.turn += 1
+
+    // console.log('enter here')
 
     this.checkCapture(row, col)
   }
@@ -193,7 +211,8 @@ class Board {
         gridSize = (boardSize) / (this.size - 1)
 
     let dom = $(`<div class="board" style="width: ${boardSize}px; height: ${boardSize}px;"></div>`)
-    let stoneWidth = gridSize
+    let stoneSize = gridSize
+    this.stoneSize = gridSize
 
     for (let i = 0; i < this.size - 1; i++) {
       let gridRow = $('<div class="grid-row"></div>')
@@ -203,7 +222,8 @@ class Board {
         let gridTouch = $(`<div class="grid-touch"
                                 data-row=${i}
                                 data-col=${j}
-                                style="width: ${stoneWidth}px; height: ${stoneWidth}px; left: ${-stoneWidth/2}px; top: ${-stoneWidth/2}px;"> </div>`)
+                                id="grid-touch-${i}-${j}"
+                                style="width: ${stoneSize}px; height: ${stoneSize}px; left: ${-stoneSize/2}px; top: ${-stoneSize/2}px;"> </div>`)
         this.boardDom[i][j] = new Grid(gridTouch, grid, this)
         grid.append(gridTouch)
 
@@ -211,7 +231,8 @@ class Board {
           let gridTouch = $(`<div class="grid-touch grid-touch-right-top"
                                   data-row=${i}
                                   data-col=${j+1}
-                                  style="width: ${stoneWidth}px; height: ${stoneWidth}px; right: ${-stoneWidth/2}px; top: ${-stoneWidth/2}px;"> </div>`)
+                                  id="grid-touch-${i}-${j+1}"
+                                  style="width: ${stoneSize}px; height: ${stoneSize}px; right: ${-stoneSize/2}px; top: ${-stoneSize/2}px;"> </div>`)
           this.boardDom[i][j + 1] = new Grid(gridTouch, grid, this)
           grid.append(gridTouch)
         }
@@ -220,7 +241,8 @@ class Board {
           let gridTouch = $(`<div class="grid-touch grid-touch-left-bottom"
                                   data-row=${i+1}
                                   data-col=${j}
-                                  style="width: ${stoneWidth}px; height: ${stoneWidth}px; left: ${-stoneWidth/2}px; bottom: ${-stoneWidth/2}px;"> </div>`)
+                                  id="grid-touch-${i+1}-${j}"
+                                  style="width: ${stoneSize}px; height: ${stoneSize}px; left: ${-stoneSize/2}px; bottom: ${-stoneSize/2}px;"> </div>`)
           this.boardDom[i + 1][j] = new Grid(gridTouch, grid, this)
           grid.append(gridTouch)
         }
@@ -229,7 +251,8 @@ class Board {
           let gridTouch = $(`<div class="grid-touch grid-touch-right-bottom"
                                   data-row=${i+1}
                                   data-col=${j+1}
-                                  style="width: ${stoneWidth}px; height: ${stoneWidth}px; right: ${-stoneWidth/2}px; bottom: ${-stoneWidth/2}px;"> </div>`)
+                                  id="grid-touch-${i+1}-${j+1}"
+                                  style="width: ${stoneSize}px; height: ${stoneSize}px; right: ${-stoneSize/2}px; bottom: ${-stoneSize/2}px;"> </div>`)
           this.boardDom[i + 1][j + 1] = new Grid(gridTouch, grid, this)
           grid.append(gridTouch)
         }
