@@ -1,5 +1,5 @@
-browserify js/main.js -o bundle_temp.js;
-babel bundle_temp.js -o bundle.js;
-rm bundle_temp.js
+browserify www/js/main.js -o www/bundle_temp.js;
+babel www/bundle_temp.js -o www/bundle.js;
+rm www/bundle_temp.js
 
-lessc less/entry.less bundle.css
+lessc www/less/entry.less www/bundle.css
