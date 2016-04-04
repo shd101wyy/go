@@ -48,7 +48,9 @@ class Board {
       for (let j = 0; j < this.size; j++) {
         let stone = this.board[i][j]
         if (stone && !stone.checked && stone.sameColor(color)) {
+          // console.log('@ check ' + i + ' ' + j)
           if (stone.hasNoQi()) {
+            // console.log('@ no qi ' + i + ' ' + j)
             stone.removeStones()
           }
         }
@@ -60,9 +62,11 @@ class Board {
       for (let j = 0; j < this.size; j++) {
         let stone = this.board[i][j]
         if (stone && !stone.checked) {
+          // console.log('@@ check ' + i + ' ' + j)
           if (stone.hasNoQi()) {
             // suicide
             // TODO: hint user not to put stone this way
+            // console.log('@@ no qi ' + i + ' ' + j)
             stone.removeStones()
           }
         }

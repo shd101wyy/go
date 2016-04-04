@@ -49,7 +49,9 @@ class Board {
       for (let j = 0; j < this.size; j++) {
         let stone = this.board[i][j]
         if (stone && !stone.checked && stone.sameColor(color)) {
+          // console.log('@ check ' + i + ' ' + j)
           if (stone.hasNoQi()) {
+            // console.log('@ no qi ' + i + ' ' + j)
             stone.removeStones()
           }
         }
@@ -61,9 +63,11 @@ class Board {
       for (let j = 0; j < this.size; j++) {
         let stone = this.board[i][j]
         if (stone && !stone.checked) {
+          // console.log('@@ check ' + i + ' ' + j)
           if (stone.hasNoQi()) {
             // suicide
             // TODO: hint user not to put stone this way
+            // console.log('@@ no qi ' + i + ' ' + j)
             stone.removeStones()
           }
         }
@@ -150,6 +154,8 @@ class Grid {
 
       if (this.board.board[row][col])
         return
+
+      // console.log(row + ', ' + col)
 
       let stoneWidth = Number(this.$grid.css('width').replace('px', ''))
       let $stone = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${stoneWidth}px; height: ${stoneWidth}px; border-radius: ${stoneWidth}px; background-image: url("${this.getStoneImage()}")' data-row=${row} data-col=${col}> </div>`)
@@ -238,6 +244,7 @@ class Stone {
     // check self and nearby stones qi
     hasNoQi() {
       this.checked = true
+
       let hasNoQi = true
       if (this.getQi() > 0) {
         hasNoQi = false
@@ -269,7 +276,7 @@ class Stone {
     }
 
     getTopStone() {
-      if (this.row !== 0) {
+      if (this.row > 0) {
         return this.board.board[this.row - 1][this.col]
       } else {
         return null
@@ -277,7 +284,7 @@ class Stone {
     }
 
     getBottomStone() {
-      if (this.row !== this.size - 1) {
+      if (this.row < this.board.size - 1) {
         return this.board.board[this.row + 1][this.col]
       } else {
         return null
@@ -285,7 +292,7 @@ class Stone {
     }
 
     getLeftStone() {
-      if (this.col !== 0) {
+      if (this.col > 0) {
         return this.board.board[this.row][this.col - 1]
       } else {
         return null
@@ -293,7 +300,7 @@ class Stone {
     }
 
     getRightStone() {
-      if (this.col !== this.size - 1) {
+      if (this.col < this.board.size - 1) {
         return this.board.board[this.row][this.col + 1]
       } else {
         return null
@@ -330,14 +337,16 @@ class Stone {
           qi += 1
         }
       }
-      
+
+      console.log(this.row + ' ' + this.col + ' qi: ' + qi)
+
       return qi
     }
 
     removeStones() {
+      console.log('remove ' + this.color)
       this.$stone.remove()
       this.board.board[this.row][this.col] = null
-      this.board.boardDom[this.row][this.col] = null
 
       let top = this.getTopStone(),
           left = this.getLeftStone(),

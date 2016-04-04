@@ -15,6 +15,8 @@ class Grid {
       if (this.board.board[row][col])
         return
 
+      // console.log(row + ', ' + col)
+
       let stoneWidth = Number(this.$grid.css('width').replace('px', ''))
       let $stone = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${stoneWidth}px; height: ${stoneWidth}px; border-radius: ${stoneWidth}px; background-image: url("${this.getStoneImage()}")' data-row=${row} data-col=${col}> </div>`)
 
