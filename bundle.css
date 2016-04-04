@@ -55,4 +55,11 @@ body {
   position: absolute;
   background-image: url("images/suicide.png");
   background-size: contain;
+  background-repeat: no-repeat;
+}
+.jie {
+  position: absolute;
+  background-image: url("images/jie.png");
+  background-size: contain;
+  background-repeat: no-repeat;
 }

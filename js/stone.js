@@ -120,10 +120,10 @@ class Stone {
       return qi
     }
 
+    // return how many stones are removed
     removeStones() {
-      // console.log('remove ' + this.color)
-      this.$stone.remove()
-      this.board.board[this.row][this.col] = null
+      let count = 1
+      this.board.removeStone(this.row, this.col)
 
       let top = this.getTopStone(),
           left = this.getLeftStone(),
@@ -131,21 +131,22 @@ class Stone {
           bottom = this.getBottomStone()
 
       if (top && top.sameColor(this.color)) {
-        top.removeStones()
+        count += top.removeStones()
       }
 
       if (left && left.sameColor(this.color)) {
-        left.removeStones()
+        count += left.removeStones()
       }
 
       if (right && right.sameColor(this.color)) {
-        right.removeStones()
+        count += right.removeStones()
       }
 
       if (bottom && bottom.sameColor(this.color)) {
-        bottom.removeStones()
+        count += bottom.removeStones()
       }
 
+      return count
     }
 }
 

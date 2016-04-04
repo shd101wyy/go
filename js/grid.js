@@ -25,7 +25,7 @@ class Grid {
       this.$gridTouch.append($stone)
       this.board.turn += 1
 
-      this.board.checkCapture()
+      this.board.checkCapture(row, col)
     })
   }
 

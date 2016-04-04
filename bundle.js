@@ -14,6 +14,8 @@ class Board {
     this.turn = 0
     this.history = new History()
 
+    this.lastCapturePos = null
+
     // create board data
     for (let i = 0; i < this.size; i++) {
       this.board.push([])
@@ -46,9 +48,48 @@ class Board {
     }
   }
 
-  checkCapture() {
+  // check if two boards have the same.
+  twoBoardsEqual(board) {
+    let board1 = this.board
+    let board2 = board
+
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        let stone1 = board1[i][j]
+        let stone2 = board2[i][j]
+
+        if (!stone1 && !stone2) {
+          continue
+        } else if (stone1 && stone2 && stone1.color === stone2.color) {
+          continue
+        } else {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  showIcon(row, col, iconName) {
+    let $gridTouch = this.boardDom[row][col].$gridTouch
+    let $suicide = $(`<div class='${iconName}'> </div>`)
+    $suicide.css('width', $gridTouch.css('width'))
+    $suicide.css('height', $gridTouch.css('height'))
+    $suicide.css('left', $gridTouch.css('left'))
+    $suicide.css('right', $gridTouch.css('right'))
+    $suicide.css('top', $gridTouch.css('top'))
+    $suicide.css('bottom', $gridTouch.css('bottom'))
+
+
+    this.boardDom[row][col].$grid.append($suicide)
+
+    $suicide.fadeOut(2000, ()=> {
+      $suicide.remove()
+    })
+  }
+
+  checkCapture(row, col) {
     let color = (this.turn % 2 === 0) ? 'black' : 'white'
-    let currentBoard = this.board
     let last = this.history.get(-1)
 
     // check opponent
@@ -58,8 +99,19 @@ class Board {
         if (stone && !stone.checked && stone.sameColor(color)) {
           // console.log('@ check ' + i + ' ' + j)
           if (stone.hasNoQi()) {
-            // console.log('@ no qi ' + i + ' ' + j)
-            stone.removeStones()
+            this.board[i][j] = null  // not remove dom yet
+            if (this.twoBoardsEqual(last)) {
+              console.log('打劫！')
+              this.showIcon(row, col, 'jie')
+              this.board[i][j] = stone // restore
+              this.removeStone(row, col)
+              this.turn -= 1
+              this.markAllStonsUncheckd()
+              return
+            } else {
+              this.board[i][j] = stone // restore. Have to restore first.
+              stone.removeStones()
+            }
           }
         }
       }
@@ -76,32 +128,18 @@ class Board {
             // TODO: hint user not to put stone this way
             // console.log('@@ no qi ' + i + ' ' + j)
             console.log('suicide')
-            let $gridTouch = this.boardDom[i][j].$gridTouch
-            let $suicide = $(`<div class='suicide'> </div>`)
-            $suicide.css('width', $gridTouch.css('width'))
-            $suicide.css('height', $gridTouch.css('height'))
-            $suicide.css('left', $gridTouch.css('left'))
-            $suicide.css('right', $gridTouch.css('right'))
-            $suicide.css('top', $gridTouch.css('top'))
-            $suicide.css('bottom', $gridTouch.css('bottom'))
-
-
-            this.boardDom[i][j].$grid.append($suicide)
-
-            $suicide.fadeOut(2000, ()=> {
-              $suicide.remove()
-            })
-
-            this.removeStone(i, j) // restore
+            this.showIcon(row, col, 'suicide')
+            this.removeStone(row, col) // restore
             this.turn -= 1
+            this.markAllStonsUncheckd()
             return
-            // stone.removeStones()
           }
         }
       }
     }
 
     this.markAllStonsUncheckd()
+    this.history.add(this.board) // save to history
   }
 
   render($element) {
@@ -192,7 +230,7 @@ class Grid {
       this.$gridTouch.append($stone)
       this.board.turn += 1
 
-      this.board.checkCapture()
+      this.board.checkCapture(row, col)
     })
   }
 
@@ -219,7 +257,14 @@ class History {
   }
 
   add(board) {
-    this.history.push(board)
+    let b = []
+    for (let i = 0; i < board.length; i++) {
+      b.push([])
+      for (let j = 0; j < board[i].length; j++) {
+        b[i].push(board[i][j])
+      }
+    }
+    this.history.push(b)
   }
 
   pop() {
@@ -370,10 +415,10 @@ class Stone {
       return qi
     }
 
+    // return how many stones are removed
     removeStones() {
-      // console.log('remove ' + this.color)
-      this.$stone.remove()
-      this.board.board[this.row][this.col] = null
+      let count = 1
+      this.board.removeStone(this.row, this.col)
 
       let top = this.getTopStone(),
           left = this.getLeftStone(),
@@ -381,21 +426,22 @@ class Stone {
           bottom = this.getBottomStone()
 
       if (top && top.sameColor(this.color)) {
-        top.removeStones()
+        count += top.removeStones()
       }
 
       if (left && left.sameColor(this.color)) {
-        left.removeStones()
+        count += left.removeStones()
       }
 
       if (right && right.sameColor(this.color)) {
-        right.removeStones()
+        count += right.removeStones()
       }
 
       if (bottom && bottom.sameColor(this.color)) {
-        bottom.removeStones()
+        count += bottom.removeStones()
       }
 
+      return count
     }
 }
 

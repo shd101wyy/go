@@ -6,7 +6,14 @@ class History {
   }
 
   add(board) {
-    this.history.push(board)
+    let b = []
+    for (let i = 0; i < board.length; i++) {
+      b.push([])
+      for (let j = 0; j < board[i].length; j++) {
+        b[i].push(board[i][j])
+      }
+    }
+    this.history.push(b)
   }
 
   pop() {
