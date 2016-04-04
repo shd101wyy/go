@@ -218,7 +218,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               gridSize = boardSize / (this.size - 1);
 
           var dom = $("<div class=\"board\" style=\"width: " + boardSize + "px; height: " + boardSize + "px;\"></div>");
-          var stoneWidth = gridSize - 4;
+          var stoneWidth = gridSize;
 
           for (var i = 0; i < this.size - 1; i++) {
             var gridRow = $('<div class="grid-row"></div>');
@@ -280,35 +280,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.$hoverElement = null;
 
+        this.row = this.$gridTouch.data('row');
+        this.col = this.$gridTouch.data('col');
+
+        this.addDot();
+
         $gridTouch.click(function () {
-          var row = _this.$gridTouch.data('row');
-          var col = _this.$gridTouch.data('col');
+          if (_this.board.board[_this.row][_this.col]) return;
 
-          if (_this.board.board[row][col]) return;
+          var $stone = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.getStoneImage() + "\");' data-row=" + _this.row + " data-col=" + _this.col + "> </div>");
 
-          var $stone = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.getStoneImage() + "\");' data-row=" + row + " data-col=" + col + "> </div>");
-
-          _this.board.board[row][col] = new Stone($stone, _this.board); // set to Go board
+          _this.board.board[_this.row][_this.col] = new Stone($stone, _this.board); // set to Go board
 
           _this.$gridTouch.append($stone);
           _this.board.turn += 1;
 
-          _this.board.checkCapture(row, col);
+          _this.board.checkCapture(_this.row, _this.col);
         });
 
         $gridTouch.hover(function () {
-          var row = _this.$gridTouch.data('row');
-          var col = _this.$gridTouch.data('col');
-
-          if (_this.$hoverElement || _this.board.board[row][col]) return;else {
-            _this.$hoverElement = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.getStoneImage() + "\"); opacity: 0.5;' data-row=" + row + " data-col=" + col + "> </div>");
+          if (_this.$hoverElement || _this.board.board[_this.row][_this.col]) return;else {
+            _this.$hoverElement = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.getStoneImage() + "\"); opacity: 0.5;' data-row=" + _this.row + " data-col=" + _this.col + "> </div>");
 
             _this.$gridTouch.append(_this.$hoverElement);
           }
         }, function () {
-          var row = _this.$gridTouch.data('row');
-          var col = _this.$gridTouch.data('col');
-
           if (_this.$hoverElement) {
             _this.$hoverElement.remove();
             _this.$hoverElement = null;
@@ -323,6 +319,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return './images/b.png';
           } else {
             return "./images/w" + Math.floor(Math.random() * 15 + 1) + ".png";
+          }
+        }
+      }, {
+        key: "addDot",
+        value: function addDot() {
+          if (this.board.size === 9) {
+            if ((this.row === 2 || this.row === 6) && (this.col === 2 || this.col === 6) || this.row === 4 && this.col === 4) {
+              this.$gridTouch.append($('<div class="dot"></div>'));
+            }
+          }
+
+          if (this.board.size === 13) {
+            if ((this.row === 3 || this.row === 9) && (this.col === 3 || this.col === 9) || this.row === 6 && this.col === 6) {
+              console.log('here');
+              this.$gridTouch.append($('<div class="dot"></div>'));
+            }
+          }
+
+          if (this.board.size === 19) {
+            if ((this.row === 3 || this.row === 9 || this.row === 15) && (this.col === 3 || this.col === 9 || this.col === 15) || this.row === 9 && this.col === 9) {
+              console.log('here');
+              this.$gridTouch.append($('<div class="dot dot-19"></div>'));
+            }
           }
         }
       }]);
@@ -383,7 +402,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var Stone = require('./stone.js').Stone;
     var Board = require('./board.js').Board;
 
-    var board = new Board(9);
+    var board = new Board(13);
     board.render($('.game'));
   }, { "./board.js": 1, "./stone.js": 5 }], 5: [function (require, module, exports) {
     'use strict';

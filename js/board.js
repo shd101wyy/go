@@ -185,7 +185,7 @@ class Board {
         gridSize = (boardSize) / (this.size - 1)
 
     let dom = $(`<div class="board" style="width: ${boardSize}px; height: ${boardSize}px;"></div>`)
-    let stoneWidth = gridSize - 4
+    let stoneWidth = gridSize
 
     for (let i = 0; i < this.size - 1; i++) {
       let gridRow = $('<div class="grid-row"></div>')
