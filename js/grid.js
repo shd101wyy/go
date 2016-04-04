@@ -22,12 +22,10 @@ class Grid {
 
       let $stone = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${this.stoneSize}px; height: ${this.stoneSize}px; border-radius: ${this.stoneSize}px; background-image: url("${this.getStoneImage()}");' data-row=${this.row} data-col=${this.col}> </div>`)
 
-      this.board.board[this.row][this.col] = new Stone($stone, this.board) // set to Go board
-
       this.$gridTouch.append($stone)
-      this.board.turn += 1
 
-      this.board.checkCapture(this.row, this.col)
+      let stone = new Stone($stone, this.board)
+      this.board.addStone(this.row, this.col, stone)
     })
 
     $gridTouch.hover(
@@ -64,14 +62,12 @@ class Grid {
 
     if (this.board.size === 13) {
       if ((this.row === 3 || this.row === 9) && (this.col === 3 || this.col === 9) || (this.row === 6 && this.col === 6)) {
-        console.log('here')
         this.$gridTouch.append($('<div class="dot"></div>'))
       }
     }
 
     if (this.board.size === 19) {
       if ((this.row === 3 || this.row === 9 || this.row === 15) && (this.col === 3 || this.col === 9 || this.col === 15) || (this.row === 9 && this.col === 9)) {
-        console.log('here')
         this.$gridTouch.append($('<div class="dot dot-19"></div>'))
       }
     }

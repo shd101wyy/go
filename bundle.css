@@ -8,6 +8,25 @@ body {
   height: 100%;
   background-color: #faf8ef;
 }
+.loading-screen {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  background: #F4F4F4;
+}
+.loading-screen .logo {
+  position: relative;
+  margin: 0 auto;
+  top: 30%;
+  width: 600px;
+  height: 70px;
+  background-image: url("images/0xGG.png");
+  background-size: cover;
+  display: none;
+}
 .stone {
   position: absolute;
   margin: 0;

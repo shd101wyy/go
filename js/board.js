@@ -40,10 +40,18 @@ class Board {
     }
   }
 
-  removeStone(i, j) {
-    if (this.board[i][j]) {
-      this.board[i][j].$stone.remove()
-      this.board[i][j] = null
+  addStone(row, col, stone) {
+    this.board[row][col] = stone // set to Go board
+
+    this.turn += 1
+
+    this.checkCapture(row, col)
+  }
+
+  removeStone(row, col) {
+    if (this.board[row][col]) {
+      this.board[row][col].$stone.remove()
+      this.board[row][col] = null
     }
   }
 

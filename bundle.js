@@ -66,11 +66,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
       }, {
+        key: "addStone",
+        value: function addStone(row, col, stone) {
+          this.board[row][col] = stone; // set to Go board
+
+          this.turn += 1;
+
+          this.checkCapture(row, col);
+        }
+      }, {
         key: "removeStone",
-        value: function removeStone(i, j) {
-          if (this.board[i][j]) {
-            this.board[i][j].$stone.remove();
-            this.board[i][j] = null;
+        value: function removeStone(row, col) {
+          if (this.board[row][col]) {
+            this.board[row][col].$stone.remove();
+            this.board[row][col] = null;
           }
         }
 
@@ -290,12 +299,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           var $stone = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.getStoneImage() + "\");' data-row=" + _this.row + " data-col=" + _this.col + "> </div>");
 
-          _this.board.board[_this.row][_this.col] = new Stone($stone, _this.board); // set to Go board
-
           _this.$gridTouch.append($stone);
-          _this.board.turn += 1;
 
-          _this.board.checkCapture(_this.row, _this.col);
+          var stone = new Stone($stone, _this.board);
+          _this.board.addStone(_this.row, _this.col, stone);
         });
 
         $gridTouch.hover(function () {
@@ -332,14 +339,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (this.board.size === 13) {
             if ((this.row === 3 || this.row === 9) && (this.col === 3 || this.col === 9) || this.row === 6 && this.col === 6) {
-              console.log('here');
               this.$gridTouch.append($('<div class="dot"></div>'));
             }
           }
 
           if (this.board.size === 19) {
             if ((this.row === 3 || this.row === 9 || this.row === 15) && (this.col === 3 || this.col === 9 || this.col === 15) || this.row === 9 && this.col === 9) {
-              console.log('here');
               this.$gridTouch.append($('<div class="dot dot-19"></div>'));
             }
           }
@@ -401,6 +406,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var Stone = require('./stone.js').Stone;
     var Board = require('./board.js').Board;
+
+    // 没什么卵用的 loading screen
+    $('.loading-screen .logo').fadeIn(1000, function () {
+      setTimeout(function () {
+        $('.loading-screen .logo').fadeOut(1000, function () {
+          $('.loading-screen').remove();
+        });
+      }, 1600);
+    });
 
     var board = new Board(13);
     board.render($('.game'));
