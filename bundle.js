@@ -39,6 +39,13 @@ class Board {
     }
   }
 
+  removeStone(i, j) {
+    if (this.board[i][j]) {
+      this.board[i][j].$stone.remove()
+      this.board[i][j] = null
+    }
+  }
+
   checkCapture() {
     let color = (this.turn % 2 === 0) ? 'black' : 'white'
     let currentBoard = this.board
@@ -68,7 +75,27 @@ class Board {
             // suicide
             // TODO: hint user not to put stone this way
             // console.log('@@ no qi ' + i + ' ' + j)
-            stone.removeStones()
+            console.log('suicide')
+            let $gridTouch = this.boardDom[i][j].$gridTouch
+            let $suicide = $(`<div class='suicide'> </div>`)
+            $suicide.css('width', $gridTouch.css('width'))
+            $suicide.css('height', $gridTouch.css('height'))
+            $suicide.css('left', $gridTouch.css('left'))
+            $suicide.css('right', $gridTouch.css('right'))
+            $suicide.css('top', $gridTouch.css('top'))
+            $suicide.css('bottom', $gridTouch.css('bottom'))
+
+
+            this.boardDom[i][j].$grid.append($suicide)
+
+            $suicide.fadeOut(2000, ()=> {
+              $suicide.remove()
+            })
+
+            this.removeStone(i, j) // restore
+            this.turn -= 1
+            return
+            // stone.removeStones()
           }
         }
       }
@@ -338,13 +365,13 @@ class Stone {
         }
       }
 
-      console.log(this.row + ' ' + this.col + ' qi: ' + qi)
+      // console.log(this.row + ' ' + this.col + ' qi: ' + qi)
 
       return qi
     }
 
     removeStones() {
-      console.log('remove ' + this.color)
+      // console.log('remove ' + this.color)
       this.$stone.remove()
       this.board.board[this.row][this.col] = null
 

@@ -121,7 +121,7 @@ class Stone {
     }
 
     removeStones() {
-      console.log('remove ' + this.color)
+      // console.log('remove ' + this.color)
       this.$stone.remove()
       this.board.board[this.row][this.col] = null
 

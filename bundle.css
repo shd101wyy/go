@@ -51,3 +51,8 @@ body {
   position: absolute;
   cursor: pointer;
 }
+.suicide {
+  position: absolute;
+  background-image: url("images/suicide.png");
+  background-size: contain;
+}
