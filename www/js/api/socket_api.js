@@ -1,3 +1,7 @@
+'use strict'
+
+let Board = require('../board.js')
+
 if (!window.socket) {
   window.socket = io()
 }
@@ -7,6 +11,10 @@ let socket = window.socket
 let socketAPI = {
   inviteMatch: function(opponentID) {
     socket.emit('invite-match', opponentID)
+  },
+
+  sendMove: function(opponentID, row, col) {
+    socket.emit('send-move', [opponentID, row, col])
   }
 }
 
@@ -32,6 +40,20 @@ socket.on('start-match', function(data) {
   let size = data.size,
       color = data.color,
       opponentID = data.opponentID
+
+  $('.menu').remove()
+  window.gameManager.startNewMatch(size, color, opponentID)
+})
+
+socket.on('receive-move', function(data) {
+  let row = data[0],
+      col = data[1]
+
+  window.gameManager.board.addStone(row, col)
+})
+
+socket.on('opponent-disconnect', function(opponentID) {
+  alert('opponent disconnect: ' + opponentID)
 })
 
 module.exports = socketAPI

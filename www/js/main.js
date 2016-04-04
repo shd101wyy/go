@@ -1,8 +1,21 @@
 'use strict'
 let Stone = require('./stone.js').Stone
-let Board = require('./board.js').Board
+let Board = require('./board.js')
 let socketAPI = require('./api/socket_api.js')
 let Menu = require('./menu.js')
+
+class GameManager {
+  constructor() {
+    this.menu = new Menu()
+    this.menu.render($('.game'))
+
+  }
+
+  startNewMatch(size, playerColor, opponentID) {
+    this.board = new Board(size, playerColor, opponentID)
+    this.board.render($('.game'))
+  }
+}
 
 // 没什么卵用的 loading screen
 $('.loading-screen .logo').fadeIn(1000, ()=> {
@@ -13,8 +26,6 @@ $('.loading-screen .logo').fadeIn(1000, ()=> {
   }, 1600)
 })
 
-let board = new Board(13)
-board.render($('.game'))
-
-// let menu = new Menu()
-// menu.render($('.game'))
+// let board = new Board(13)
+// board.render($('.game'))
+window.gameManager = new GameManager()

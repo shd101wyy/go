@@ -1,6 +1,6 @@
 'use strict'
 
-let Stone = require('./stone.js').Stone
+let Stone = require('./stone.js')
 
 class Grid {
   constructor($gridTouch, $grid, board) {
@@ -17,12 +17,13 @@ class Grid {
     this.addDot()
 
     $gridTouch.click(()=> {
+      if (!this.board.isMyTurn()) return 
       this.board.addStone(this.row, this.col)
     })
 
     $gridTouch.hover(
       () => {
-        if (this.$hoverElement || this.board.board[this.row][this.col]) return
+        if (this.$hoverElement || this.board.board[this.row][this.col] || !this.board.isMyTurn()) return
         else {
           this.$hoverElement = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${this.stoneSize}px; height: ${this.stoneSize}px; border-radius: ${this.stoneSize}px; background-image: url("${this.board.getStoneImage()}"); opacity: 0.5;' data-row=${this.row} data-col=${this.col}> </div>`)
 
@@ -59,6 +60,4 @@ class Grid {
 
 }
 
-module.exports = {
-  Grid
-}
+module.exports = Grid

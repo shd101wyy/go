@@ -17,6 +17,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     s(r[o]);
   }return s;
 })({ 1: [function (require, module, exports) {
+    'use strict';
+
+    var Board = require('../board.js');
+
     if (!window.socket) {
       window.socket = io();
     }
@@ -26,6 +30,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var socketAPI = {
       inviteMatch: function inviteMatch(opponentID) {
         socket.emit('invite-match', opponentID);
+      },
+
+      sendMove: function sendMove(opponentID, row, col) {
+        socket.emit('send-move', [opponentID, row, col]);
       }
     };
 
@@ -50,23 +58,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       var size = data.size,
           color = data.color,
           opponentID = data.opponentID;
+
+      $('.menu').remove();
+      window.gameManager.startNewMatch(size, color, opponentID);
+    });
+
+    socket.on('receive-move', function (data) {
+      var row = data[0],
+          col = data[1];
+
+      window.gameManager.board.addStone(row, col);
+    });
+
+    socket.on('opponent-disconnect', function (opponentID) {
+      alert('opponent disconnect: ' + opponentID);
     });
 
     module.exports = socketAPI;
-  }, {}], 2: [function (require, module, exports) {
-    var Grid = require('./grid.js').Grid;
-    var Stone = require('./stone.js').Stone;
+  }, { "../board.js": 2 }], 2: [function (require, module, exports) {
+    var Grid = require('./grid.js');
+    var Stone = require('./stone.js');
     var History = require('./history.js').History;
+    var socketAPI = require('./api/socket_api');
 
     // 假设只 9x9
 
     var Board = (function () {
       // 9x9 13x13 19x19
 
-      function Board(size) {
+      function Board(size, playerColor, opponentID) {
         _classCallCheck(this, Board);
 
         this.size = size;
+        this.playerColor = playerColor;
+        this.opponentID = opponentID;
+
         this.board = [];
         this.boardDom = [];
 
@@ -101,6 +127,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               }
             }
           }
+        }
+      }, {
+        key: "getColorForCurrentTurn",
+        value: function getColorForCurrentTurn() {
+          if (this.turn % 2 === 0) {
+            return 'black';
+          } else {
+            return 'white';
+          }
+        }
+      }, {
+        key: "isMyTurn",
+        value: function isMyTurn() {
+          return this.getColorForCurrentTurn() === this.playerColor;
         }
       }, {
         key: "getStoneImage",
@@ -274,6 +314,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this.history.add(this.board); // save to history
           // this.setMark(row, col) // mark lastest stone
           this.setMark(row, col);
+
+          if (this.opponentID) {
+            socketAPI.sendMove(this.opponentID, row, col);
+          }
         }
       }, {
         key: "render",
@@ -325,13 +369,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return Board;
     })();
 
-    module.exports = {
-      Board: Board
-    };
-  }, { "./grid.js": 3, "./history.js": 4, "./stone.js": 7 }], 3: [function (require, module, exports) {
+    module.exports = Board;
+  }, { "./api/socket_api": 1, "./grid.js": 3, "./history.js": 4, "./stone.js": 7 }], 3: [function (require, module, exports) {
     'use strict';
 
-    var Stone = require('./stone.js').Stone;
+    var Stone = require('./stone.js');
 
     var Grid = (function () {
       function Grid($gridTouch, $grid, board) {
@@ -352,11 +394,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.addDot();
 
         $gridTouch.click(function () {
+          if (!_this.board.isMyTurn()) return;
           _this.board.addStone(_this.row, _this.col);
         });
 
         $gridTouch.hover(function () {
-          if (_this.$hoverElement || _this.board.board[_this.row][_this.col]) return;else {
+          if (_this.$hoverElement || _this.board.board[_this.row][_this.col] || !_this.board.isMyTurn()) return;else {
             _this.$hoverElement = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.board.getStoneImage() + "\"); opacity: 0.5;' data-row=" + _this.row + " data-col=" + _this.col + "> </div>");
 
             _this.$gridTouch.append(_this.$hoverElement);
@@ -395,9 +438,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return Grid;
     })();
 
-    module.exports = {
-      Grid: Grid
-    };
+    module.exports = Grid;
   }, { "./stone.js": 7 }], 4: [function (require, module, exports) {
     'use strict';
 
@@ -446,11 +487,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     'use strict';
 
     var Stone = require('./stone.js').Stone;
-    var Board = require('./board.js').Board;
+    var Board = require('./board.js');
     var socketAPI = require('./api/socket_api.js');
     var Menu = require('./menu.js');
 
+    var GameManager = (function () {
+      function GameManager() {
+        _classCallCheck(this, GameManager);
+
+        this.menu = new Menu();
+        this.menu.render($('.game'));
+      }
+
+      _createClass(GameManager, [{
+        key: "startNewMatch",
+        value: function startNewMatch(size, playerColor, opponentID) {
+          this.board = new Board(size, playerColor, opponentID);
+          this.board.render($('.game'));
+        }
+      }]);
+
+      return GameManager;
+    })();
+
     // 没什么卵用的 loading screen
+
     $('.loading-screen .logo').fadeIn(1000, function () {
       setTimeout(function () {
         $('.loading-screen .logo').fadeOut(1000, function () {
@@ -459,11 +520,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, 1600);
     });
 
-    var board = new Board(13);
-    board.render($('.game'));
-
-    // let menu = new Menu()
-    // menu.render($('.game'))
+    // let board = new Board(13)
+    // board.render($('.game'))
+    window.gameManager = new GameManager();
   }, { "./api/socket_api.js": 1, "./board.js": 2, "./menu.js": 6, "./stone.js": 7 }], 6: [function (require, module, exports) {
     'use strict';
 
@@ -666,7 +725,5 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       return Stone;
     })();
 
-    module.exports = {
-      Stone: Stone
-    };
+    module.exports = Stone;
   }, {}] }, {}, [5]);

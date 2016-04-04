@@ -1,12 +1,16 @@
-let Grid = require('./grid.js').Grid
-let Stone = require('./stone.js').Stone
+let Grid = require('./grid.js')
+let Stone = require('./stone.js')
 let History = require('./history.js').History
+let socketAPI = require('./api/socket_api')
 
 // 假设只 9x9
 class Board {
   // 9x9 13x13 19x19
-  constructor(size) {
+  constructor(size, playerColor, opponentID) {
     this.size = size
+    this.playerColor = playerColor
+    this.opponentID = opponentID
+
     this.board = []
     this.boardDom = []
 
@@ -38,6 +42,18 @@ class Board {
         }
       }
     }
+  }
+
+  getColorForCurrentTurn() {
+    if (this.turn % 2 === 0) {
+      return 'black'
+    } else {
+      return 'white'
+    }
+  }
+
+  isMyTurn() {
+    return this.getColorForCurrentTurn() === this.playerColor
   }
 
   getStoneImage() {
@@ -203,6 +219,10 @@ class Board {
     this.history.add(this.board) // save to history
     // this.setMark(row, col) // mark lastest stone
     this.setMark(row, col)
+
+    if (this.opponentID) {
+      socketAPI.sendMove(this.opponentID, row, col)
+    }
   }
 
   render($element) {
@@ -266,6 +286,4 @@ class Board {
   }
 }
 
-module.exports = {
-  Board
-}
+module.exports = Board

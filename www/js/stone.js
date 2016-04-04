@@ -150,6 +150,4 @@ class Stone {
     }
 }
 
-module.exports = {
-  Stone: Stone
-}
+module.exports = Stone

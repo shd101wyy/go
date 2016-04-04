@@ -119,10 +119,22 @@ io.on('connection', function(socket) {
     }
   })
 
+  socket.on('send-move', function(data) {
+    let opponentID = data[0],
+        row = data[1],
+        col = data[2]
+    if (socketMap[opponentID]) {
+      socketMap[opponentID].emit('receive-move', [row, col])
+    } else {
+      socket.emit('opponent-disconnect', opponentID)
+    }
+  })
+
   socket.on("disconnect", function() {
     console.log('user disconnect: ' + userID)
     delete(socketMap[socket.userID])
   })
+
 })
 
 
