@@ -22,9 +22,9 @@ class Stone {
     hasNoQi() {
       this.checked = true
 
-      let hasNoQi = true
+      let noQi = true
       if (this.getQi() > 0) {
-        hasNoQi = false
+        noQi = false
       }
 
       let top = this.getTopStone(),
@@ -33,22 +33,22 @@ class Stone {
           bottom = this.getBottomStone()
 
       if (top && top.sameColor(this.color) && !top.checked && !top.hasNoQi()) {
-        hasNoQi = false
+        noQi = false
       }
 
       if (left && left.sameColor(this.color) && !left.checked && !left.hasNoQi()) {
-        hasNoQi = false
+        noQi = false
       }
 
       if (right && right.sameColor(this.color) && !right.checked && !right.hasNoQi()) {
-        hasNoQi = false
+        noQi = false
       }
 
       if (bottom && bottom.sameColor(this.color) && !bottom.checked && !bottom.hasNoQi()) {
-        hasNoQi = false
+        noQi = false
       }
 
-      return hasNoQi
+      return noQi
 
     }
 

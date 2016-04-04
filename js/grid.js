@@ -7,6 +7,9 @@ class Grid {
     this.$gridTouch = $gridTouch
     this.$grid = $grid
     this.board = board
+    this.stoneSize = Number(this.$grid.css('width').replace('px', ''))
+
+    this.$hoverElement = null
 
     $gridTouch.click(()=> {
       let row = this.$gridTouch.data('row')
@@ -15,10 +18,7 @@ class Grid {
       if (this.board.board[row][col])
         return
 
-      // console.log(row + ', ' + col)
-
-      let stoneWidth = Number(this.$grid.css('width').replace('px', ''))
-      let $stone = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${stoneWidth}px; height: ${stoneWidth}px; border-radius: ${stoneWidth}px; background-image: url("${this.getStoneImage()}")' data-row=${row} data-col=${col}> </div>`)
+      let $stone = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${this.stoneSize}px; height: ${this.stoneSize}px; border-radius: ${this.stoneSize}px; background-image: url("${this.getStoneImage()}");' data-row=${row} data-col=${col}> </div>`)
 
       this.board.board[row][col] = new Stone($stone, this.board) // set to Go board
 
@@ -27,6 +27,28 @@ class Grid {
 
       this.board.checkCapture(row, col)
     })
+
+    $gridTouch.hover(
+      () => {
+        let row = this.$gridTouch.data('row')
+        let col = this.$gridTouch.data('col')
+
+        if (this.$hoverElement || this.board.board[row][col]) return
+        else {
+          this.$hoverElement = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${this.stoneSize}px; height: ${this.stoneSize}px; border-radius: ${this.stoneSize}px; background-image: url("${this.getStoneImage()}"); opacity: 0.5;' data-row=${row} data-col=${col}> </div>`)
+
+          this.$gridTouch.append(this.$hoverElement)
+        }
+      },
+      () => {
+        let row = this.$gridTouch.data('row')
+        let col = this.$gridTouch.data('col')
+
+        if (this.$hoverElement) {
+          this.$hoverElement.remove()
+          this.$hoverElement = null
+        }
+      })
   }
 
   getStoneImage() {

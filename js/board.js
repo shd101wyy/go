@@ -13,7 +13,7 @@ class Board {
     this.turn = 0
     this.history = new History()
 
-    this.lastCapturePos = null
+    this.$mark = null
 
     // create board data
     for (let i = 0; i < this.size; i++) {
@@ -71,20 +71,56 @@ class Board {
 
   showIcon(row, col, iconName) {
     let $gridTouch = this.boardDom[row][col].$gridTouch
-    let $suicide = $(`<div class='${iconName}'> </div>`)
-    $suicide.css('width', $gridTouch.css('width'))
-    $suicide.css('height', $gridTouch.css('height'))
-    $suicide.css('left', $gridTouch.css('left'))
-    $suicide.css('right', $gridTouch.css('right'))
-    $suicide.css('top', $gridTouch.css('top'))
-    $suicide.css('bottom', $gridTouch.css('bottom'))
+    let $icon = $(`<div class='${iconName}'> </div>`)
+    $icon.css('width', $gridTouch.css('width'))
+    $icon.css('height', $gridTouch.css('height'))
+    $icon.css('left', $gridTouch.css('left'))
+    $icon.css('right', $gridTouch.css('right'))
+    $icon.css('top', $gridTouch.css('top'))
+    $icon.css('bottom', $gridTouch.css('bottom'))
 
 
-    this.boardDom[row][col].$grid.append($suicide)
+    this.boardDom[row][col].$grid.append($icon)
 
-    $suicide.fadeOut(2000, ()=> {
-      $suicide.remove()
+    $icon.fadeOut(2000, ()=> {
+      $icon.remove()
     })
+  }
+
+  setMark(row, col) {
+    if (this.$mark) {
+      this.$mark.remove()
+    }
+
+    let $grid = this.boardDom[row][col].$grid
+    let $gridTouch = this.boardDom[row][col].$gridTouch
+    let $mark = $(`<div class="${this.board[row][col].color === 'black' ? 'mark-w':'mark-b'}"></div>`)
+    $mark.css('width', $grid.css('width'))
+    $mark.css('height', $grid.css('height'))
+    $mark.css('left', $gridTouch.css('left'))
+    $mark.css('right', $gridTouch.css('right'))
+    $mark.css('top', $gridTouch.css('top'))
+    $mark.css('bottom', $gridTouch.css('bottom'))
+
+    this.$mark = $mark
+    this.boardDom[row][col].$grid.append(this.$mark)
+
+    if (this.$mark) {
+      this.$mark.remove()
+    } else {
+      let $gridTouch = this.boardDom[row][col].$gridTouch
+      let $mark = $(`<div class='mark'> </div>`)
+      $mark.css('width', $gridTouch.css('width'))
+      $mark.css('height', $gridTouch.css('height'))
+      $mark.css('left', $gridTouch.css('left'))
+      $mark.css('right', $gridTouch.css('right'))
+      $mark.css('top', $gridTouch.css('top'))
+      $mark.css('bottom', $gridTouch.css('bottom'))
+
+      this.$mark = $mark
+    }
+
+    this.boardDom[row][col].$grid.append(this.$mark)
   }
 
   checkCapture(row, col) {
@@ -139,6 +175,8 @@ class Board {
 
     this.markAllStonsUncheckd()
     this.history.add(this.board) // save to history
+    // this.setMark(row, col) // mark lastest stone
+    this.setMark(row, col)
   }
 
   render($element) {
