@@ -13,12 +13,21 @@ class Grid {
         return
 
       let stoneWidth = Number(this.$grid.css('width').replace('px', '')) - 4
-      let stone = $(`<div class="stone ${this.board.turn % 2 == 0 ? 'black' : 'white'}" style='width: ${stoneWidth}px; height: ${stoneWidth}px; border-radius: ${stoneWidth}px; left:${-stoneWidth/2}px; top:${-stoneWidth/2}px;'> </div>`)
+      let stone = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${stoneWidth}px; height: ${stoneWidth}px; border-radius: ${stoneWidth}px; left:${-stoneWidth/2}px; top:${-stoneWidth/2}px; background-image: url("${this.getStoneImage()}")'> </div>`)
 
       this.$grid.append(stone)
       this.board.turn += 1
     })
   }
+
+  getStoneImage() {
+    if (this.board.turn % 2 === 0) {
+      return './images/b.png'
+    } else {
+      return `./images/w${Math.floor(Math.random() * 15)}.png`
+    }
+  }
+
 }
 
 module.exports = {
