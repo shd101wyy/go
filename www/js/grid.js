@@ -17,25 +17,28 @@ class Grid {
     this.addDot()
 
     $gridTouch.click(()=> {
-      if (!this.board.isMyTurn()) return 
+      if (!this.board.isMyTurn()) return
       this.board.addStone(this.row, this.col)
     })
 
-    $gridTouch.hover(
-      () => {
-        if (this.$hoverElement || this.board.board[this.row][this.col] || !this.board.isMyTurn()) return
-        else {
-          this.$hoverElement = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${this.stoneSize}px; height: ${this.stoneSize}px; border-radius: ${this.stoneSize}px; background-image: url("${this.board.getStoneImage()}"); opacity: 0.5;' data-row=${this.row} data-col=${this.col}> </div>`)
+    let isTouchDevice = ('ontouchstart' in window || 'onmsgesturechange' in window)
+    if (!isTouchDevice) {
+      $gridTouch.hover(
+        () => {
+          if (this.$hoverElement || this.board.board[this.row][this.col] || !this.board.isMyTurn()) return
+          else {
+            this.$hoverElement = $(`<div class="stone ${this.board.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${this.stoneSize}px; height: ${this.stoneSize}px; border-radius: ${this.stoneSize}px; background-image: url("${this.board.getStoneImage()}"); opacity: 0.5;' data-row=${this.row} data-col=${this.col}> </div>`)
 
-          this.$gridTouch.append(this.$hoverElement)
-        }
-      },
-      () => {
-        if (this.$hoverElement) {
-          this.$hoverElement.remove()
-          this.$hoverElement = null
-        }
-      })
+            this.$gridTouch.append(this.$hoverElement)
+          }
+        },
+        () => {
+          if (this.$hoverElement) {
+            this.$hoverElement.remove()
+            this.$hoverElement = null
+          }
+        })
+    }
   }
 
   addDot() {

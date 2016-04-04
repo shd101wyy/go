@@ -322,11 +322,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "render",
         value: function render($element) {
-          var boardSize = 576,
-              padding = 24,
-              gridSize = boardSize / (this.size - 1);
+          var dom = $("<div class=\"board\"></div>");
+          $element.append(dom);
 
-          var dom = $("<div class=\"board\" style=\"width: " + boardSize + "px; height: " + boardSize + "px;\"></div>");
+          var boardSize = dom.width(),
+              // excluding padding  // 576,
+          gridSize = boardSize / (this.size - 1);
+
+          dom.css('height', boardSize + parseInt(dom.css('padding'), 10) * 2 + 'px'); // set height
+
           var stoneSize = gridSize;
           this.stoneSize = gridSize;
 
@@ -361,8 +365,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
             dom.append(gridRow);
           }
-
-          $element.append(dom);
         }
       }]);
 
@@ -398,18 +400,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           _this.board.addStone(_this.row, _this.col);
         });
 
-        $gridTouch.hover(function () {
-          if (_this.$hoverElement || _this.board.board[_this.row][_this.col] || !_this.board.isMyTurn()) return;else {
-            _this.$hoverElement = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.board.getStoneImage() + "\"); opacity: 0.5;' data-row=" + _this.row + " data-col=" + _this.col + "> </div>");
+        var isTouchDevice = 'ontouchstart' in window || 'onmsgesturechange' in window;
+        if (!isTouchDevice) {
+          $gridTouch.hover(function () {
+            if (_this.$hoverElement || _this.board.board[_this.row][_this.col] || !_this.board.isMyTurn()) return;else {
+              _this.$hoverElement = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.board.getStoneImage() + "\"); opacity: 0.5;' data-row=" + _this.row + " data-col=" + _this.col + "> </div>");
 
-            _this.$gridTouch.append(_this.$hoverElement);
-          }
-        }, function () {
-          if (_this.$hoverElement) {
-            _this.$hoverElement.remove();
-            _this.$hoverElement = null;
-          }
-        });
+              _this.$gridTouch.append(_this.$hoverElement);
+            }
+          }, function () {
+            if (_this.$hoverElement) {
+              _this.$hoverElement.remove();
+              _this.$hoverElement = null;
+            }
+          });
+        }
       }
 
       _createClass(Grid, [{

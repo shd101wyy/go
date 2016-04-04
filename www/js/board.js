@@ -226,11 +226,14 @@ class Board {
   }
 
   render($element) {
-    let boardSize = 576,
-        padding = 24,
+    let dom = $(`<div class="board"></div>`)
+    $element.append( dom )
+
+    let boardSize = dom.width(), // excluding padding  // 576, 
         gridSize = (boardSize) / (this.size - 1)
 
-    let dom = $(`<div class="board" style="width: ${boardSize}px; height: ${boardSize}px;"></div>`)
+    dom.css('height', (boardSize + parseInt(dom.css('padding'), 10) * 2) + 'px') // set height
+
     let stoneSize = gridSize
     this.stoneSize = gridSize
 
@@ -281,8 +284,6 @@ class Board {
       }
       dom.append(gridRow)
     }
-
-    $element.append( dom )
   }
 }
 
