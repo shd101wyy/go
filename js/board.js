@@ -62,6 +62,7 @@ class Board {
         if (stone && !stone.checked) {
           if (stone.hasNoQi()) {
             // suicide
+            // TODO: hint user not to put stone this way
             stone.removeStones()
           }
         }

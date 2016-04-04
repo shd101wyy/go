@@ -113,9 +113,7 @@ class Stone {
           qi += 1
         }
       }
-
-      console.log(this.row + ' ' + this.col + ': ' + qi)
-
+      
       return qi
     }
 

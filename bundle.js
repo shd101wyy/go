@@ -1,6 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 let Grid = require('./grid.js').Grid
 let Stone = require('./stone.js').Stone
+let History = require('./history.js').History
 
 // 假设只 9x9
 class Board {
@@ -11,6 +12,7 @@ class Board {
     this.boardDom = []
 
     this.turn = 0
+    this.history = new History()
 
     // create board data
     for (let i = 0; i < this.size; i++) {
@@ -22,6 +24,8 @@ class Board {
         this.boardDom[i].push(null)
       }
     }
+
+    this.history.add(this.board)
   }
 
   // mark all stones as unchecked
@@ -37,7 +41,10 @@ class Board {
 
   checkCapture() {
     let color = (this.turn % 2 === 0) ? 'black' : 'white'
+    let currentBoard = this.board
+    let last = this.history.get(-1)
 
+    // check opponent
     for (let i = 0; i < this.size; i++) {
       for (let j = 0; j < this.size; j++) {
         let stone = this.board[i][j]
@@ -49,11 +56,14 @@ class Board {
       }
     }
 
+    // check self
     for (let i = 0; i < this.size; i++) {
       for (let j = 0; j < this.size; j++) {
         let stone = this.board[i][j]
         if (stone && !stone.checked) {
           if (stone.hasNoQi()) {
+            // suicide
+            // TODO: hint user not to put stone this way
             stone.removeStones()
           }
         }
@@ -123,7 +133,7 @@ module.exports = {
   Board
 }
 
-},{"./grid.js":2,"./stone.js":4}],2:[function(require,module,exports){
+},{"./grid.js":2,"./history.js":3,"./stone.js":5}],2:[function(require,module,exports){
 'use strict'
 
 let Stone = require('./stone.js').Stone
@@ -167,15 +177,44 @@ module.exports = {
   Grid
 }
 
-},{"./stone.js":4}],3:[function(require,module,exports){
+},{"./stone.js":5}],3:[function(require,module,exports){
+'use strict'
+
+class History {
+  constructor() {
+    this.history = []
+  }
+
+  add(board) {
+    this.history.push(board)
+  }
+
+  pop() {
+    this.history.pop()
+  }
+
+  get(num) {
+    if (num >= 0) {
+      return this.history[num]
+    } else {
+      return this.history[this.history.length - 1 + num]
+    }
+  }
+}
+
+module.exports = {
+  History
+}
+
+},{}],4:[function(require,module,exports){
 'use strict'
 let Stone = require('./stone.js').Stone
 let Board = require('./board.js').Board
 
-let board = new Board(19)
+let board = new Board(9)
 board.render($('.game'))
 
-},{"./board.js":1,"./stone.js":4}],4:[function(require,module,exports){
+},{"./board.js":1,"./stone.js":5}],5:[function(require,module,exports){
 'use strict'
 
 class Stone {
@@ -291,9 +330,7 @@ class Stone {
           qi += 1
         }
       }
-
-      console.log(this.row + ' ' + this.col + ': ' + qi)
-
+      
       return qi
     }
 
@@ -330,4 +367,4 @@ module.exports = {
   Stone: Stone
 }
 
-},{}]},{},[3]);
+},{}]},{},[4]);
