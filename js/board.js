@@ -1,5 +1,6 @@
 let Grid = require('./grid.js').Grid
 let Stone = require('./stone.js').Stone
+let History = require('./history.js').History
 
 // 假设只 9x9
 class Board {
@@ -10,6 +11,7 @@ class Board {
     this.boardDom = []
 
     this.turn = 0
+    this.history = new History()
 
     // create board data
     for (let i = 0; i < this.size; i++) {
@@ -21,6 +23,8 @@ class Board {
         this.boardDom[i].push(null)
       }
     }
+
+    this.history.add(this.board)
   }
 
   // mark all stones as unchecked
@@ -36,7 +40,10 @@ class Board {
 
   checkCapture() {
     let color = (this.turn % 2 === 0) ? 'black' : 'white'
+    let currentBoard = this.board
+    let last = this.history.get(-1)
 
+    // check opponent
     for (let i = 0; i < this.size; i++) {
       for (let j = 0; j < this.size; j++) {
         let stone = this.board[i][j]
@@ -48,11 +55,13 @@ class Board {
       }
     }
 
+    // check self
     for (let i = 0; i < this.size; i++) {
       for (let j = 0; j < this.size; j++) {
         let stone = this.board[i][j]
         if (stone && !stone.checked) {
           if (stone.hasNoQi()) {
+            // suicide
             stone.removeStones()
           }
         }
