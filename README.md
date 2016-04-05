@@ -14,13 +14,29 @@
 
 - 搭建项目环境
   ```sh
+    cd 到 project folder
     npm install
   ```
-  在全局安装 babel, less, browserify
+  在全局安装 babel, less, browserify, etc
   ```sh
-    npm install -g babel babel-cli less browserify
+    npm install -g babel babel-cli less browserify, nodemon
+  ```
+  安装 mongodb
+  ```
+    brew install mongodb
+    mkdir /data/db
   ```
 - 编译代码
   ```sh
     ./build.sh
   ```
+
+- 运行项目
+  ```sh
+    sudo mongod
+    ./build.sh
+    nodemon server.js
+
+  ```
+- 注意
+  现在每修改一次 javascript 或者 less 文件都得重新运行 ```./build.sh``` 重新编译
