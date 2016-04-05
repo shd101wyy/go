@@ -499,9 +499,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var GameManager = (function () {
       function GameManager() {
         _classCallCheck(this, GameManager);
-
-        this.menu = new Menu();
-        this.menu.render($('.game'));
       }
 
       _createClass(GameManager, [{
@@ -509,6 +506,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         value: function startNewMatch(size, playerColor, opponentID) {
           this.board = new Board(size, playerColor, opponentID);
           this.board.render($('.game'));
+        }
+      }, {
+        key: "showMenu",
+        value: function showMenu() {
+          this.menu = new Menu();
+          this.menu.render($('.game'));
         }
       }]);
 
@@ -528,6 +531,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     // let board = new Board(13)
     // board.render($('.game'))
     window.gameManager = new GameManager();
+    gameManager.showMenu();
   }, { "./api/socket_api.js": 1, "./board.js": 2, "./menu.js": 6, "./stone.js": 7 }], 6: [function (require, module, exports) {
     'use strict';
 

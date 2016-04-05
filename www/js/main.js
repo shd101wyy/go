@@ -6,14 +6,16 @@ let Menu = require('./menu.js')
 
 class GameManager {
   constructor() {
-    this.menu = new Menu()
-    this.menu.render($('.game'))
-
   }
 
   startNewMatch(size, playerColor, opponentID) {
     this.board = new Board(size, playerColor, opponentID)
     this.board.render($('.game'))
+  }
+
+  showMenu() {
+    this.menu = new Menu()
+    this.menu.render($('.game'))
   }
 }
 
@@ -29,3 +31,4 @@ $('.loading-screen .logo').fadeIn(1000, ()=> {
 // let board = new Board(13)
 // board.render($('.game'))
 window.gameManager = new GameManager()
+gameManager.showMenu()
