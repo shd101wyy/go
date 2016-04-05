@@ -10,6 +10,7 @@
   "keywords": [
     "go"
   ],
+  "repository": "https://github.com/shd101wyy/go.git",
   "author": "shd101wyy",
   "license": "MIT",
   "dependencies": {
