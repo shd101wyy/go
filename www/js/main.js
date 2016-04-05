@@ -9,6 +9,8 @@ class GameManager {
   constructor() {
     this.signup_login_page = new Signup_Login()
     this.signup_login_page.appendTo($('.game'))
+
+    document.body.addEventListener('touchmove', function(e){ e.preventDefault()})
   }
 
   startNewMatch(size, playerColor, opponentID) {

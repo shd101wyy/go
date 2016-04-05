@@ -558,6 +558,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.signup_login_page = new Signup_Login();
         this.signup_login_page.appendTo($('.game'));
+
+        document.body.addEventListener('touchmove', function (e) {
+          e.preventDefault();
+        });
       }
 
       _createClass(GameManager, [{
