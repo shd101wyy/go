@@ -15,14 +15,22 @@ let socketAPI = {
 
   sendMove: function(opponentID, row, col) {
     socket.emit('send-move', [opponentID, row, col])
+  },
+
+  userLoggedIn: function(userID) {
+    socket.emit('user-logged-in', userID)
   }
 }
 
-
+/*
+不再需要产生随机 ID
+ */
+/*
 socket.on('generate-user-id', function(userID) {
   console.log('get userID: ', userID)
   $('.user-id').html('User ID: ' + userID)
 })
+*/
 
 socket.on('opponent-not-found', function(opponentID) {
   alert('opponent ' + opponentID + ' not found')

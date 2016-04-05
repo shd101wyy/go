@@ -2,6 +2,10 @@
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 (function e(t, n, r) {
@@ -34,13 +38,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       sendMove: function sendMove(opponentID, row, col) {
         socket.emit('send-move', [opponentID, row, col]);
+      },
+
+      userLoggedIn: function userLoggedIn(userID) {
+        socket.emit('user-logged-in', userID);
       }
     };
 
-    socket.on('generate-user-id', function (userID) {
-      console.log('get userID: ', userID);
-      $('.user-id').html('User ID: ' + userID);
-    });
+    /*
+    不再需要产生随机 ID
+     */
+    /*
+    socket.on('generate-user-id', function(userID) {
+      console.log('get userID: ', userID)
+      $('.user-id').html('User ID: ' + userID)
+    })
+    */
 
     socket.on('opponent-not-found', function (opponentID) {
       alert('opponent ' + opponentID + ' not found');
@@ -75,7 +88,49 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
 
     module.exports = socketAPI;
-  }, { "../board.js": 2 }], 2: [function (require, module, exports) {
+  }, { "../board.js": 3 }], 2: [function (require, module, exports) {
+    'use strict';
+
+    var userAPI = {
+      signup: function signup(email, userID, password, callback) {
+        $.ajax('/signup', {
+          type: 'POST',
+          dataType: 'json',
+          data: { email: email, password: password, userID: userID },
+          success: function success(res) {
+            if (res) {
+              if (callback) callback(res);else callback(null);
+            } else if (callback) {
+              callback(null);
+            }
+          },
+          error: function error(res) {
+            if (callback) callback(null);
+          }
+        });
+      },
+
+      signin: function signin(email, password, callback) {
+        $.ajax('/signin', {
+          type: 'POST',
+          dataType: 'json',
+          data: { email: email, password: password },
+          success: function success(res) {
+            if (res) {
+              if (callback) callback(res);else callback(null);
+            } else if (callback) {
+              callback(null);
+            }
+          },
+          error: function error(res) {
+            if (callback) callback(null);
+          }
+        });
+      }
+    };
+
+    module.exports = userAPI;
+  }, {}], 3: [function (require, module, exports) {
     var Grid = require('./grid.js');
     var Stone = require('./stone.js');
     var History = require('./history.js').History;
@@ -372,7 +427,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = Board;
-  }, { "./api/socket_api": 1, "./grid.js": 3, "./history.js": 4, "./stone.js": 7 }], 3: [function (require, module, exports) {
+  }, { "./api/socket_api": 1, "./grid.js": 4, "./history.js": 5, "./stone.js": 10 }], 4: [function (require, module, exports) {
     'use strict';
 
     var Stone = require('./stone.js');
@@ -444,7 +499,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = Grid;
-  }, { "./stone.js": 7 }], 4: [function (require, module, exports) {
+  }, { "./stone.js": 10 }], 5: [function (require, module, exports) {
     'use strict';
 
     var History = (function () {
@@ -488,17 +543,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     module.exports = {
       History: History
     };
-  }, {}], 5: [function (require, module, exports) {
+  }, {}], 6: [function (require, module, exports) {
     'use strict';
 
     var Stone = require('./stone.js').Stone;
     var Board = require('./board.js');
     var socketAPI = require('./api/socket_api.js');
     var Menu = require('./menu.js');
+    var Signup_Login = require('./signup_login.js');
 
     var GameManager = (function () {
       function GameManager() {
         _classCallCheck(this, GameManager);
+
+        this.signup_login_page = new Signup_Login();
+        this.signup_login_page.appendTo($('.game'));
       }
 
       _createClass(GameManager, [{
@@ -510,6 +569,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "showMenu",
         value: function showMenu() {
+          if (this.signup_login_page) {
+            this.signup_login_page.remove();
+          }
+
+          // TODO: remove
+          /*
+          if (this.board) {
+          }
+          */
+
           this.menu = new Menu();
           this.menu.render($('.game'));
         }
@@ -531,8 +600,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     // let board = new Board(13)
     // board.render($('.game'))
     window.gameManager = new GameManager();
-    gameManager.showMenu();
-  }, { "./api/socket_api.js": 1, "./board.js": 2, "./menu.js": 6, "./stone.js": 7 }], 6: [function (require, module, exports) {
+    // gameManager.showMenu()
+  }, { "./api/socket_api.js": 1, "./board.js": 3, "./menu.js": 7, "./signup_login.js": 8, "./stone.js": 10 }], 7: [function (require, module, exports) {
     'use strict';
 
     var socketAPI = require('./api/socket_api.js');
@@ -563,7 +632,179 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = Menu;
-  }, { "./api/socket_api.js": 1 }], 7: [function (require, module, exports) {
+  }, { "./api/socket_api.js": 1 }], 8: [function (require, module, exports) {
+    'use strict';
+
+    var Simple = require('./simple.js');
+    var userAPI = require('./api/user_api.js');
+    var socketAPI = require('./api/socket_api.js');
+
+    var Signup_Login = (function (_Simple) {
+      _inherits(Signup_Login, _Simple);
+
+      function Signup_Login() {
+        _classCallCheck(this, Signup_Login);
+
+        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Signup_Login).call(this));
+
+        _this2.state = {
+          showLogin: true
+        };
+        return _this2;
+      }
+
+      _createClass(Signup_Login, [{
+        key: "render",
+        value: function render() {
+          var _this3 = this;
+
+          var $email = $("<div class=\"email field\"> <input placeholder=\"Email\" /> </div>");
+          var $userID = $("<div class=\"userID field  " + (this.state.showLogin ? 'hide' : 'show') + "\"> <input placeholder=\"User ID\" /> </div>");
+          var $password = $('<div class="password field"> <input placeholder="Password" type="password" /> </div>');
+
+          var $switch = $("<a class=\"switch\"> " + (this.state.showLogin ? 'Don\'t have account yet? Click me ' : 'Already have an account? Click me') + " </a>");
+
+          var $go = $('<div class="go"> Go </div>');
+
+          var $container = $('<div class="container"></div>');
+
+          $container.append($email);
+          $container.append($userID);
+          $container.append($password);
+          $container.append($switch);
+          $container.append($go);
+
+          var $pageElement = $("\n      <div class=\"signup-login-page\">\n      </div>\n      ");
+
+          $pageElement.append($container);
+
+          $switch.click(function () {
+            _this3.setState({ showLogin: !_this3.state.showLogin });
+          });
+
+          $go.click(function () {
+            var email = $('input', $email).val().trim(),
+                userID = $('input', $userID).val().trim(),
+                password = $('input', $password).val();
+
+            if (_this3.state.showLogin) {
+              // login
+              // missing information
+              if (!email.length || !password.length) {
+                return;
+              }
+              console.log('login');
+              userAPI.signin(email, password, function (res) {
+                console.log(res);
+                if (!res) {
+                  alert('Failed to signin');
+                } else {
+                  $('.user-id').html('User ID: ' + res.userID);
+                  window.gameManager.showMenu();
+                  socketAPI.userLoggedIn(res.userID);
+                }
+              });
+            } else {
+              // missing information
+              if (!email.length || !userID.length || !password.length) {
+                return;
+              }
+              console.log('signup');
+              userAPI.signup(email, userID, password, function (res) {
+                console.log(res);
+                if (!res) {
+                  alert('Failed to signup');
+                } else {
+                  $('.user-id').html('User ID: ' + res.userID);
+                  window.gameManager.showMenu();
+                  socketAPI.userLoggedIn(res.userID);
+                }
+              });
+            }
+          });
+
+          return $pageElement;
+        }
+      }]);
+
+      return Signup_Login;
+    })(Simple);
+
+    module.exports = Signup_Login;
+  }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./simple.js": 9 }], 9: [function (require, module, exports) {
+    /*
+      My Simple and silly front end library called "Simple"
+     */
+
+    var Simple = (function () {
+      function Simple() {
+        _classCallCheck(this, Simple);
+
+        this.state = {};
+        this.$el = null;
+      }
+
+      _createClass(Simple, [{
+        key: "setState",
+        value: function setState(newState) {
+          // copy state and then rerender dom element
+          for (var key in newState) {
+            this.state[key] = newState[key];
+          }
+
+          this.forceUpdate();
+        }
+      }, {
+        key: "forceUpdate",
+        value: function forceUpdate() {
+          var $new = this._render();
+
+          if (this.$el) {
+            this.$el.replaceWith($new);
+            this.$el = $new;
+          } else {
+            this.$el = $new;
+          }
+        }
+      }, {
+        key: "_render",
+        value: function _render() {
+          var res = this.render();
+          if (typeof res === 'string') {
+            return $(res);
+          } else {
+            return res;
+          }
+        }
+      }, {
+        key: "appendTo",
+        value: function appendTo($element) {
+          if (!this.$el) {
+            this.$el = this._render();
+          }
+          $element.append(this.$el);
+        }
+      }, {
+        key: "remove",
+        value: function remove() {
+          if (this.$el) {
+            this.$el.remove();
+            this.$el = null;
+          }
+        }
+      }, {
+        key: "render",
+        value: function render() {
+          throw 'Simple Exception: render function not implemented';
+          return null;
+        }
+      }]);
+
+      return Simple;
+    })();
+
+    module.exports = Simple;
+  }, {}], 10: [function (require, module, exports) {
     'use strict';
 
     var Stone = (function () {
@@ -735,4 +976,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = Stone;
-  }, {}] }, {}, [5]);
+  }, {}] }, {}, [6]);

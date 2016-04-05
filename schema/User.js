@@ -21,7 +21,7 @@ db.once("open", function(callback){
 var userSchema = new Schema({
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
-    userId: {type: String, required: true, unique: true},
+    userID: {type: String, required: true, unique: true},
 })
 
 // create model that uses the schema

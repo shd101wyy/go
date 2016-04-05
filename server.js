@@ -9,6 +9,15 @@ let express = require('express'),
     io = require('socket.io')(http)
 
 
+let crypto = require('crypto'),
+    algorithm = 'aes-256-ctr'
+function encrypt(text){
+  var cipher = crypto.createCipher(algorithm, "asdfnjksaQW");
+  var crypted = cipher.update(text,'utf8','hex');
+  crypted += cipher.final('hex');
+  return crypted;
+}
+
 app.use(session({
   secret: '1234567890QWERTY',
 }))
@@ -22,20 +31,22 @@ app.get('/', function(req, res){
 })
 
 app.get('/auth', function(req, res) {
-  if (req.session.userId) {
-    res.json({success: true, userId: req.session.userId})
+  if (req.session.userID) {
+    res.json({success: true, userID: req.session.userID})
   } else {
     res.send('null')
   }
 })
 
 app.post('/signin', function(req, res) {
-  console.log(req.session.userId)
+  console.log(req.session.userID)
   let post = req.body,
       email = post.email,
       password = post.password
 
   if (password) password = encrypt(password)
+
+  console.log(email, password)
 
   db_User.find({email, password}, function(error, users) {
     if (error || !users || users.length === 0) {
@@ -43,8 +54,8 @@ app.post('/signin', function(req, res) {
       res.send('null')
     } else {
       console.log('signin successfully')
-      req.session.userId = users[0].userId
-      res.json({success: true, userId: users[0].userId})
+      req.session.userID = users[0].userID
+      res.json({success: true, userID: users[0].userID})
     }
   })
 })
@@ -53,14 +64,14 @@ app.post('/signup', function(req, res) {
   let post = req.body,
       email = post.email,
       password = post.password,
-      userId = post.userId
+      userID = post.userID
 
   if (password) password = encrypt(password)
 
   let newUser = db_User({
     email,
     password,
-    userId
+    userID
   })
 
   newUser.save(function(error) {
@@ -69,14 +80,14 @@ app.post('/signup', function(req, res) {
       res.send('null')
     } else {
       console.log('signup successfully')
-      req.session.userId = userId
-      res.json({success: true})
+      req.session.userID = userID
+      res.json({success: true, userID: userID})
     }
   })
 })
 
 app.get('/logout', function(req, res) {
-  delete(req.session.userId)
+  delete(req.session.userID)
   res.send({success: true})
 })
 
@@ -95,15 +106,15 @@ function makeid() {
 // socket.io
 let socketMap = {} // key is userID, value is socket
 io.on('connection', function(socket) {
-  let userID = makeid()
-  console.log('user connect: ' + socket.id + ' ' + userID)
-  socket.userID = userID
-  socketMap[userID] = socket
+  console.log('user connect: ' + socket.id)
 
-  socket.emit('generate-user-id', userID)
+  socket.on('user-logged-in', function(userID) {
+    socket.userID = userID
+    socketMap[userID] = socket
+  })
 
   socket.on('invite-match', function(opponentID) {
-    if (opponentID === userID) return
+    if (opponentID === socket.userID) return
 
     if (socketMap[opponentID]) {
       // TODO: assume after sent, accpet immediately...
@@ -113,7 +124,7 @@ io.on('connection', function(socket) {
       */
       // assume I am black and opponent is white
       socket.emit('start-match', {size: 9, color: 'black', opponentID: opponentID})
-      socketMap[opponentID].emit('start-match', {size: 9, color: 'white', opponentID: userID})
+      socketMap[opponentID].emit('start-match', {size: 9, color: 'white', opponentID: socket.userID})
     } else { // not found
       socket.emit('opponent-not-found', opponentID)
     }
@@ -131,7 +142,7 @@ io.on('connection', function(socket) {
   })
 
   socket.on("disconnect", function() {
-    console.log('user disconnect: ' + userID)
+    console.log('user disconnect: ' + socket.userID)
     delete(socketMap[socket.userID])
   })
 
