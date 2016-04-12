@@ -171,6 +171,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         _this.playerColor = props.playerColor || 'black';
         _this.playerID = props.playerID || null;
         _this.opponentID = props.opponentID || null;
+        _this.gameManager = props.gameManager || null;
 
         _this.board = [];
         _this.boardDom = [];
@@ -408,6 +409,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (this.opponentID) {
             socketAPI.sendMove(this.opponentID, row, col);
           }
+
+          if (this.gameManager) {
+            this.gameManager.updateBoardMenu();
+          }
         }
       }, {
         key: "render",
@@ -644,6 +649,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (res && res.success) {
             _this5.playerID = res.userID;
             $('.user-id').html('User ID: ' + _this5.playerID);
+            socketAPI.userLoggedIn(_this5.playerID);
             _this5.showMenu();
           } else {
             _this5.signup_login_page = new Signup_Login();
@@ -669,12 +675,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.board = new Board({ size: size,
             playerColor: playerColor,
             playerID: this.playerID,
-            opponentID: opponentID });
+            opponentID: opponentID,
+            gameManager: this });
           this.board.render(this.$game);
           // this.board.appendTo(this.$game)
 
           this.boardMenu = new BoardMenu(this.board);
           this.boardMenu.appendTo(this.$game);
+        }
+      }, {
+        key: "updateBoardMenu",
+        value: function updateBoardMenu() {
+          this.boardMenu.forceUpdate();
         }
       }, {
         key: "showMenu",

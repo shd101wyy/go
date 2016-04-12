@@ -14,6 +14,7 @@ class GameManager {
       if (res && res.success) {
         this.playerID = res.userID
         $('.user-id').html('User ID: ' + this.playerID)
+        socketAPI.userLoggedIn(this.playerID)
         this.showMenu()
       } else {
         this.signup_login_page = new Signup_Login()
@@ -34,12 +35,17 @@ class GameManager {
     this.board = new Board({  size,
                               playerColor,
                               playerID: this.playerID,
-                              opponentID})
+                              opponentID,
+                              gameManager: this})
     this.board.render(this.$game)
     // this.board.appendTo(this.$game)
 
     this.boardMenu = new BoardMenu(this.board)
     this.boardMenu.appendTo(this.$game)
+  }
+
+  updateBoardMenu() {
+    this.boardMenu.forceUpdate()
   }
 
   showMenu() {

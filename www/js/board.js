@@ -13,6 +13,7 @@ class Board extends Simple {
     this.playerColor = props.playerColor || 'black'
     this.playerID = props.playerID || null
     this.opponentID = props.opponentID || null
+    this.gameManager = props.gameManager || null
 
     this.board = []
     this.boardDom = []
@@ -234,6 +235,11 @@ class Board extends Simple {
     if (this.opponentID) {
       socketAPI.sendMove(this.opponentID, row, col)
     }
+
+    if (this.gameManager) {
+      this.gameManager.updateBoardMenu()
+    }
+
   }
 
   render($el) {
