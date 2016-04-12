@@ -2,20 +2,44 @@
 let Stone = require('./stone.js').Stone
 let Board = require('./board.js')
 let socketAPI = require('./api/socket_api.js')
+let userAPI = require('./api/user_api.js')
 let Menu = require('./menu.js')
 let Signup_Login = require('./signup_login.js')
+let BoardMenu = require('./board_menu.js')
 
 class GameManager {
   constructor() {
-    this.signup_login_page = new Signup_Login()
-    this.signup_login_page.appendTo($('.game'))
+    this.$game = $('.game')
+    userAPI.checkAuth((res)=> {
+      if (res && res.success) {
+        this.playerID = res.userID
+        $('.user-id').html('User ID: ' + this.playerID)
+        this.showMenu()
+      } else {
+        this.signup_login_page = new Signup_Login()
+        this.signup_login_page.appendTo($('.game'))
+      }
+    })
 
     document.body.addEventListener('touchmove', function(e){ e.preventDefault()})
+
+    // this.startNewMatch(19, 'white', 'opponentID')
+  }
+
+  setPlayerID(id) {
+    this.playerID = id
   }
 
   startNewMatch(size, playerColor, opponentID) {
-    this.board = new Board(size, playerColor, opponentID)
-    this.board.render($('.game'))
+    this.board = new Board({  size,
+                              playerColor,
+                              playerID: this.playerID,
+                              opponentID})
+    this.board.render(this.$game)
+    // this.board.appendTo(this.$game)
+
+    this.boardMenu = new BoardMenu(this.board)
+    this.boardMenu.appendTo(this.$game)
   }
 
   showMenu() {

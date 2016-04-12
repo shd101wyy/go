@@ -7,6 +7,7 @@ body {
   overflow-y: hidden;
 }
 .game {
+  position: relative;
   width: 100%;
   height: 100%;
   background-color: #faf8ef;
@@ -54,7 +55,7 @@ body {
   position: absolute;
   margin: 0;
   padding: 0;
-  box-shadow: 10px 10px 25px 1px rgba(0, 0, 0, 0.75);
+  box-shadow: 4px 4px 10px 1px rgba(0, 0, 0, 0.75);
 }
 .stone.white {
   background-size: cover;
@@ -64,10 +65,12 @@ body {
 }
 .board {
   position: relative;
+  float: left;
   background-color: #ddb45d;
-  margin: 0 auto;
   padding: 48px;
   top: 32px;
+  left: 50%;
+  transform: translateX(-100%);
   border-radius: 6px;
   box-sizing: border-box;
   -webkit-box-shadow: 0px 0px 56px 2px #d9be96;
@@ -76,25 +79,35 @@ body {
   background-image: url("images/background.png");
   background-repeat: repeat;
   background-size: contain;
-  width: 576px;
+  width: 664px;
 }
 @media (max-width: 450px) {
   .board {
     width: 100%;
   }
 }
+@media (min-width: 1328px) {
+  .board {
+    position: relative;
+    margin: 0 auto;
+    left: initial;
+    transform: initial;
+    float: none;
+    width: 768px;
+  }
+}
 .grid {
   float: left;
   position: relative;
   box-sizing: border-box;
-  border-bottom: 2px solid #454545;
-  border-right: 2px solid #454545;
+  border-bottom: 1px solid #454545;
+  border-right: 1px solid #454545;
 }
 .grid-row .grid:first-child {
-  border-left: 2px solid #454545;
+  border-left: 1px solid #454545;
 }
 .board .grid-row:first-child .grid {
-  border-top: 2px solid #454545;
+  border-top: 1px solid #454545;
 }
 .grid-touch {
   position: absolute;
@@ -164,7 +177,7 @@ body {
 }
 .menu .button {
   position: relative;
-  margin: 6px auto;
+  margin: 14px auto;
   width: 300px;
   height: 100px;
   background: #F0F8FF;
@@ -193,6 +206,7 @@ body {
     width: 100%;
     height: 48px;
     font-size: 24px;
+    margin: 6px auto;
   }
 }
 .signup-login-page {
@@ -289,4 +303,93 @@ body {
 .signup-login-page .go:hover {
   cursor: pointer;
   background-color: #a68c6d;
+}
+.board-menu {
+  float: left;
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  right: 0;
+}
+.board-menu .players {
+  width: 100%;
+  height: 200px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.board-menu .player {
+  float: left;
+  width: 50%;
+  height: 100%;
+  margin: 0px;
+  padding: 6px;
+  box-sizing: border-box;
+}
+.board-menu .player .card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  box-shadow: 0px 0px 5px 1px #D9D9D9;
+}
+.board-menu .player .card.black {
+  background: linear-gradient(to bottom, #535353 0%, #2E2E2E 60%, #090909 100%);
+  color: #fff;
+}
+.board-menu .player .card.black .btn {
+  background-color: #222;
+  border: 1px solid #494949;
+}
+.board-menu .player .card.black .btn:hover {
+  cursor: pointer;
+  background-color: #303030;
+}
+.board-menu .player .card.white {
+  background: linear-gradient(to bottom, #FFFFFF 0%, #E0E0E0 60%, #C9C9C9 100%);
+  color: #222;
+}
+.board-menu .player .card.white .btn {
+  background-color: #ececec;
+  border: 1px solid #D5D5D5;
+}
+.board-menu .player .card.white .btn:hover {
+  cursor: pointer;
+  background-color: #e3e3e3;
+}
+.board-menu .player .card .profile-image {
+  float: left;
+  margin-right: 30px;
+  background-image: url("images/default-user-64.png");
+  width: 64px;
+  height: 64px;
+}
+.board-menu .player .card .name {
+  margin: 6px 0;
+  font-weight: 500;
+}
+.board-menu .player .card .button-group {
+  position: relative;
+  top: 12px;
+  height: 64px;
+  clear: both;
+}
+.board-menu .player .card .button-group .pass,
+.board-menu .player .card .button-group .resign {
+  float: left;
+  width: 50%;
+  text-align: center;
+  height: 80%;
+}
+.board-menu .player .card .button-group .pass .btn,
+.board-menu .player .card .button-group .resign .btn {
+  position: relative;
+  top: 50%;
+  padding: 6px;
+}
+.board-menu .turn {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
 }

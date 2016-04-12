@@ -13,32 +13,34 @@ class Menu extends Simple {
 
   render() {
     if (this.state.showBoardSize) {
-      let $el = $( `<div class="menu">
+      let $menu = $( `<div class="menu">
                       <p class="menu-title"> Board Size </p>
                       <div class="button" size="19"> <span size="19"> 19x19 </span> </div>
                       <div class="button" size="13"> <span size="13"> 13x13 </span> </div>
                       <div class="button" size="9"> <span size="9"> 9x9 </span> </div>
                     </div>`)
 
-      $('.button', $el).click((event)=> {
+      $('.button', $menu).click((event)=> {
         let size = parseInt(event.target.getAttribute('size'))
 
         let opponentID = prompt('enter opponent id')
         socketAPI.inviteMatch(opponentID, size)
       })
 
-      return $el
+      return $menu
     } else {
-      let $menu = $('<div class="menu"> </div>'),
-          $privateMatchBtn = $('<div class="button"> <span> Private Match </span> </div>')
+      let $menu = $(` <div class="menu">
+                        <div class="button private-match"> <span> Private Match </span> </div>
+                        <div class="button public-match"> <span> Public Match </span> </div>
+                      </div>`)
 
-      $privateMatchBtn.click(()=> {
+      $('.private-match', $menu).click(()=> {
         this.setState({showBoardSize: true})
-        // let opponentID = prompt('enter opponent id')
-        // socketAPI.inviteMatch(opponentID)
       })
 
-      $menu.append($privateMatchBtn)
+      $('.public-match', $menu).click(()=> {
+        console.log('public match')
+      })
 
       return $menu
     }

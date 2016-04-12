@@ -2,14 +2,17 @@ let Grid = require('./grid.js')
 let Stone = require('./stone.js')
 let History = require('./history.js').History
 let socketAPI = require('./api/socket_api')
+let Simple = require('./simple.js')
 
 // 假设只 9x9
-class Board {
+class Board extends Simple {
   // 9x9 13x13 19x19
-  constructor(size, playerColor, opponentID) {
-    this.size = size
-    this.playerColor = playerColor
-    this.opponentID = opponentID
+  constructor(/*size, playerColor, opponentID */props) {
+    super()
+    this.size = props.size || 19
+    this.playerColor = props.playerColor || 'black'
+    this.playerID = props.playerID || null
+    this.opponentID = props.opponentID || null
 
     this.board = []
     this.boardDom = []
@@ -87,6 +90,14 @@ class Board {
       this.board[row][col].$stone.remove()
       this.board[row][col] = null
     }
+  }
+
+  pass() {
+    console.log('pass')
+  }
+
+  resign() {
+    console.log('resign')
   }
 
   // check if two boards have the same.
@@ -225,11 +236,14 @@ class Board {
     }
   }
 
-  render($element) {
+  render($el) {
     let dom = $(`<div class="board"></div>`)
-    $element.append( dom )
 
-    let boardSize = dom.width(), // excluding padding  // 576, 
+    if ($el) {
+      $el.append(dom)
+    }
+
+    let boardSize = dom.width(), // excluding padding  // 576,
         gridSize = (boardSize) / (this.size - 1)
 
     dom.css('height', (boardSize + parseInt(dom.css('padding'), 10) * 2) + 'px') // set height
@@ -284,6 +298,8 @@ class Board {
       }
       dom.append(gridRow)
     }
+
+    return dom
   }
 }
 

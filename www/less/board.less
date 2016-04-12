@@ -2,10 +2,13 @@
 
 .board {
   position: relative;
+  float: left;
   background-color: #ddb45d;
-  margin: 0 auto;
+  // margin: 0 auto;
   padding: 48px;
   top: 32px;
+  left: 50%;
+  transform: translateX(-100%);
   border-radius: 6px;
   box-sizing: border-box;
 
@@ -17,10 +20,18 @@
   background-repeat: repeat;
   background-size: contain;
 
-  width: 576px;
+  width: 664px;
 
   @media (max-width:450px) {
     width: 100%;
   }
 
+  @media (min-width: 1328px) { // width * 2
+    position: relative;
+    margin: 0 auto;
+    left: initial;
+    transform: initial;
+    float: none;
+    width: 768px;
+  }
 }

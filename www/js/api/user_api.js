@@ -37,6 +37,25 @@ let userAPI = {
         if (callback) callback(null)
       }
     })
+  },
+
+  checkAuth: function(callback) {
+    $.ajax('/auth', {
+      type: 'GET',
+      dataType: 'json',
+      success: function(res) {
+        console.log('auth success', res)
+        if (res) {
+          if (callback) callback(res)
+          else callback(null)
+        } else if (callback) {
+          callback(null)
+        }
+      },
+      error: function(res) {
+        if (callback) callback(null)
+      }
+    })
   }
 }
 

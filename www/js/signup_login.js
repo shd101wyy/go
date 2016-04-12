@@ -56,6 +56,7 @@ class Signup_Login extends Simple {
             alert('Failed to signin')
           } else {
             $('.user-id').html('User ID: ' + res.userID)
+            window.gameManager.setPlayerID(res.userID)
             window.gameManager.showMenu()
             socketAPI.userLoggedIn(res.userID)
           }
@@ -72,6 +73,7 @@ class Signup_Login extends Simple {
             alert('Failed to signup')
           } else {
             $('.user-id').html('User ID: ' + res.userID)
+            window.gameManager.setPlayerID(res.userID)
             window.gameManager.showMenu()
             socketAPI.userLoggedIn(res.userID)
           }

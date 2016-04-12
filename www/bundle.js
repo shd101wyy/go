@@ -2,11 +2,11 @@
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 (function e(t, n, r) {
   function s(o, u) {
@@ -126,6 +126,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (callback) callback(null);
           }
         });
+      },
+
+      checkAuth: function checkAuth(callback) {
+        $.ajax('/auth', {
+          type: 'GET',
+          dataType: 'json',
+          success: function success(res) {
+            console.log('auth success', res);
+            if (res) {
+              if (callback) callback(res);else callback(null);
+            } else if (callback) {
+              callback(null);
+            }
+          },
+          error: function error(res) {
+            if (callback) callback(null);
+          }
+        });
       }
     };
 
@@ -135,39 +153,46 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var Stone = require('./stone.js');
     var History = require('./history.js').History;
     var socketAPI = require('./api/socket_api');
+    var Simple = require('./simple.js');
 
     // 假设只 9x9
 
-    var Board = (function () {
+    var Board = (function (_Simple) {
+      _inherits(Board, _Simple);
+
       // 9x9 13x13 19x19
 
-      function Board(size, playerColor, opponentID) {
+      function Board( /*size, playerColor, opponentID */props) {
         _classCallCheck(this, Board);
 
-        this.size = size;
-        this.playerColor = playerColor;
-        this.opponentID = opponentID;
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Board).call(this));
 
-        this.board = [];
-        this.boardDom = [];
+        _this.size = props.size || 19;
+        _this.playerColor = props.playerColor || 'black';
+        _this.playerID = props.playerID || null;
+        _this.opponentID = props.opponentID || null;
 
-        this.turn = 0;
-        this.history = new History();
+        _this.board = [];
+        _this.boardDom = [];
 
-        this.$mark = null;
+        _this.turn = 0;
+        _this.history = new History();
+
+        _this.$mark = null;
 
         // create board data
-        for (var i = 0; i < this.size; i++) {
-          this.board.push([]);
-          this.boardDom.push([]);
+        for (var i = 0; i < _this.size; i++) {
+          _this.board.push([]);
+          _this.boardDom.push([]);
 
-          for (var j = 0; j < this.size; j++) {
-            this.board[i].push(null);
-            this.boardDom[i].push(null);
+          for (var j = 0; j < _this.size; j++) {
+            _this.board[i].push(null);
+            _this.boardDom[i].push(null);
           }
         }
 
-        this.history.add(this.board);
+        _this.history.add(_this.board);
+        return _this;
       }
 
       // mark all stones as unchecked
@@ -232,6 +257,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             this.board[row][col].$stone.remove();
             this.board[row][col] = null;
           }
+        }
+      }, {
+        key: "pass",
+        value: function pass() {
+          console.log('pass');
+        }
+      }, {
+        key: "resign",
+        value: function resign() {
+          console.log('resign');
         }
 
         // check if two boards have the same.
@@ -376,9 +411,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }, {
         key: "render",
-        value: function render($element) {
+        value: function render($el) {
           var dom = $("<div class=\"board\"></div>");
-          $element.append(dom);
+
+          if ($el) {
+            $el.append(dom);
+          }
 
           var boardSize = dom.width(),
               // excluding padding  // 576,
@@ -420,21 +458,62 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
             dom.append(gridRow);
           }
+
+          return dom;
         }
       }]);
 
       return Board;
-    })();
+    })(Simple);
 
     module.exports = Board;
-  }, { "./api/socket_api": 1, "./grid.js": 4, "./history.js": 5, "./stone.js": 10 }], 4: [function (require, module, exports) {
+  }, { "./api/socket_api": 1, "./grid.js": 5, "./history.js": 6, "./simple.js": 10, "./stone.js": 11 }], 4: [function (require, module, exports) {
+    var Simple = require('./simple.js');
+
+    var BoardMenu = (function (_Simple2) {
+      _inherits(BoardMenu, _Simple2);
+
+      function BoardMenu(board) {
+        _classCallCheck(this, BoardMenu);
+
+        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(BoardMenu).call(this));
+
+        _this2.board = board;
+        return _this2;
+      }
+
+      _createClass(BoardMenu, [{
+        key: "render",
+        value: function render() {
+          var _this3 = this;
+
+          var $menu = $("\n<div class=\"board-menu\">\n  <div class=\"players\">\n    <div class=\"player\">\n      <div class=\"card black\">\n        <div class=\"profile-image\"> </div>\n        <p class=\"name\"> " + (this.board.playerColor === 'black' ? this.board.playerID : this.board.opponentID) + " </p>\n\n        " + (this.board.playerColor === 'black' ? this.board.isMyTurn() ? " <div class=\"button-group\">\n              <div class=\"pass\"> <div class=\"btn pass-btn\"> Pass </div> </div>\n              <div class=\"resign\"> <div class=\"btn resign-btn\"> Resign </div> </div>\n            </div>" : '<div class="button-group"> White to move</div>' : '') + "\n\n      </div>\n    </div>\n    <div class=\"player\">\n      <div class=\"card white\">\n        <div class=\"profile-image\"> </div>\n        <p class=\"name\"> " + (this.board.playerColor === 'white' ? this.board.playerID : this.board.opponentID) + " </p>\n\n        " + (this.board.playerColor === 'white' ? this.board.isMyTurn() ? " <div class=\"button-group\">\n              <div class=\"pass\"> <div class=\"btn pass-btn\"> Pass </div> </div>\n              <div class=\"resign\"> <div class=\"btn resign-btn\"> Resign </div> </div>\n            </div>" : '<div class="button-group"> Black to move </div>' : '') + "\n      </div>\n    </div>\n  </div>\n</div>\n");
+          console.log('enter here');
+
+          $('.pass-btn', $menu).click(function () {
+            _this3.board.pass();
+          });
+
+          $('.resign-btn', $menu).click(function () {
+            _this3.board.resign();
+          });
+
+          return $menu;
+        }
+      }]);
+
+      return BoardMenu;
+    })(Simple);
+
+    module.exports = BoardMenu;
+  }, { "./simple.js": 10 }], 5: [function (require, module, exports) {
     'use strict';
 
     var Stone = require('./stone.js');
 
     var Grid = (function () {
       function Grid($gridTouch, $grid, board) {
-        var _this = this;
+        var _this4 = this;
 
         _classCallCheck(this, Grid);
 
@@ -451,22 +530,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.addDot();
 
         $gridTouch.click(function () {
-          if (!_this.board.isMyTurn()) return;
-          _this.board.addStone(_this.row, _this.col);
+          if (!_this4.board.isMyTurn()) return;
+          _this4.board.addStone(_this4.row, _this4.col);
         });
 
         var isTouchDevice = 'ontouchstart' in window || 'onmsgesturechange' in window;
         if (!isTouchDevice) {
           $gridTouch.hover(function () {
-            if (_this.$hoverElement || _this.board.board[_this.row][_this.col] || !_this.board.isMyTurn()) return;else {
-              _this.$hoverElement = $("<div class=\"stone " + (_this.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this.stoneSize + "px; height: " + _this.stoneSize + "px; border-radius: " + _this.stoneSize + "px; background-image: url(\"" + _this.board.getStoneImage() + "\"); opacity: 0.5;' data-row=" + _this.row + " data-col=" + _this.col + "> </div>");
+            if (_this4.$hoverElement || _this4.board.board[_this4.row][_this4.col] || !_this4.board.isMyTurn()) return;else {
+              _this4.$hoverElement = $("<div class=\"stone " + (_this4.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this4.stoneSize + "px; height: " + _this4.stoneSize + "px; border-radius: " + _this4.stoneSize + "px; background-image: url(\"" + _this4.board.getStoneImage() + "\"); opacity: 0.5;' data-row=" + _this4.row + " data-col=" + _this4.col + "> </div>");
 
-              _this.$gridTouch.append(_this.$hoverElement);
+              _this4.$gridTouch.append(_this4.$hoverElement);
             }
           }, function () {
-            if (_this.$hoverElement) {
-              _this.$hoverElement.remove();
-              _this.$hoverElement = null;
+            if (_this4.$hoverElement) {
+              _this4.$hoverElement.remove();
+              _this4.$hoverElement = null;
             }
           });
         }
@@ -499,7 +578,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = Grid;
-  }, { "./stone.js": 10 }], 5: [function (require, module, exports) {
+  }, { "./stone.js": 11 }], 6: [function (require, module, exports) {
     'use strict';
 
     var History = (function () {
@@ -543,32 +622,59 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     module.exports = {
       History: History
     };
-  }, {}], 6: [function (require, module, exports) {
+  }, {}], 7: [function (require, module, exports) {
     'use strict';
 
     var Stone = require('./stone.js').Stone;
     var Board = require('./board.js');
     var socketAPI = require('./api/socket_api.js');
+    var userAPI = require('./api/user_api.js');
     var Menu = require('./menu.js');
     var Signup_Login = require('./signup_login.js');
+    var BoardMenu = require('./board_menu.js');
 
     var GameManager = (function () {
       function GameManager() {
+        var _this5 = this;
+
         _classCallCheck(this, GameManager);
 
-        this.signup_login_page = new Signup_Login();
-        this.signup_login_page.appendTo($('.game'));
+        this.$game = $('.game');
+        userAPI.checkAuth(function (res) {
+          if (res && res.success) {
+            _this5.playerID = res.userID;
+            $('.user-id').html('User ID: ' + _this5.playerID);
+            _this5.showMenu();
+          } else {
+            _this5.signup_login_page = new Signup_Login();
+            _this5.signup_login_page.appendTo($('.game'));
+          }
+        });
 
         document.body.addEventListener('touchmove', function (e) {
           e.preventDefault();
         });
+
+        // this.startNewMatch(19, 'white', 'opponentID')
       }
 
       _createClass(GameManager, [{
+        key: "setPlayerID",
+        value: function setPlayerID(id) {
+          this.playerID = id;
+        }
+      }, {
         key: "startNewMatch",
         value: function startNewMatch(size, playerColor, opponentID) {
-          this.board = new Board(size, playerColor, opponentID);
-          this.board.render($('.game'));
+          this.board = new Board({ size: size,
+            playerColor: playerColor,
+            playerID: this.playerID,
+            opponentID: opponentID });
+          this.board.render(this.$game);
+          // this.board.appendTo(this.$game)
+
+          this.boardMenu = new BoardMenu(this.board);
+          this.boardMenu.appendTo(this.$game);
         }
       }, {
         key: "showMenu",
@@ -605,55 +711,54 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     // board.render($('.game'))
     window.gameManager = new GameManager();
     // gameManager.showMenu()
-  }, { "./api/socket_api.js": 1, "./board.js": 3, "./menu.js": 7, "./signup_login.js": 8, "./stone.js": 10 }], 7: [function (require, module, exports) {
+  }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./board.js": 3, "./board_menu.js": 4, "./menu.js": 8, "./signup_login.js": 9, "./stone.js": 11 }], 8: [function (require, module, exports) {
     'use strict';
 
     var socketAPI = require('./api/socket_api.js');
     var Simple = require('./simple.js');
 
-    var Menu = (function (_Simple) {
-      _inherits(Menu, _Simple);
+    var Menu = (function (_Simple3) {
+      _inherits(Menu, _Simple3);
 
       function Menu() {
         _classCallCheck(this, Menu);
 
-        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
+        var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
 
-        _this2.state = {
+        _this6.state = {
           showBoardSize: false
         };
-        return _this2;
+        return _this6;
       }
 
       _createClass(Menu, [{
         key: "render",
         value: function render() {
-          var _this3 = this;
+          var _this7 = this;
 
           if (this.state.showBoardSize) {
-            var $el = $("<div class=\"menu\">\n                      <p class=\"menu-title\"> Board Size </p>\n                      <div class=\"button\" size=\"19\"> <span size=\"19\"> 19x19 </span> </div>\n                      <div class=\"button\" size=\"13\"> <span size=\"13\"> 13x13 </span> </div>\n                      <div class=\"button\" size=\"9\"> <span size=\"9\"> 9x9 </span> </div>\n                    </div>");
+            var $menu = $("<div class=\"menu\">\n                      <p class=\"menu-title\"> Board Size </p>\n                      <div class=\"button\" size=\"19\"> <span size=\"19\"> 19x19 </span> </div>\n                      <div class=\"button\" size=\"13\"> <span size=\"13\"> 13x13 </span> </div>\n                      <div class=\"button\" size=\"9\"> <span size=\"9\"> 9x9 </span> </div>\n                    </div>");
 
-            $('.button', $el).click(function (event) {
+            $('.button', $menu).click(function (event) {
               var size = parseInt(event.target.getAttribute('size'));
 
               var opponentID = prompt('enter opponent id');
               socketAPI.inviteMatch(opponentID, size);
             });
 
-            return $el;
+            return $menu;
           } else {
-            var $menu = $('<div class="menu"> </div>'),
-                $privateMatchBtn = $('<div class="button"> <span> Private Match </span> </div>');
+            var _$menu = $(" <div class=\"menu\">\n                        <div class=\"button private-match\"> <span> Private Match </span> </div>\n                        <div class=\"button public-match\"> <span> Public Match </span> </div>\n                      </div>");
 
-            $privateMatchBtn.click(function () {
-              _this3.setState({ showBoardSize: true });
-              // let opponentID = prompt('enter opponent id')
-              // socketAPI.inviteMatch(opponentID)
+            $('.private-match', _$menu).click(function () {
+              _this7.setState({ showBoardSize: true });
             });
 
-            $menu.append($privateMatchBtn);
+            $('.public-match', _$menu).click(function () {
+              console.log('public match');
+            });
 
-            return $menu;
+            return _$menu;
           }
         }
       }]);
@@ -662,31 +767,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(Simple);
 
     module.exports = Menu;
-  }, { "./api/socket_api.js": 1, "./simple.js": 9 }], 8: [function (require, module, exports) {
+  }, { "./api/socket_api.js": 1, "./simple.js": 10 }], 9: [function (require, module, exports) {
     'use strict';
 
     var Simple = require('./simple.js');
     var userAPI = require('./api/user_api.js');
     var socketAPI = require('./api/socket_api.js');
 
-    var Signup_Login = (function (_Simple2) {
-      _inherits(Signup_Login, _Simple2);
+    var Signup_Login = (function (_Simple4) {
+      _inherits(Signup_Login, _Simple4);
 
       function Signup_Login() {
         _classCallCheck(this, Signup_Login);
 
-        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(Signup_Login).call(this));
+        var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(Signup_Login).call(this));
 
-        _this4.state = {
+        _this8.state = {
           showLogin: true
         };
-        return _this4;
+        return _this8;
       }
 
       _createClass(Signup_Login, [{
         key: "render",
         value: function render() {
-          var _this5 = this;
+          var _this9 = this;
 
           var $email = $("<div class=\"email field\"> <input placeholder=\"Email\" /> </div>");
           var $userID = $("<div class=\"userID field  " + (this.state.showLogin ? 'hide' : 'show') + "\"> <input placeholder=\"User ID\" /> </div>");
@@ -709,7 +814,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           $pageElement.append($container);
 
           $switch.click(function () {
-            _this5.setState({ showLogin: !_this5.state.showLogin });
+            _this9.setState({ showLogin: !_this9.state.showLogin });
           });
 
           $go.click(function () {
@@ -717,7 +822,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 userID = $('input', $userID).val().trim(),
                 password = $('input', $password).val();
 
-            if (_this5.state.showLogin) {
+            if (_this9.state.showLogin) {
               // login
               // missing information
               if (!email.length || !password.length) {
@@ -730,6 +835,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   alert('Failed to signin');
                 } else {
                   $('.user-id').html('User ID: ' + res.userID);
+                  window.gameManager.setPlayerID(res.userID);
                   window.gameManager.showMenu();
                   socketAPI.userLoggedIn(res.userID);
                 }
@@ -746,6 +852,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   alert('Failed to signup');
                 } else {
                   $('.user-id').html('User ID: ' + res.userID);
+                  window.gameManager.setPlayerID(res.userID);
                   window.gameManager.showMenu();
                   socketAPI.userLoggedIn(res.userID);
                 }
@@ -761,7 +868,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(Simple);
 
     module.exports = Signup_Login;
-  }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./simple.js": 9 }], 9: [function (require, module, exports) {
+  }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./simple.js": 10 }], 10: [function (require, module, exports) {
     /*
       My Simple and silly front end library called "Simple"
      */
@@ -834,7 +941,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = Simple;
-  }, {}], 10: [function (require, module, exports) {
+  }, {}], 11: [function (require, module, exports) {
     'use strict';
 
     var Stone = (function () {
@@ -1006,4 +1113,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = Stone;
-  }, {}] }, {}, [6]);
+  }, {}] }, {}, [7]);
