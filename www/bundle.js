@@ -492,7 +492,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         value: function render() {
           var _this3 = this;
 
-          var $menu = $("\n<div class=\"board-menu\">\n  <div class=\"players\">\n    <div class=\"player\">\n      <div class=\"card black\">\n        <div class=\"profile-image\"> </div>\n        <p class=\"name\"> " + (this.board.playerColor === 'black' ? this.board.playerID : this.board.opponentID) + " </p>\n\n        " + (this.board.playerColor === 'black' ? this.board.isMyTurn() ? " <div class=\"button-group\">\n              <div class=\"pass\"> <div class=\"btn pass-btn\"> Pass </div> </div>\n              <div class=\"resign\"> <div class=\"btn resign-btn\"> Resign </div> </div>\n            </div>" : '<div class="button-group"> White to move</div>' : '') + "\n\n      </div>\n    </div>\n    <div class=\"player\">\n      <div class=\"card white\">\n        <div class=\"profile-image\"> </div>\n        <p class=\"name\"> " + (this.board.playerColor === 'white' ? this.board.playerID : this.board.opponentID) + " </p>\n\n        " + (this.board.playerColor === 'white' ? this.board.isMyTurn() ? " <div class=\"button-group\">\n              <div class=\"pass\"> <div class=\"btn pass-btn\"> Pass </div> </div>\n              <div class=\"resign\"> <div class=\"btn resign-btn\"> Resign </div> </div>\n            </div>" : '<div class="button-group"> Black to move </div>' : '') + "\n      </div>\n    </div>\n  </div>\n</div>\n");
+          var $menu = $("\n<div class=\"board-menu\">\n  <div class=\"players\">\n    <div class=\"player\">\n      <div class=\"card black " + (this.board.getColorForCurrentTurn() === 'black' ? 'this-turn' : '') + "\">\n        <div class=\"profile-image\"> </div>\n        <p class=\"name\"> " + (this.board.playerColor === 'black' ? this.board.playerID : this.board.opponentID) + " </p>\n\n        " + (this.board.playerColor === 'black' ? this.board.isMyTurn() ? " <div class=\"button-group\">\n              <div class=\"pass\"> <div class=\"btn pass-btn\"> Pass </div> </div>\n              <div class=\"resign\"> <div class=\"btn resign-btn\"> Resign </div> </div>\n            </div>" : '<div class="button-group"> White to move</div>' : '') + "\n\n      </div>\n    </div>\n    <div class=\"player\">\n      <div class=\"card white " + (this.board.getColorForCurrentTurn() === 'white' ? 'this-turn' : '') + "\">\n        <div class=\"profile-image\"> </div>\n        <p class=\"name\"> " + (this.board.playerColor === 'white' ? this.board.playerID : this.board.opponentID) + " </p>\n\n        " + (this.board.playerColor === 'white' ? this.board.isMyTurn() ? " <div class=\"button-group\">\n              <div class=\"pass\"> <div class=\"btn pass-btn\"> Pass </div> </div>\n              <div class=\"resign\"> <div class=\"btn resign-btn\"> Resign </div> </div>\n            </div>" : '<div class="button-group"> Black to move </div>' : '') + "\n      </div>\n    </div>\n  </div>\n</div>\n");
           console.log('enter here');
 
           $('.pass-btn', $menu).click(function () {
@@ -648,7 +648,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         userAPI.checkAuth(function (res) {
           if (res && res.success) {
             _this5.playerID = res.userID;
-            $('.user-id').html('User ID: ' + _this5.playerID);
+            // $('.user-id').html('User ID: ' + this.playerID)
             socketAPI.userLoggedIn(_this5.playerID);
             _this5.showMenu();
           } else {
@@ -701,7 +701,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
           */
 
-          this.menu = new Menu();
+          this.menu = new Menu(this);
           this.menu.appendTo($('.game'));
         }
       }]);
@@ -732,10 +732,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     var Menu = (function (_Simple3) {
       _inherits(Menu, _Simple3);
 
-      function Menu() {
+      function Menu(gameManager) {
         _classCallCheck(this, Menu);
 
         var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
+
+        _this6.gameManager = gameManager;
 
         _this6.state = {
           showBoardSize: false
@@ -749,18 +751,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           var _this7 = this;
 
           if (this.state.showBoardSize) {
-            var $menu = $("<div class=\"menu\">\n                      <p class=\"menu-title\"> Board Size </p>\n                      <div class=\"button\" size=\"19\"> <span size=\"19\"> 19x19 </span> </div>\n                      <div class=\"button\" size=\"13\"> <span size=\"13\"> 13x13 </span> </div>\n                      <div class=\"button\" size=\"9\"> <span size=\"9\"> 9x9 </span> </div>\n                    </div>");
+            var $menu = $("<div class=\"menu\">\n                      <p class=\"menu-title\"> Board Size </p>\n                      <div class=\"button play\" size=\"19\"> <span size=\"19\"> 19x19 </span> </div>\n                      <div class=\"button play\" size=\"13\"> <span size=\"13\"> 13x13 </span> </div>\n                      <div class=\"button play\" size=\"9\"> <span size=\"9\"> 9x9 </span> </div>\n                      <div class=\"button back\"> <span> Back </span> </div>\n                    </div>");
 
-            $('.button', $menu).click(function (event) {
+            $('.play', $menu).click(function (event) {
               var size = parseInt(event.target.getAttribute('size'));
 
               var opponentID = prompt('enter opponent id');
               socketAPI.inviteMatch(opponentID, size);
             });
 
+            $('.back', $menu).click(function (event) {
+              _this7.setState({ showBoardSize: false });
+            });
+
             return $menu;
           } else {
-            var _$menu = $(" <div class=\"menu\">\n                        <div class=\"button private-match\"> <span> Private Match </span> </div>\n                        <div class=\"button public-match\"> <span> Public Match </span> </div>\n                      </div>");
+            var _$menu = $(" <div class=\"menu\">\n                        <p class=\"menu-title\"> Go! " + this.gameManager.playerID + " </p>\n                        <div class=\"button private-match\"> <span> Private Match </span> </div>\n                        <div class=\"button public-match\"> <span> Public Match </span> </div>\n                      </div>");
 
             $('.private-match', _$menu).click(function () {
               _this7.setState({ showBoardSize: true });
@@ -846,7 +852,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 if (!res) {
                   alert('Failed to signin');
                 } else {
-                  $('.user-id').html('User ID: ' + res.userID);
+                  // $('.user-id').html('User ID: ' + res.userID)
                   window.gameManager.setPlayerID(res.userID);
                   window.gameManager.showMenu();
                   socketAPI.userLoggedIn(res.userID);
@@ -863,7 +869,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 if (!res) {
                   alert('Failed to signup');
                 } else {
-                  $('.user-id').html('User ID: ' + res.userID);
+                  // $('.user-id').html('User ID: ' + res.userID)
                   window.gameManager.setPlayerID(res.userID);
                   window.gameManager.showMenu();
                   socketAPI.userLoggedIn(res.userID);

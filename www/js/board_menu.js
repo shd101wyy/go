@@ -12,7 +12,7 @@ class BoardMenu extends Simple{
 <div class="board-menu">
   <div class="players">
     <div class="player">
-      <div class="card black">
+      <div class="card black ${this.board.getColorForCurrentTurn() === 'black' ? 'this-turn' : ''}">
         <div class="profile-image"> </div>
         <p class="name"> ${this.board.playerColor === 'black' ? this.board.playerID : this.board.opponentID} </p>
 
@@ -27,7 +27,7 @@ class BoardMenu extends Simple{
       </div>
     </div>
     <div class="player">
-      <div class="card white">
+      <div class="card white ${this.board.getColorForCurrentTurn() === 'white' ? 'this-turn' : ''}">
         <div class="profile-image"> </div>
         <p class="name"> ${this.board.playerColor === 'white' ? this.board.playerID : this.board.opponentID} </p>
 
@@ -52,7 +52,7 @@ class BoardMenu extends Simple{
     $('.resign-btn', $menu).click(()=>{
       this.board.resign()
     })
-    
+
     return $menu
   }
 }

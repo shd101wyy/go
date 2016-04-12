@@ -13,7 +13,7 @@ class GameManager {
     userAPI.checkAuth((res)=> {
       if (res && res.success) {
         this.playerID = res.userID
-        $('.user-id').html('User ID: ' + this.playerID)
+        // $('.user-id').html('User ID: ' + this.playerID)
         socketAPI.userLoggedIn(this.playerID)
         this.showMenu()
       } else {
@@ -59,7 +59,7 @@ class GameManager {
     }
     */
 
-    this.menu = new Menu()
+    this.menu = new Menu(this)
     this.menu.appendTo($('.game'))
   }
 }
