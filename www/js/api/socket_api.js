@@ -9,8 +9,8 @@ if (!window.socket) {
 let socket = window.socket
 
 let socketAPI = {
-  inviteMatch: function(opponentID) {
-    socket.emit('invite-match', opponentID)
+  inviteMatch: function(opponentID, size) {
+    socket.emit('invite-match', opponentID, size)
   },
 
   sendMove: function(opponentID, row, col) {

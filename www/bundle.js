@@ -32,8 +32,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var socket = window.socket;
 
     var socketAPI = {
-      inviteMatch: function inviteMatch(opponentID) {
-        socket.emit('invite-match', opponentID);
+      inviteMatch: function inviteMatch(opponentID, size) {
+        socket.emit('invite-match', opponentID, size);
       },
 
       sendMove: function sendMove(opponentID, row, col) {
@@ -584,7 +584,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           */
 
           this.menu = new Menu();
-          this.menu.render($('.game'));
+          this.menu.appendTo($('.game'));
         }
       }]);
 
@@ -609,58 +609,84 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     'use strict';
 
     var socketAPI = require('./api/socket_api.js');
+    var Simple = require('./simple.js');
 
-    var Menu = (function () {
+    var Menu = (function (_Simple) {
+      _inherits(Menu, _Simple);
+
       function Menu() {
         _classCallCheck(this, Menu);
+
+        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
+
+        _this2.state = {
+          showBoardSize: false
+        };
+        return _this2;
       }
 
       _createClass(Menu, [{
         key: "render",
-        value: function render($element) {
-          var $menu = $('<div class="menu"> </div>'),
-              $privateMatchBtn = $('<div class="button"> <span> Private Match </span> </div>');
+        value: function render() {
+          var _this3 = this;
 
-          $privateMatchBtn.click(function () {
-            var opponentID = prompt('enter opponent id');
-            socketAPI.inviteMatch(opponentID);
-          });
+          if (this.state.showBoardSize) {
+            var $el = $("<div class=\"menu\">\n                      <p class=\"menu-title\"> Board Size </p>\n                      <div class=\"button\" size=\"19\"> <span size=\"19\"> 19x19 </span> </div>\n                      <div class=\"button\" size=\"13\"> <span size=\"13\"> 13x13 </span> </div>\n                      <div class=\"button\" size=\"9\"> <span size=\"9\"> 9x9 </span> </div>\n                    </div>");
 
-          $menu.append($privateMatchBtn);
+            $('.button', $el).click(function (event) {
+              var size = parseInt(event.target.getAttribute('size'));
 
-          $element.append($menu);
+              var opponentID = prompt('enter opponent id');
+              socketAPI.inviteMatch(opponentID, size);
+            });
+
+            return $el;
+          } else {
+            var $menu = $('<div class="menu"> </div>'),
+                $privateMatchBtn = $('<div class="button"> <span> Private Match </span> </div>');
+
+            $privateMatchBtn.click(function () {
+              _this3.setState({ showBoardSize: true });
+              // let opponentID = prompt('enter opponent id')
+              // socketAPI.inviteMatch(opponentID)
+            });
+
+            $menu.append($privateMatchBtn);
+
+            return $menu;
+          }
         }
       }]);
 
       return Menu;
-    })();
+    })(Simple);
 
     module.exports = Menu;
-  }, { "./api/socket_api.js": 1 }], 8: [function (require, module, exports) {
+  }, { "./api/socket_api.js": 1, "./simple.js": 9 }], 8: [function (require, module, exports) {
     'use strict';
 
     var Simple = require('./simple.js');
     var userAPI = require('./api/user_api.js');
     var socketAPI = require('./api/socket_api.js');
 
-    var Signup_Login = (function (_Simple) {
-      _inherits(Signup_Login, _Simple);
+    var Signup_Login = (function (_Simple2) {
+      _inherits(Signup_Login, _Simple2);
 
       function Signup_Login() {
         _classCallCheck(this, Signup_Login);
 
-        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Signup_Login).call(this));
+        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(Signup_Login).call(this));
 
-        _this2.state = {
+        _this4.state = {
           showLogin: true
         };
-        return _this2;
+        return _this4;
       }
 
       _createClass(Signup_Login, [{
         key: "render",
         value: function render() {
-          var _this3 = this;
+          var _this5 = this;
 
           var $email = $("<div class=\"email field\"> <input placeholder=\"Email\" /> </div>");
           var $userID = $("<div class=\"userID field  " + (this.state.showLogin ? 'hide' : 'show') + "\"> <input placeholder=\"User ID\" /> </div>");
@@ -683,7 +709,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           $pageElement.append($container);
 
           $switch.click(function () {
-            _this3.setState({ showLogin: !_this3.state.showLogin });
+            _this5.setState({ showLogin: !_this5.state.showLogin });
           });
 
           $go.click(function () {
@@ -691,7 +717,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 userID = $('input', $userID).val().trim(),
                 password = $('input', $password).val();
 
-            if (_this3.state.showLogin) {
+            if (_this5.state.showLogin) {
               // login
               // missing information
               if (!email.length || !password.length) {

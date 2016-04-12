@@ -113,7 +113,7 @@ io.on('connection', function(socket) {
     socketMap[userID] = socket
   })
 
-  socket.on('invite-match', function(opponentID) {
+  socket.on('invite-match', function(opponentID, size) {
     if (opponentID === socket.userID) return
 
     if (socketMap[opponentID]) {
@@ -123,8 +123,8 @@ io.on('connection', function(socket) {
       socket.emit('invitation-sent', opponentID)
       */
       // assume I am black and opponent is white
-      socket.emit('start-match', {size: 9, color: 'black', opponentID: opponentID})
-      socketMap[opponentID].emit('start-match', {size: 9, color: 'white', opponentID: socket.userID})
+      socket.emit('start-match', {size: size, color: 'black', opponentID: opponentID})
+      socketMap[opponentID].emit('start-match', {size: size, color: 'white', opponentID: socket.userID})
     } else { // not found
       socket.emit('opponent-not-found', opponentID)
     }

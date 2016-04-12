@@ -151,6 +151,17 @@ body {
   padding: 48px;
   box-sizing: border-box;
 }
+.menu .menu-title {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: 32px;
+}
+@media (max-width: 450px) {
+  .menu .menu-title {
+    margin-top: 0;
+  }
+}
 .menu .button {
   position: relative;
   margin: 6px auto;

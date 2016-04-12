@@ -30,7 +30,7 @@ class GameManager {
     */
 
     this.menu = new Menu()
-    this.menu.render($('.game'))
+    this.menu.appendTo($('.game'))
   }
 }
 

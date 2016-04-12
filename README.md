@@ -1,5 +1,5 @@
-### 围棋
-- 文件结构
+## 围棋
+#### 文件结构
   ```
     www/* 网页
        /images      用到的图片
@@ -12,7 +12,7 @@
     /schema         数据库 schema        
   ```
 
-- 搭建项目环境
+#### 搭建项目环境
   ```sh
     cd 到 project folder
     npm install
@@ -26,12 +26,12 @@
     brew install mongodb
     mkdir /data/db
   ```
-- 编译代码
+#### 编译代码
   ```sh
     ./build.sh
   ```
 
-- 运行项目
+#### 运行项目
   ```sh
     sudo mongod
     ./build.sh
