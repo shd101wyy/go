@@ -313,16 +313,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
 
           // flood fill algorithm
-          var scoreDFS = function scoreDFS(i, j, color) {
+          var scoreFloodFill = function scoreFloodFill(i, j, color) {
             if (i >= 0 && i < _this2.size && j >= 0 && j < _this2.size) {
               if (_this2.board[i][j]) return;
               if (boardData[i][j][color]) return;
               boardData[i][j][color] = true;
               boardData[i][j].visited = true;
-              scoreDFS(i, j + 1, color);
-              scoreDFS(i, j - 1, color);
-              scoreDFS(i + 1, j, color);
-              scoreDFS(i - 1, j, color);
+              scoreFloodFill(i, j + 1, color);
+              scoreFloodFill(i, j - 1, color);
+              scoreFloodFill(i + 1, j, color);
+              scoreFloodFill(i - 1, j, color);
             }
           };
 
@@ -330,10 +330,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             for (var _j = 0; _j < this.size; _j++) {
               if (!boardData[_i][_j].visited && this.board[_i][_j]) {
                 boardData[_i][_j].visited = true;
-                scoreDFS(_i, _j + 1, this.board[_i][_j].color);
-                scoreDFS(_i, _j - 1, this.board[_i][_j].color);
-                scoreDFS(_i + 1, _j, this.board[_i][_j].color);
-                scoreDFS(_i - 1, _j, this.board[_i][_j].color);
+                scoreFloodFill(_i, _j + 1, this.board[_i][_j].color);
+                scoreFloodFill(_i, _j - 1, this.board[_i][_j].color);
+                scoreFloodFill(_i + 1, _j, this.board[_i][_j].color);
+                scoreFloodFill(_i - 1, _j, this.board[_i][_j].color);
               }
             }
           }

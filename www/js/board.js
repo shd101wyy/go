@@ -122,16 +122,16 @@ class Board extends Simple {
     }
 
     // flood fill algorithm
-    let scoreDFS = (i, j, color)=> {
+    let scoreFloodFill = (i, j, color)=> {
       if (i >= 0 && i < this.size && j >= 0 && j < this.size) {
         if (this.board[i][j]) return
         if (boardData[i][j][color]) return
         boardData[i][j][color] = true
         boardData[i][j].visited = true
-        scoreDFS(i, j+1, color)
-        scoreDFS(i, j-1, color)
-        scoreDFS(i+1, j, color)
-        scoreDFS(i-1, j, color)
+        scoreFloodFill(i, j+1, color)
+        scoreFloodFill(i, j-1, color)
+        scoreFloodFill(i+1, j, color)
+        scoreFloodFill(i-1, j, color)
       }
     }
 
@@ -139,10 +139,10 @@ class Board extends Simple {
         for (let j = 0; j < this.size; j++) {
           if (!boardData[i][j].visited && this.board[i][j]) {
             boardData[i][j].visited = true
-            scoreDFS(i, j+1, this.board[i][j].color)
-            scoreDFS(i, j-1, this.board[i][j].color)
-            scoreDFS(i+1, j, this.board[i][j].color)
-            scoreDFS(i-1, j, this.board[i][j].color)
+            scoreFloodFill(i, j+1, this.board[i][j].color)
+            scoreFloodFill(i, j-1, this.board[i][j].color)
+            scoreFloodFill(i+1, j, this.board[i][j].color)
+            scoreFloodFill(i-1, j, this.board[i][j].color)
           }
         }
       }
