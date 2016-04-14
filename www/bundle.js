@@ -42,6 +42,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       userLoggedIn: function userLoggedIn(userID) {
         socket.emit('user-logged-in', userID);
+      },
+
+      resign: function resign(userID, opponentID) {
+        socket.emit('resign', userID, opponentID);
       }
     };
 
@@ -80,7 +84,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       var row = data[0],
           col = data[1];
 
-      window.gameManager.board.addStone(row, col);
+      if (row === -1 || col === -1) {
+        // pass
+        window.gameManager.board.nextTurn(true);
+      } else {
+        window.gameManager.board.addStone(row, col);
+      }
+    });
+
+    socket.on('opponent-resign', function () {
+      window.gameManager.board.opponentResign();
     });
 
     socket.on('opponent-disconnect', function (opponentID) {
@@ -180,6 +193,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         _this.history = new History();
 
         _this.$mark = null;
+        _this.justPass = false;
 
         // create board data
         for (var i = 0; i < _this.size; i++) {
@@ -233,6 +247,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
       }, {
+        key: "nextTurn",
+        value: function nextTurn(justPass) {
+          this.justPass = justPass;
+          this.turn += 1;
+          this.markAllStonsUncheckd();
+
+          this.gameManager.updateBoardMenu();
+        }
+      }, {
         key: "addStone",
         value: function addStone(row, col) {
           if (this.board[row][col]) return;
@@ -260,14 +283,40 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
       }, {
+        key: "score",
+        value: function score() {
+          console.log('score');
+        }
+      }, {
         key: "pass",
         value: function pass() {
           console.log('pass');
+          if (this.justPass) {
+            this.score();
+            return;
+          }
+
+          if (this.opponentID) {
+            socketAPI.sendMove(this.opponentID, -1, -1);
+          }
+
+          this.nextTurn();
         }
       }, {
         key: "resign",
         value: function resign() {
           console.log('resign');
+          socketAPI.resign(this.userID, this.opponentID);
+          alert('You resigned');
+
+          location.reload();
+        }
+      }, {
+        key: "opponentResign",
+        value: function opponentResign() {
+          alert('Opponent ' + this.opponentID + ' resigned');
+
+          location.reload();
         }
 
         // check if two boards have the same.
@@ -405,6 +454,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.history.add(this.board); // save to history
           // this.setMark(row, col) // mark lastest stone
           this.setMark(row, col);
+
+          this.justPass = false;
 
           if (this.opponentID) {
             socketAPI.sendMove(this.opponentID, row, col);
@@ -693,6 +744,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         value: function showMenu() {
           if (this.signup_login_page) {
             this.signup_login_page.remove();
+            this.signup_login_page = null;
+          }
+
+          if (this.board) {
+            this.board.remove();
+            this.board = null;
+          }
+
+          if (this.boardMenu) {
+            this.boardMenu.remove();
+            this.boardMenu = null;
           }
 
           // TODO: remove

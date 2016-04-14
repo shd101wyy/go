@@ -51,6 +51,17 @@ class GameManager {
   showMenu() {
     if (this.signup_login_page) {
       this.signup_login_page.remove()
+      this.signup_login_page = null
+    }
+
+    if (this.board) {
+      this.board.remove()
+      this.board = null
+    }
+
+    if (this.boardMenu) {
+      this.boardMenu.remove()
+      this.boardMenu = null
     }
 
     // TODO: remove

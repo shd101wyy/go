@@ -22,6 +22,7 @@ class Board extends Simple {
     this.history = new History()
 
     this.$mark = null
+    this.justPass = false
 
     // create board data
     for (let i = 0; i < this.size; i++) {
@@ -68,6 +69,14 @@ class Board extends Simple {
     }
   }
 
+  nextTurn(justPass) {
+    this.justPass = justPass
+    this.turn += 1
+    this.markAllStonsUncheckd()
+
+    this.gameManager.updateBoardMenu()
+  }
+
   addStone(row, col) {
     if (this.board[row][col]) return
 
@@ -93,12 +102,36 @@ class Board extends Simple {
     }
   }
 
+  score() {
+    console.log('score')
+  }
+
   pass() {
     console.log('pass')
+    if (this.justPass) {
+      this.score()
+      return
+    }
+
+    if (this.opponentID) {
+      socketAPI.sendMove(this.opponentID, -1, -1)
+    }
+
+    this.nextTurn()
   }
 
   resign() {
     console.log('resign')
+    socketAPI.resign(this.userID, this.opponentID)
+    alert('You resigned')
+
+    location.reload()
+  }
+
+  opponentResign() {
+    alert('Opponent ' + this.opponentID + ' resigned')
+
+    location.reload()
   }
 
   // check if two boards have the same.
@@ -231,6 +264,8 @@ class Board extends Simple {
     this.history.add(this.board) // save to history
     // this.setMark(row, col) // mark lastest stone
     this.setMark(row, col)
+
+    this.justPass = false
 
     if (this.opponentID) {
       socketAPI.sendMove(this.opponentID, row, col)

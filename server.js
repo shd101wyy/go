@@ -141,6 +141,15 @@ io.on('connection', function(socket) {
     }
   })
 
+  // userID resign
+  socket.on('resign', function(userID, opponentID) {
+    if (socketMap[opponentID]) {
+      socketMap[opponentID].emit('opponent-resign', userID)
+    } else {
+      socekt.emit('opponent-disconnect')
+    }
+  })
+
   socket.on("disconnect", function() {
     console.log('user disconnect: ' + socket.userID)
     delete(socketMap[socket.userID])

@@ -19,6 +19,10 @@ let socketAPI = {
 
   userLoggedIn: function(userID) {
     socket.emit('user-logged-in', userID)
+  },
+
+  resign: function(userID, opponentID) {
+    socket.emit('resign', userID, opponentID)
   }
 }
 
@@ -57,7 +61,15 @@ socket.on('receive-move', function(data) {
   let row = data[0],
       col = data[1]
 
-  window.gameManager.board.addStone(row, col)
+  if (row === -1 || col === -1) { // pass
+    window.gameManager.board.nextTurn(true)
+  } else {
+    window.gameManager.board.addStone(row, col)
+  }
+})
+
+socket.on('opponent-resign', function() {
+  window.gameManager.board.opponentResign()
 })
 
 socket.on('opponent-disconnect', function(opponentID) {

@@ -39,6 +39,7 @@ class Menu extends Simple {
                         <p class="menu-title"> Go! ${this.gameManager.playerID} </p>
                         <div class="button private-match"> <span> Private Match </span> </div>
                         <div class="button public-match"> <span> Public Match </span> </div>
+                        <div class="button"> <span> Bot Match </span> </div>
                       </div>`)
 
       $('.private-match', $menu).click(()=> {
