@@ -84,8 +84,8 @@ $('.loading-screen .logo').fadeIn(1000, ()=> {
   }, 1600)
 })
 
-// window.gameManager = new GameManager()
+window.gameManager = new GameManager()
 
-let board = new Board({size: 9})
-board.board[1][1] = {color: 'black'}
-board.score()
+// let board = new Board({size: 9})
+//board.board[1][1] = {color: 'black'}
+// board.score()

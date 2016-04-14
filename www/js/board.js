@@ -121,30 +121,30 @@ class Board extends Simple {
       }
     }
 
-
+    // flood fill algorithm
     let scoreDFS = (i, j, color)=> {
       if (i >= 0 && i < this.size && j >= 0 && j < this.size) {
-          if (this.board[i][j]) return
-          if (boardData[i][j].visited) return
-          boardData[i][j][color] = true
-          boardData[i][j].visited = true
-          scoreDFS(i, j+1, color)
-          scoreDFS(i, j-1, color)
-          scoreDFS(i+1, j, color)
-          scoreDFS(i-1, j, color)
+        if (this.board[i][j]) return
+        if (boardData[i][j][color]) return
+        boardData[i][j][color] = true
+        boardData[i][j].visited = true
+        scoreDFS(i, j+1, color)
+        scoreDFS(i, j-1, color)
+        scoreDFS(i+1, j, color)
+        scoreDFS(i-1, j, color)
       }
     }
 
       for (let i = 0; i < this.size; i++) {
-          for (let j = 0; j < this.size; j++) {
-              if (!boardData[i][j].visited && this.board[i][j]) {
-                  boardData[i][j].visited = true
-                  scoreDFS(i, j+1, this.board[i][j].color)
-                  scoreDFS(i, j-1, this.board[i][j].color)
-                  scoreDFS(i+1, j, this.board[i][j].color)
-                  scoreDFS(i-1, j, this.board[i][j].color)
-              }
+        for (let j = 0; j < this.size; j++) {
+          if (!boardData[i][j].visited && this.board[i][j]) {
+            boardData[i][j].visited = true
+            scoreDFS(i, j+1, this.board[i][j].color)
+            scoreDFS(i, j-1, this.board[i][j].color)
+            scoreDFS(i+1, j, this.board[i][j].color)
+            scoreDFS(i-1, j, this.board[i][j].color)
           }
+        }
       }
 
 
@@ -153,22 +153,27 @@ class Board extends Simple {
 
     for (let i = 0; i < this.size; i++) {
       for (let j = 0; j < this.size; j++) {
-          if (boardData[i][j].white && boardData[i][j].black) continue
-          else if (boardData[i][j].white) whiteScore++
-          else if (boardData[i][j].black) blackScore++
-          else continue
+        if (boardData[i][j].white && boardData[i][j].black) continue
+        else if (boardData[i][j].white) whiteScore++
+        else if (boardData[i][j].black) blackScore++
+        else continue
       }
     }
 
     console.log(boardData)
     console.log(whiteScore)
     console.log(blackScore)
+
+    alert(`white score: ${whiteScore}, black score: ${blackScore}`)
+
+    location.reload()
   }
 
   pass() {
     console.log('pass')
     if (this.justPass) {
       this.score()
+      socketAPI.score(this.userID, this.opponentID)
       return
     }
 

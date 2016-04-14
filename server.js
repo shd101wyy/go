@@ -150,6 +150,15 @@ io.on('connection', function(socket) {
     }
   })
 
+  // userID pass twice. so opponentID should score
+  socket.on('score', function(userID, opponentID) {
+    if (socketMap[opponentID]) {
+      socketMap[opponentID].emit('opponent-score', userID)
+    } else {
+      socekt.emit('opponent-disconnect')
+    }
+  })
+
   socket.on("disconnect", function() {
     console.log('user disconnect: ' + socket.userID)
     delete(socketMap[socket.userID])

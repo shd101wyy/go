@@ -23,6 +23,10 @@ let socketAPI = {
 
   resign: function(userID, opponentID) {
     socket.emit('resign', userID, opponentID)
+  },
+
+  score: function(userID, opponentID) {
+    socket.emit('score', userID, opponentID)
   }
 }
 
@@ -70,6 +74,10 @@ socket.on('receive-move', function(data) {
 
 socket.on('opponent-resign', function() {
   window.gameManager.board.opponentResign()
+})
+
+socket.on('opponent-score', function() {
+  window.gameManager.board.score()
 })
 
 socket.on('opponent-disconnect', function(opponentID) {

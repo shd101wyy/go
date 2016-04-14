@@ -1,6 +1,6 @@
 "use strict";
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -46,6 +46,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       resign: function resign(userID, opponentID) {
         socket.emit('resign', userID, opponentID);
+      },
+
+      score: function score(userID, opponentID) {
+        socket.emit('score', userID, opponentID);
       }
     };
 
@@ -94,6 +98,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     socket.on('opponent-resign', function () {
       window.gameManager.board.opponentResign();
+    });
+
+    socket.on('opponent-score', function () {
+      window.gameManager.board.score();
     });
 
     socket.on('opponent-disconnect', function (opponentID) {
@@ -170,7 +178,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     // 假设只 9x9
 
-    var Board = function (_Simple) {
+    var Board = (function (_Simple) {
       _inherits(Board, _Simple);
 
       // 9x9 13x13 19x19
@@ -211,7 +219,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
 
       // mark all stones as unchecked
-
 
       _createClass(Board, [{
         key: "markAllStonsUncheckd",
@@ -305,10 +312,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
 
+          // flood fill algorithm
           var scoreDFS = function scoreDFS(i, j, color) {
             if (i >= 0 && i < _this2.size && j >= 0 && j < _this2.size) {
               if (_this2.board[i][j]) return;
-              if (boardData[i][j].visited) return;
+              if (boardData[i][j][color]) return;
               boardData[i][j][color] = true;
               boardData[i][j].visited = true;
               scoreDFS(i, j + 1, color);
@@ -342,6 +350,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           console.log(boardData);
           console.log(whiteScore);
           console.log(blackScore);
+
+          alert("white score: " + whiteScore + ", black score: " + blackScore);
+
+          location.reload();
         }
       }, {
         key: "pass",
@@ -349,6 +361,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           console.log('pass');
           if (this.justPass) {
             this.score();
+            socketAPI.score(this.userID, this.opponentID);
             return;
           }
 
@@ -576,13 +589,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Board;
-    }(Simple);
+    })(Simple);
 
     module.exports = Board;
   }, { "./api/socket_api": 1, "./grid.js": 5, "./history.js": 6, "./simple.js": 10, "./stone.js": 11 }], 4: [function (require, module, exports) {
     var Simple = require('./simple.js');
 
-    var BoardMenu = function (_Simple2) {
+    var BoardMenu = (function (_Simple2) {
       _inherits(BoardMenu, _Simple2);
 
       function BoardMenu(board) {
@@ -615,7 +628,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return BoardMenu;
-    }(Simple);
+    })(Simple);
 
     module.exports = BoardMenu;
   }, { "./simple.js": 10 }], 5: [function (require, module, exports) {
@@ -623,7 +636,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     var Stone = require('./stone.js');
 
-    var Grid = function () {
+    var Grid = (function () {
       function Grid($gridTouch, $grid, board) {
         var _this5 = this;
 
@@ -687,13 +700,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Grid;
-    }();
+    })();
 
     module.exports = Grid;
   }, { "./stone.js": 11 }], 6: [function (require, module, exports) {
     'use strict';
 
-    var History = function () {
+    var History = (function () {
       function History() {
         _classCallCheck(this, History);
 
@@ -729,7 +742,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return History;
-    }();
+    })();
 
     module.exports = {
       History: History
@@ -745,7 +758,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     var Signup_Login = require('./signup_login.js');
     var BoardMenu = require('./board_menu.js');
 
-    var GameManager = function () {
+    var GameManager = (function () {
       function GameManager() {
         var _this6 = this;
 
@@ -825,10 +838,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return GameManager;
-    }();
+    })();
 
     // 没什么卵用的 loading screen
-
 
     $('.loading-screen .logo').fadeIn(1000, function () {
       setTimeout(function () {
@@ -838,18 +850,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }, 1600);
     });
 
-    // window.gameManager = new GameManager()
+    window.gameManager = new GameManager();
 
-    var board = new Board({ size: 9 });
-    board.board[1][1] = { color: 'black' };
-    board.score();
+    // let board = new Board({size: 9})
+    //board.board[1][1] = {color: 'black'}
+    // board.score()
   }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./board.js": 3, "./board_menu.js": 4, "./menu.js": 8, "./signup_login.js": 9, "./stone.js": 11 }], 8: [function (require, module, exports) {
     'use strict';
 
     var socketAPI = require('./api/socket_api.js');
     var Simple = require('./simple.js');
 
-    var Menu = function (_Simple3) {
+    var Menu = (function (_Simple3) {
       _inherits(Menu, _Simple3);
 
       function Menu(gameManager) {
@@ -902,7 +914,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Menu;
-    }(Simple);
+    })(Simple);
 
     module.exports = Menu;
   }, { "./api/socket_api.js": 1, "./simple.js": 10 }], 9: [function (require, module, exports) {
@@ -912,7 +924,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     var userAPI = require('./api/user_api.js');
     var socketAPI = require('./api/socket_api.js');
 
-    var Signup_Login = function (_Simple4) {
+    var Signup_Login = (function (_Simple4) {
       _inherits(Signup_Login, _Simple4);
 
       function Signup_Login() {
@@ -1003,7 +1015,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Signup_Login;
-    }(Simple);
+    })(Simple);
 
     module.exports = Signup_Login;
   }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./simple.js": 10 }], 10: [function (require, module, exports) {
@@ -1011,7 +1023,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       My Simple and silly front end library called "Simple"
      */
 
-    var Simple = function () {
+    var Simple = (function () {
       function Simple() {
         _classCallCheck(this, Simple);
 
@@ -1076,13 +1088,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Simple;
-    }();
+    })();
 
     module.exports = Simple;
   }, {}], 11: [function (require, module, exports) {
     'use strict';
 
-    var Stone = function () {
+    var Stone = (function () {
       function Stone($stone, board) {
         _classCallCheck(this, Stone);
 
@@ -1248,7 +1260,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Stone;
-    }();
+    })();
 
     module.exports = Stone;
   }, {}] }, {}, [7]);
