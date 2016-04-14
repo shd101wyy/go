@@ -104,6 +104,99 @@ class Board extends Simple {
 
   score() {
     console.log('score')
+    let boardData = []
+    for (let i = 0; i < this.size; i++) {
+      boardData.push([])
+      for (let j = 0; j < this.size; j++) {
+        boardData[i][j] = {color: null, marked: false, scoreByColor: null}
+        if (this.board[i][j]) {
+          boardData[i][j].color = this.board[i][j].color
+        } else {
+          boardData[i][j].scoreByColor = 'no-color'
+        }
+      }
+    }
+
+    let this_ = this
+    function scoreDFS(i, j) {
+      if (boardData[i][j].marked) {
+        return boardData[i][j].scoreByColor
+      }
+
+      if (boardData[i][j].color) {
+        return boardData[i][j].color
+      }
+
+      let scoreByArr = []
+
+      // mark as checked
+      boardData[i][j].marked = true
+
+      if (i > 0) {
+        let color = scoreDFS(i-1, j)
+        if (color !== 'no-color') {
+          scoreByArr.push(color)
+        }
+      }
+
+      if (i < this_.size - 1) {
+        let color = scoreDFS(i+1, j)
+        if (color !== 'no-color') {
+          scoreByArr.push(color)
+        }
+      }
+
+      if (j > 0) {
+        let color = scoreDFS(i, j-1)
+        if (color !== 'no-color') {
+          scoreByArr.push(color)
+        }
+      }
+
+      if (j < this_.size - 1) {
+        let color = scoreDFS(i, j+1)
+        if (color !== 'no-color') {
+          scoreByArr.push(color)
+        }
+      }
+
+      console.log(scoreByArr)
+
+      let color = scoreByArr[0]
+      for (let i = 0; i < scoreByArr.length; i++) {
+        if (color !== scoreByArr[i]) {
+          color = null
+          break
+        }
+      }
+
+      boardData[i][j].scoreByColor = color
+      return color
+    }
+
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+          scoreDFS(i, j)
+      }
+    }
+
+    let whiteScore = 0,
+        blackScore = 0
+
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        if (boardData[i][j].scoreByColor === 'black' || boardData[i][j].color === 'black') {
+          blackScore += 1
+        }
+        if (boardData[i][j].scoreByColor === 'white' || boardData[i][j].color === 'white') {
+          whiteScore += 1
+        }
+      }
+    }
+
+    console.log(boardData)
+    console.log(whiteScore)
+    console.log(blackScore)
   }
 
   pass() {

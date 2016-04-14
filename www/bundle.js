@@ -286,6 +286,99 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         key: "score",
         value: function score() {
           console.log('score');
+          var boardData = [];
+          for (var i = 0; i < this.size; i++) {
+            boardData.push([]);
+            for (var j = 0; j < this.size; j++) {
+              boardData[i][j] = { color: null, marked: false, scoreByColor: null };
+              if (this.board[i][j]) {
+                boardData[i][j].color = this.board[i][j].color;
+              } else {
+                boardData[i][j].scoreByColor = 'no-color';
+              }
+            }
+          }
+
+          var this_ = this;
+          function scoreDFS(i, j) {
+            if (boardData[i][j].marked) {
+              return boardData[i][j].scoreByColor;
+            }
+
+            if (boardData[i][j].color) {
+              return boardData[i][j].color;
+            }
+
+            var scoreByArr = [];
+
+            // mark as checked
+            boardData[i][j].marked = true;
+
+            if (i > 0) {
+              var _color = scoreDFS(i - 1, j);
+              if (_color !== 'no-color') {
+                scoreByArr.push(_color);
+              }
+            }
+
+            if (i < this_.size - 1) {
+              var _color2 = scoreDFS(i + 1, j);
+              if (_color2 !== 'no-color') {
+                scoreByArr.push(_color2);
+              }
+            }
+
+            if (j > 0) {
+              var _color3 = scoreDFS(i, j - 1);
+              if (_color3 !== 'no-color') {
+                scoreByArr.push(_color3);
+              }
+            }
+
+            if (j < this_.size - 1) {
+              var _color4 = scoreDFS(i, j + 1);
+              if (_color4 !== 'no-color') {
+                scoreByArr.push(_color4);
+              }
+            }
+
+            console.log(scoreByArr);
+
+            var color = scoreByArr[0];
+            for (var _i = 0; _i < scoreByArr.length; _i++) {
+              if (color !== scoreByArr[_i]) {
+                color = null;
+                break;
+              }
+            }
+
+            boardData[i][j].scoreByColor = color;
+            return color;
+          }
+
+          for (var _i2 = 0; _i2 < this.size; _i2++) {
+            for (var _j = 0; _j < this.size; _j++) {
+              scoreDFS(_i2, _j);
+            }
+          }
+
+          var whiteScore = 0,
+              blackScore = 0;
+
+          for (var _i3 = 0; _i3 < this.size; _i3++) {
+            for (var _j2 = 0; _j2 < this.size; _j2++) {
+              if (boardData[_i3][_j2].scoreByColor === 'black' || boardData[_i3][_j2].color === 'black') {
+                blackScore += 1;
+              }
+              if (boardData[_i3][_j2].scoreByColor === 'white' || boardData[_i3][_j2].color === 'white') {
+                whiteScore += 1;
+              }
+            }
+          }
+
+          console.log(boardData);
+          console.log(whiteScore);
+          console.log(blackScore);
         }
       }, {
         key: "pass",
@@ -430,9 +523,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
 
           // check self
-          for (var _i = 0; _i < this.size; _i++) {
-            for (var _j = 0; _j < this.size; _j++) {
-              var _stone = this.board[_i][_j];
+          for (var _i4 = 0; _i4 < this.size; _i4++) {
+            for (var _j3 = 0; _j3 < this.size; _j3++) {
+              var _stone = this.board[_i4][_j3];
               if (_stone && !_stone.checked) {
                 // console.log('@@ check ' + i + ' ' + j)
                 if (_stone.hasNoQi()) {
@@ -781,10 +874,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }, 1600);
     });
 
-    // let board = new Board(13)
-    // board.render($('.game'))
-    window.gameManager = new GameManager();
-    // gameManager.showMenu()
+    // window.gameManager = new GameManager()
+
+    var board = new Board({ size: 3 });
+    board.board[1][1] = { color: 'black' };
+    board.score();
   }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./board.js": 3, "./board_menu.js": 4, "./menu.js": 8, "./signup_login.js": 9, "./stone.js": 11 }], 8: [function (require, module, exports) {
     'use strict';
 
@@ -828,7 +922,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
             return $menu;
           } else {
-            var _$menu = $(" <div class=\"menu\">\n                        <p class=\"menu-title\"> Go! " + this.gameManager.playerID + " </p>\n                        <div class=\"button private-match\"> <span> Private Match </span> </div>\n                        <div class=\"button public-match\"> <span> Public Match </span> </div>\n                      </div>");
+            var _$menu = $(" <div class=\"menu\">\n                        <p class=\"menu-title\"> Go! " + this.gameManager.playerID + " </p>\n                        <div class=\"button private-match\"> <span> Private Match </span> </div>\n                        <div class=\"button public-match\"> <span> Public Match </span> </div>\n                        <div class=\"button\"> <span> Bot Match </span> </div>\n                      </div>");
 
             $('.private-match', _$menu).click(function () {
               _this7.setState({ showBoardSize: true });
