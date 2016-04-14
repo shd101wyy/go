@@ -1,6 +1,6 @@
 "use strict";
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -170,7 +170,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     // 假设只 9x9
 
-    var Board = (function (_Simple) {
+    var Board = function (_Simple) {
       _inherits(Board, _Simple);
 
       // 9x9 13x13 19x19
@@ -211,6 +211,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
 
       // mark all stones as unchecked
+
 
       _createClass(Board, [{
         key: "markAllStonsUncheckd",
@@ -285,94 +286,56 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }, {
         key: "score",
         value: function score() {
+          var _this2 = this;
+
           console.log('score');
           var boardData = [];
+          // initialize flood fill data structure
           for (var i = 0; i < this.size; i++) {
             boardData.push([]);
             for (var j = 0; j < this.size; j++) {
-              boardData[i][j] = { color: null, marked: false, scoreByColor: null };
+              boardData[i][j] = { white: false, black: false, visited: false };
               if (this.board[i][j]) {
-                boardData[i][j].color = this.board[i][j].color;
-              } else {
-                boardData[i][j].scoreByColor = 'no-color';
+                if (this.board[i][j].color === 'white') {
+                  boardData[i][j].white = true;
+                } else {
+                  boardData[i][j].black = true;
+                }
               }
             }
           }
 
-          var this_ = this;
-          function scoreDFS(i, j) {
-            if (boardData[i][j].marked) {
-              return boardData[i][j].scoreByColor;
+          var scoreDFS = function scoreDFS(i, j, color) {
+            if (i >= 0 && i < _this2.size && j >= 0 && j < _this2.size) {
+              if (_this2.board[i][j]) return;
+              if (boardData[i][j].visited) return;
+              boardData[i][j][color] = true;
+              boardData[i][j].visited = true;
+              scoreDFS(i, j + 1, color);
+              scoreDFS(i, j - 1, color);
+              scoreDFS(i + 1, j, color);
+              scoreDFS(i - 1, j, color);
             }
+          };
 
-            if (boardData[i][j].color) {
-              return boardData[i][j].color;
-            }
-
-            var scoreByArr = [];
-
-            // mark as checked
-            boardData[i][j].marked = true;
-
-            if (i > 0) {
-              var _color = scoreDFS(i - 1, j);
-              if (_color !== 'no-color') {
-                scoreByArr.push(_color);
-              }
-            }
-
-            if (i < this_.size - 1) {
-              var _color2 = scoreDFS(i + 1, j);
-              if (_color2 !== 'no-color') {
-                scoreByArr.push(_color2);
-              }
-            }
-
-            if (j > 0) {
-              var _color3 = scoreDFS(i, j - 1);
-              if (_color3 !== 'no-color') {
-                scoreByArr.push(_color3);
-              }
-            }
-
-            if (j < this_.size - 1) {
-              var _color4 = scoreDFS(i, j + 1);
-              if (_color4 !== 'no-color') {
-                scoreByArr.push(_color4);
-              }
-            }
-
-            console.log(scoreByArr);
-
-            var color = scoreByArr[0];
-            for (var _i = 0; _i < scoreByArr.length; _i++) {
-              if (color !== scoreByArr[_i]) {
-                color = null;
-                break;
-              }
-            }
-
-            boardData[i][j].scoreByColor = color;
-            return color;
-          }
-
-          for (var _i2 = 0; _i2 < this.size; _i2++) {
+          for (var _i = 0; _i < this.size; _i++) {
             for (var _j = 0; _j < this.size; _j++) {
-              scoreDFS(_i2, _j);
+              if (!boardData[_i][_j].visited && this.board[_i][_j]) {
+                boardData[_i][_j].visited = true;
+                scoreDFS(_i, _j + 1, this.board[_i][_j].color);
+                scoreDFS(_i, _j - 1, this.board[_i][_j].color);
+                scoreDFS(_i + 1, _j, this.board[_i][_j].color);
+                scoreDFS(_i - 1, _j, this.board[_i][_j].color);
+              }
             }
           }
 
           var whiteScore = 0,
               blackScore = 0;
 
-          for (var _i3 = 0; _i3 < this.size; _i3++) {
+          for (var _i2 = 0; _i2 < this.size; _i2++) {
             for (var _j2 = 0; _j2 < this.size; _j2++) {
-              if (boardData[_i3][_j2].scoreByColor === 'black' || boardData[_i3][_j2].color === 'black') {
-                blackScore += 1;
-              }
-              if (boardData[_i3][_j2].scoreByColor === 'white' || boardData[_i3][_j2].color === 'white') {
-                whiteScore += 1;
-              }
+              if (boardData[_i2][_j2].white && boardData[_i2][_j2].black) continue;else if (boardData[_i2][_j2].white) whiteScore++;else if (boardData[_i2][_j2].black) blackScore++;else continue;
             }
           }
 
@@ -523,9 +486,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
 
           // check self
-          for (var _i4 = 0; _i4 < this.size; _i4++) {
+          for (var _i3 = 0; _i3 < this.size; _i3++) {
             for (var _j3 = 0; _j3 < this.size; _j3++) {
-              var _stone = this.board[_i4][_j3];
+              var _stone = this.board[_i3][_j3];
               if (_stone && !_stone.checked) {
                 // console.log('@@ check ' + i + ' ' + j)
                 if (_stone.hasNoQi()) {
@@ -613,38 +576,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Board;
-    })(Simple);
+    }(Simple);
 
     module.exports = Board;
   }, { "./api/socket_api": 1, "./grid.js": 5, "./history.js": 6, "./simple.js": 10, "./stone.js": 11 }], 4: [function (require, module, exports) {
     var Simple = require('./simple.js');
 
-    var BoardMenu = (function (_Simple2) {
+    var BoardMenu = function (_Simple2) {
       _inherits(BoardMenu, _Simple2);
 
       function BoardMenu(board) {
         _classCallCheck(this, BoardMenu);
 
-        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(BoardMenu).call(this));
+        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(BoardMenu).call(this));
 
-        _this2.board = board;
-        return _this2;
+        _this3.board = board;
+        return _this3;
       }
 
       _createClass(BoardMenu, [{
         key: "render",
         value: function render() {
-          var _this3 = this;
+          var _this4 = this;
 
           var $menu = $("\n<div class=\"board-menu\">\n  <div class=\"players\">\n    <div class=\"player\">\n      <div class=\"card black " + (this.board.getColorForCurrentTurn() === 'black' ? 'this-turn' : '') + "\">\n        <div class=\"profile-image\"> </div>\n        <p class=\"name\"> " + (this.board.playerColor === 'black' ? this.board.playerID : this.board.opponentID) + " </p>\n\n        " + (this.board.playerColor === 'black' ? this.board.isMyTurn() ? " <div class=\"button-group\">\n              <div class=\"pass\"> <div class=\"btn pass-btn\"> Pass </div> </div>\n              <div class=\"resign\"> <div class=\"btn resign-btn\"> Resign </div> </div>\n            </div>" : '<div class="button-group"> White to move</div>' : '') + "\n\n      </div>\n    </div>\n    <div class=\"player\">\n      <div class=\"card white " + (this.board.getColorForCurrentTurn() === 'white' ? 'this-turn' : '') + "\">\n        <div class=\"profile-image\"> </div>\n        <p class=\"name\"> " + (this.board.playerColor === 'white' ? this.board.playerID : this.board.opponentID) + " </p>\n\n        " + (this.board.playerColor === 'white' ? this.board.isMyTurn() ? " <div class=\"button-group\">\n              <div class=\"pass\"> <div class=\"btn pass-btn\"> Pass </div> </div>\n              <div class=\"resign\"> <div class=\"btn resign-btn\"> Resign </div> </div>\n            </div>" : '<div class="button-group"> Black to move </div>' : '') + "\n      </div>\n    </div>\n  </div>\n</div>\n");
           console.log('enter here');
 
           $('.pass-btn', $menu).click(function () {
-            _this3.board.pass();
+            _this4.board.pass();
           });
 
           $('.resign-btn', $menu).click(function () {
-            _this3.board.resign();
+            _this4.board.resign();
           });
 
           return $menu;
@@ -652,7 +615,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return BoardMenu;
-    })(Simple);
+    }(Simple);
 
     module.exports = BoardMenu;
   }, { "./simple.js": 10 }], 5: [function (require, module, exports) {
@@ -660,9 +623,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     var Stone = require('./stone.js');
 
-    var Grid = (function () {
+    var Grid = function () {
       function Grid($gridTouch, $grid, board) {
-        var _this4 = this;
+        var _this5 = this;
 
         _classCallCheck(this, Grid);
 
@@ -679,22 +642,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.addDot();
 
         $gridTouch.click(function () {
-          if (!_this4.board.isMyTurn()) return;
-          _this4.board.addStone(_this4.row, _this4.col);
+          if (!_this5.board.isMyTurn()) return;
+          _this5.board.addStone(_this5.row, _this5.col);
         });
 
         var isTouchDevice = 'ontouchstart' in window || 'onmsgesturechange' in window;
         if (!isTouchDevice) {
           $gridTouch.hover(function () {
-            if (_this4.$hoverElement || _this4.board.board[_this4.row][_this4.col] || !_this4.board.isMyTurn()) return;else {
-              _this4.$hoverElement = $("<div class=\"stone " + (_this4.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this4.stoneSize + "px; height: " + _this4.stoneSize + "px; border-radius: " + _this4.stoneSize + "px; background-image: url(\"" + _this4.board.getStoneImage() + "\"); opacity: 0.5;' data-row=" + _this4.row + " data-col=" + _this4.col + "> </div>");
+            if (_this5.$hoverElement || _this5.board.board[_this5.row][_this5.col] || !_this5.board.isMyTurn()) return;else {
+              _this5.$hoverElement = $("<div class=\"stone " + (_this5.board.turn % 2 === 0 ? 'black' : 'white') + "\" style='width: " + _this5.stoneSize + "px; height: " + _this5.stoneSize + "px; border-radius: " + _this5.stoneSize + "px; background-image: url(\"" + _this5.board.getStoneImage() + "\"); opacity: 0.5;' data-row=" + _this5.row + " data-col=" + _this5.col + "> </div>");
 
-              _this4.$gridTouch.append(_this4.$hoverElement);
+              _this5.$gridTouch.append(_this5.$hoverElement);
             }
           }, function () {
-            if (_this4.$hoverElement) {
-              _this4.$hoverElement.remove();
-              _this4.$hoverElement = null;
+            if (_this5.$hoverElement) {
+              _this5.$hoverElement.remove();
+              _this5.$hoverElement = null;
             }
           });
         }
@@ -724,13 +687,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Grid;
-    })();
+    }();
 
     module.exports = Grid;
   }, { "./stone.js": 11 }], 6: [function (require, module, exports) {
     'use strict';
 
-    var History = (function () {
+    var History = function () {
       function History() {
         _classCallCheck(this, History);
 
@@ -766,7 +729,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return History;
-    })();
+    }();
 
     module.exports = {
       History: History
@@ -782,22 +745,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     var Signup_Login = require('./signup_login.js');
     var BoardMenu = require('./board_menu.js');
 
-    var GameManager = (function () {
+    var GameManager = function () {
       function GameManager() {
-        var _this5 = this;
+        var _this6 = this;
 
         _classCallCheck(this, GameManager);
 
         this.$game = $('.game');
         userAPI.checkAuth(function (res) {
           if (res && res.success) {
-            _this5.playerID = res.userID;
+            _this6.playerID = res.userID;
             // $('.user-id').html('User ID: ' + this.playerID)
-            socketAPI.userLoggedIn(_this5.playerID);
-            _this5.showMenu();
+            socketAPI.userLoggedIn(_this6.playerID);
+            _this6.showMenu();
           } else {
-            _this5.signup_login_page = new Signup_Login();
-            _this5.signup_login_page.appendTo($('.game'));
+            _this6.signup_login_page = new Signup_Login();
+            _this6.signup_login_page.appendTo($('.game'));
           }
         });
 
@@ -862,9 +825,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return GameManager;
-    })();
+    }();
 
     // 没什么卵用的 loading screen
+
 
     $('.loading-screen .logo').fadeIn(1000, function () {
       setTimeout(function () {
@@ -876,7 +840,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     // window.gameManager = new GameManager()
 
-    var board = new Board({ size: 3 });
+    var board = new Board({ size: 9 });
     board.board[1][1] = { color: 'black' };
     board.score();
   }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./board.js": 3, "./board_menu.js": 4, "./menu.js": 8, "./signup_login.js": 9, "./stone.js": 11 }], 8: [function (require, module, exports) {
@@ -885,26 +849,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     var socketAPI = require('./api/socket_api.js');
     var Simple = require('./simple.js');
 
-    var Menu = (function (_Simple3) {
+    var Menu = function (_Simple3) {
       _inherits(Menu, _Simple3);
 
       function Menu(gameManager) {
         _classCallCheck(this, Menu);
 
-        var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
+        var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this));
 
-        _this6.gameManager = gameManager;
+        _this7.gameManager = gameManager;
 
-        _this6.state = {
+        _this7.state = {
           showBoardSize: false
         };
-        return _this6;
+        return _this7;
       }
 
       _createClass(Menu, [{
         key: "render",
         value: function render() {
-          var _this7 = this;
+          var _this8 = this;
 
           if (this.state.showBoardSize) {
             var $menu = $("<div class=\"menu\">\n                      <p class=\"menu-title\"> Board Size </p>\n                      <div class=\"button play\" size=\"19\"> <span size=\"19\"> 19x19 </span> </div>\n                      <div class=\"button play\" size=\"13\"> <span size=\"13\"> 13x13 </span> </div>\n                      <div class=\"button play\" size=\"9\"> <span size=\"9\"> 9x9 </span> </div>\n                      <div class=\"button back\"> <span> Back </span> </div>\n                    </div>");
@@ -917,7 +881,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             });
 
             $('.back', $menu).click(function (event) {
-              _this7.setState({ showBoardSize: false });
+              _this8.setState({ showBoardSize: false });
             });
 
             return $menu;
@@ -925,7 +889,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             var _$menu = $(" <div class=\"menu\">\n                        <p class=\"menu-title\"> Go! " + this.gameManager.playerID + " </p>\n                        <div class=\"button private-match\"> <span> Private Match </span> </div>\n                        <div class=\"button public-match\"> <span> Public Match </span> </div>\n                        <div class=\"button\"> <span> Bot Match </span> </div>\n                      </div>");
 
             $('.private-match', _$menu).click(function () {
-              _this7.setState({ showBoardSize: true });
+              _this8.setState({ showBoardSize: true });
             });
 
             $('.public-match', _$menu).click(function () {
@@ -938,7 +902,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Menu;
-    })(Simple);
+    }(Simple);
 
     module.exports = Menu;
   }, { "./api/socket_api.js": 1, "./simple.js": 10 }], 9: [function (require, module, exports) {
@@ -948,24 +912,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     var userAPI = require('./api/user_api.js');
     var socketAPI = require('./api/socket_api.js');
 
-    var Signup_Login = (function (_Simple4) {
+    var Signup_Login = function (_Simple4) {
       _inherits(Signup_Login, _Simple4);
 
       function Signup_Login() {
         _classCallCheck(this, Signup_Login);
 
-        var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(Signup_Login).call(this));
+        var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(Signup_Login).call(this));
 
-        _this8.state = {
+        _this9.state = {
           showLogin: true
         };
-        return _this8;
+        return _this9;
       }
 
       _createClass(Signup_Login, [{
         key: "render",
         value: function render() {
-          var _this9 = this;
+          var _this10 = this;
 
           var $email = $("<div class=\"email field\"> <input placeholder=\"Email\" /> </div>");
           var $userID = $("<div class=\"userID field  " + (this.state.showLogin ? 'hide' : 'show') + "\"> <input placeholder=\"User ID\" /> </div>");
@@ -988,7 +952,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           $pageElement.append($container);
 
           $switch.click(function () {
-            _this9.setState({ showLogin: !_this9.state.showLogin });
+            _this10.setState({ showLogin: !_this10.state.showLogin });
           });
 
           $go.click(function () {
@@ -996,7 +960,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 userID = $('input', $userID).val().trim(),
                 password = $('input', $password).val();
 
-            if (_this9.state.showLogin) {
+            if (_this10.state.showLogin) {
               // login
               // missing information
               if (!email.length || !password.length) {
@@ -1039,7 +1003,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Signup_Login;
-    })(Simple);
+    }(Simple);
 
     module.exports = Signup_Login;
   }, { "./api/socket_api.js": 1, "./api/user_api.js": 2, "./simple.js": 10 }], 10: [function (require, module, exports) {
@@ -1047,7 +1011,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       My Simple and silly front end library called "Simple"
      */
 
-    var Simple = (function () {
+    var Simple = function () {
       function Simple() {
         _classCallCheck(this, Simple);
 
@@ -1112,13 +1076,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Simple;
-    })();
+    }();
 
     module.exports = Simple;
   }, {}], 11: [function (require, module, exports) {
     'use strict';
 
-    var Stone = (function () {
+    var Stone = function () {
       function Stone($stone, board) {
         _classCallCheck(this, Stone);
 
@@ -1284,7 +1248,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }]);
 
       return Stone;
-    })();
+    }();
 
     module.exports = Stone;
   }, {}] }, {}, [7]);
