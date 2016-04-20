@@ -19,7 +19,7 @@
   ```
   在全局安装 babel, less, browserify, etc
   ```sh
-    npm install -g babel babel-cli less browserify nodemon
+    npm install -g babel babel-cli less browserify nodemon webpack
   ```
   安装 mongodb
   ```
