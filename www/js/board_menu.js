@@ -1,4 +1,5 @@
 let Simple = require('./simple.js')
+import {Chat} from './chat.js'
 
 class BoardMenu extends Simple{
   constructor(board) {
@@ -43,7 +44,6 @@ class BoardMenu extends Simple{
   </div>
 </div>
 `)
-    console.log('enter here')
 
     $('.pass-btn', $menu).click(()=>{
       this.board.pass()
@@ -52,6 +52,10 @@ class BoardMenu extends Simple{
     $('.resign-btn', $menu).click(()=>{
       this.board.resign()
     })
+
+    // create Chat
+    let chat = Chat({playerID: this.board.playerID, opponentID: this.board.opponentID})
+    chat.appendTo($menu[0])
 
     return $menu
   }

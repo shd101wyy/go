@@ -1,0 +1,63 @@
+// main: ./entry.less
+
+.chat-div {
+  position: relative;
+  margin: 0 auto;
+  width: 80%;
+  height: 500px;
+
+  .chat-content {
+    width: 100%;
+    height: 400px;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .message-box {
+      width: 100%;
+      background-color: #fff;
+      border-radius: 6px;
+      padding: 12px;
+      border: 1px solid #e5e5e5;
+      margin-bottom: 12px;
+      word-wrap: break-word;
+      box-sizing: border-box;
+
+      &.me {
+        background-color: #BBEAF8;
+      }
+
+      .id {
+        margin: 0 0 6px 0;
+        font-size: 12px;
+      }
+
+      .message {
+        margin: 0 0 0 12px;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .input-box {
+    position: relative;
+    height: 100px;
+    padding: 24px;
+
+    input {
+      width: 100%;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      padding-left: 16px;
+      box-sizing: border-box;
+
+      &:focus {
+        background-color: #fbfbfb;
+      }
+    }
+  }
+}

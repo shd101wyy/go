@@ -159,6 +159,14 @@ io.on('connection', function(socket) {
     }
   })
 
+  socket.on('send-message', function(userID, opponentID, message) {
+    if (socketMap[opponentID]) {
+      socketMap[opponentID].emit('receive-message', userID, message)
+    } else {
+      socekt.emit('opponent-disconnect')
+    }
+  })
+
   socket.on("disconnect", function() {
     console.log('user disconnect: ' + socket.userID)
     delete(socketMap[socket.userID])

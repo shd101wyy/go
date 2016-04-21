@@ -1,4 +1,6 @@
 'use strict'
+
+
 let Stone = require('./stone.js').Stone
 let Board = require('./board.js')
 let socketAPI = require('./api/socket_api.js')
@@ -64,11 +66,7 @@ class GameManager {
       this.boardMenu = null
     }
 
-    // TODO: remove
-    /*
-    if (this.board) {
-    }
-    */
+    // TODO: remove board
 
     this.menu = new Menu(this)
     this.menu.appendTo($('.game'))
@@ -85,7 +83,6 @@ $('.loading-screen .logo').fadeIn(1000, ()=> {
 })
 
 window.gameManager = new GameManager()
-
 // let board = new Board({size: 9})
 //board.board[1][1] = {color: 'black'}
 // board.score()

@@ -14,7 +14,7 @@
   "author": "shd101wyy",
   "license": "MIT",
   "dependencies": {
-    "Simple": "0.0.1-alpha",
+    "Simple": "0.0.2-4-alpha",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
@@ -25,11 +25,7 @@
     "babel-core": "^6.7.6",
     "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.6.0",
-    "css-loader": "^0.23.1",
     "less": "^2.6.1",
-    "less-loader": "^2.2.3",
-    "raw-loader": "^0.5.1",
-    "style-loader": "^0.13.1",
     "webpack": "^1.13.0"
   }
 }

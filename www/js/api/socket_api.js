@@ -1,12 +1,13 @@
 'use strict'
 
-let Board = require('../board.js')
+import Simple from 'Simple'
 
 if (!window.socket) {
   window.socket = io()
 }
 
 let socket = window.socket
+let emitters = {}
 
 let socketAPI = {
   inviteMatch: function(opponentID, size) {
@@ -27,18 +28,13 @@ let socketAPI = {
 
   score: function(userID, opponentID) {
     socket.emit('score', userID, opponentID)
+  },
+
+  sendMessage: function({playerID, opponentID, message, chatEmitter}) {
+    socket.emit('send-message', playerID, opponentID, message)
+    emitters.chatEmitter = chatEmitter
   }
 }
-
-/*
-不再需要产生随机 ID
- */
-/*
-socket.on('generate-user-id', function(userID) {
-  console.log('get userID: ', userID)
-  $('.user-id').html('User ID: ' + userID)
-})
-*/
 
 socket.on('opponent-not-found', function(opponentID) {
   alert('opponent ' + opponentID + ' not found')
@@ -82,6 +78,14 @@ socket.on('opponent-score', function() {
 
 socket.on('opponent-disconnect', function(opponentID) {
   alert('opponent disconnect: ' + opponentID)
+})
+
+socket.on('receive-message', function(opponentID, message) {
+  console.log('receive message')
+  let chatEmitter = Simple.Emitter.getEmitterById('chat')
+  if (chatEmitter) {
+    chatEmitter.emit('receive-message', {opponentID, message})
+  }
 })
 
 module.exports = socketAPI
