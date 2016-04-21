@@ -423,6 +423,7 @@ body {
 .chat-div {
   position: relative;
   margin: 0 auto;
+  padding: 12px;
   width: 80%;
   height: 500px;
 }
@@ -435,7 +436,8 @@ body {
   display: none;
 }
 .chat-div .chat-content .message-box {
-  width: 100%;
+  position: relative;
+  width: 60%;
   background-color: #fff;
   border-radius: 6px;
   padding: 12px;
@@ -445,7 +447,8 @@ body {
   box-sizing: border-box;
 }
 .chat-div .chat-content .message-box.me {
-  background-color: #BBEAF8;
+  background-color: #EFF7F0;
+  left: 40%;
 }
 .chat-div .chat-content .message-box .id {
   margin: 0 0 6px 0;
@@ -454,6 +457,22 @@ body {
 .chat-div .chat-content .message-box .message {
   margin: 0 0 0 12px;
   font-size: 16px;
+}
+@media (max-width: 450px) {
+  .chat-div .chat-content .message-box {
+    padding: 4px 12px;
+  }
+  .chat-div .chat-content .message-box .id {
+    font-size: 10px;
+  }
+  .chat-div .chat-content .message-box .message {
+    font-size: 12px;
+  }
+}
+@media (max-width: 450px) {
+  .chat-div .chat-content {
+    height: inherit;
+  }
 }
 .chat-div .input-box {
   position: relative;
@@ -471,4 +490,15 @@ body {
 }
 .chat-div .input-box input:focus {
   background-color: #fbfbfb;
+}
+@media (max-width: 450px) {
+  .chat-div .input-box {
+    width: initial;
+    padding: 0;
+  }
+}
+@media (max-width: 450px) {
+  .chat-div {
+    height: inherit;
+  }
 }
