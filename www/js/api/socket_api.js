@@ -9,8 +9,8 @@ if (!window.socket) {
 let socket = window.socket
 
 let socketAPI = {
-  inviteMatch: function(opponentID, size) {
-    socket.emit('invite-match', opponentID, size)
+  inviteMatch: function({opponentID, size, color, komi}) {
+    socket.emit('invite-match', opponentID, size, color, komi)
   },
 
   sendMove: function(opponentID, row, col) {
@@ -49,9 +49,10 @@ socket.on('receive-match-invitation', function(opponentID) {
 socket.on('start-match', function(data) {
   let size = data.size,
       color = data.color,
-      opponentID = data.opponentID
+      opponentID = data.opponentID,
+      komi = data.komi
 
-  Simple.Emitter.getEmitterById('emitter').emit('start-match', {opponentID, size, color})
+  Simple.Emitter.getEmitterById('emitter').emit('start-match', {opponentID, size, color, komi})
 })
 
 socket.on('receive-move', function(data) {

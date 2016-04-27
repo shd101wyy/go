@@ -23,9 +23,9 @@ emitter.registerId('emitter')
 
 emitter.on(signupLogin)
 
-emitter.on('start-match', function({opponentID, size, color}) {
+emitter.on('start-match', function({opponentID, size, color, komi}) {
   this.state.opponentID = opponentID
-  this.state.board = new Board({playerID: this.state.playerID, opponentID, size, playerColor: color})
+  this.state.board = new Board({playerID: this.state.playerID, opponentID, size, playerColor: color, komi})
 
   let gameComponent = this.state.gameComponent
   gameComponent.setProps({page: 'SHOW_MATCH', board: this.state.board})
@@ -110,9 +110,8 @@ emitter.on('receive-message', function({opponentID, message}) {
   }
 })
 
-emitter.on('find-private-match', function({opponentID, size}, component) {
-  console.log('find private match ', opponentID)
-  socketAPI.inviteMatch(opponentID, size)
+emitter.on('find-private-match', function({opponentID, size, color, komi}, component) {
+  socketAPI.inviteMatch({opponentID, size, color, komi})
 })
 
 

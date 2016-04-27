@@ -504,8 +504,8 @@
 	      if (!events[_key]) {
 	        removeEvent(element, _key, _eventListeners[_key]);
 	      }
-	      _eventListeners = null;
 	    }
+	    _eventListeners = null;
 	    if (findEvent) {
 	      element._eventListeners = events;
 	    } else {
@@ -804,9 +804,10 @@
 	  var opponentID = _ref.opponentID;
 	  var size = _ref.size;
 	  var color = _ref.color;
+	  var komi = _ref.komi;
 
 	  this.state.opponentID = opponentID;
-	  this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color });
+	  this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color, komi: komi });
 
 	  var gameComponent = this.state.gameComponent;
 	  gameComponent.setProps({ page: 'SHOW_MATCH', board: this.state.board });
@@ -906,9 +907,10 @@
 	emitter.on('find-private-match', function (_ref6, component) {
 	  var opponentID = _ref6.opponentID;
 	  var size = _ref6.size;
+	  var color = _ref6.color;
+	  var komi = _ref6.komi;
 
-	  console.log('find private match ', opponentID);
-	  _socket_api2.default.inviteMatch(opponentID, size);
+	  _socket_api2.default.inviteMatch({ opponentID: opponentID, size: size, color: color, komi: komi });
 	});
 
 	exports.default = emitter;
@@ -936,8 +938,13 @@
 	var socket = window.socket;
 
 	var socketAPI = {
-	  inviteMatch: function inviteMatch(opponentID, size) {
-	    socket.emit('invite-match', opponentID, size);
+	  inviteMatch: function inviteMatch(_ref) {
+	    var opponentID = _ref.opponentID;
+	    var size = _ref.size;
+	    var color = _ref.color;
+	    var komi = _ref.komi;
+
+	    socket.emit('invite-match', opponentID, size, color, komi);
 	  },
 
 	  sendMove: function sendMove(opponentID, row, col) {
@@ -956,10 +963,10 @@
 	    socket.emit('score', userID, opponentID);
 	  },
 
-	  sendMessage: function sendMessage(_ref) {
-	    var playerID = _ref.playerID;
-	    var opponentID = _ref.opponentID;
-	    var message = _ref.message;
+	  sendMessage: function sendMessage(_ref2) {
+	    var playerID = _ref2.playerID;
+	    var opponentID = _ref2.opponentID;
+	    var message = _ref2.message;
 
 	    socket.emit('send-message', playerID, opponentID, message);
 	  }
@@ -980,9 +987,10 @@
 	socket.on('start-match', function (data) {
 	  var size = data.size,
 	      color = data.color,
-	      opponentID = data.opponentID;
+	      opponentID = data.opponentID,
+	      komi = data.komi;
 
-	  _Simple2.default.Emitter.getEmitterById('emitter').emit('start-match', { opponentID: opponentID, size: size, color: color });
+	  _Simple2.default.Emitter.getEmitterById('emitter').emit('start-match', { opponentID: opponentID, size: size, color: color, komi: komi });
 	});
 
 	socket.on('receive-move', function (data) {
@@ -1189,6 +1197,7 @@
 	    var playerColor = _ref.playerColor;
 	    var playerID = _ref.playerID;
 	    var opponentID = _ref.opponentID;
+	    var komi = _ref.komi;
 
 	    _classCallCheck(this, Board);
 
@@ -1196,6 +1205,7 @@
 	    this.playerColor = playerColor || 'black';
 	    this.playerID = playerID || null;
 	    this.opponentID = opponentID || null;
+	    this.komi = komi || 0;
 
 	    this.board = [];
 
@@ -1339,11 +1349,11 @@
 	        }
 	      }
 
-	      console.log(boardData);
+	      // console.log(boardData)
 	      console.log(whiteScore);
 	      console.log(blackScore);
 
-	      /**toastr.success**/alert('white score: ' + whiteScore + ', black score: ' + blackScore);
+	      /**toastr.success**/alert('white score: ' + whiteScore + '+' + this.komi + '=' + (whiteScore + this.komi) + ', black score: ' + blackScore);
 
 	      location.reload();
 	    }
@@ -1622,7 +1632,8 @@
 	    this.state = { page: 'MAIN_MENU',
 	      size: null,
 	      color: 'black',
-	      komi: 5.5 };
+	      komi: 5.5,
+	      opponentID: '' };
 	  },
 
 	  selectBoardSize: function selectBoardSize(size, e) {
@@ -1641,11 +1652,46 @@
 	    e.preventDefault();
 	    this.setState({ page: 'SHOW_BOARD_SIZE' });
 	  },
+	  play: function play(mode) {
+	    console.log(mode, this.refs.komi.value);
+	    var komi = this.refs.komi.value;
+
+	    if (isNaN(komi) || komi.trim() === '') {
+	      toastr.warning('komi ' + komi + ' is an invalid number');
+	      return;
+	    }
+
+	    komi = Number(komi);
+
+	    var opponentID = this.refs.opponentID.value;
+	    if (!opponentID) {
+	      toastr.warning('please enter opponent ID');
+	      return;
+	    }
+
+	    this.state.komi = komi;
+	    this.state.opponentID = opponentID;
+
+	    var size = this.state.size,
+	        color = this.state.color;
+
+	    if (color === 'random') {
+	      if (Math.random() < 0.5) {
+	        color = 'black';
+	      } else {
+	        color = 'white';
+	      }
+	    }
+
+	    this.emit('find-private-match', { opponentID: opponentID, size: size, color: color, komi: komi });
+	  },
 	  render: function render() {
 	    var _this = this;
 
 	    if (this.state.page === 'SHOW_MATCH_OPTIONS') {
-	      return this.div({ class: 'menu' }, this.div({ class: 'pick-color' }, this.p({ class: 'title' }, 'Your Color'), this.div({ class: 'color-group' }, this.div({ class: 'black color ' + (this.state.color === 'black' ? 'selected' : ''), click: this.selectColor.bind(this, 'black') }, this.span('Black')), this.div({ class: 'white color ' + (this.state.color === 'white' ? 'selected' : ''), click: this.selectColor.bind(this, 'white') }, this.span('White')), this.div({ class: 'random color ' + (this.state.color === 'random' ? 'selected' : ''), click: this.selectColor.bind(this, 'random') }, this.span('Random')))), this.div({ class: 'pick-komi' }, this.p({ class: 'title' }, 'Komi'), this.input({ value: this.state.komi })), this.div({ class: 'bottom-button-group' }, this.div({ class: 'small-btn', click: this.showBoardSize.bind(this) }, this.span('back')), this.div({ class: 'small-btn play' }, this.span('play'))));
+	      return this.div({ class: 'menu' }, this.div({ class: 'pick-opponent' }, this.p({ class: 'title' }, 'Opponent ID'), this.input({ placeholder: 'enter opponent id here', value: this.state.opponentID, ref: 'opponentID', input: function input() {
+	          _this.state.opponentID = _this.refs.opponentID.value;
+	        } })), this.div({ class: 'pick-color' }, this.p({ class: 'title' }, 'Your Color'), this.div({ class: 'color-group' }, this.div({ class: 'black color ' + (this.state.color === 'black' ? 'selected' : ''), click: this.selectColor.bind(this, 'black') }, this.span('Black')), this.div({ class: 'white color ' + (this.state.color === 'white' ? 'selected' : ''), click: this.selectColor.bind(this, 'white') }, this.span('White')), this.div({ class: 'random color ' + (this.state.color === 'random' ? 'selected' : ''), click: this.selectColor.bind(this, 'random') }, this.span('Random')))), this.div({ class: 'pick-komi' }, this.p({ class: 'title' }, 'Komi'), this.input({ value: this.state.komi, ref: 'komi' })), this.div({ class: 'bottom-button-group' }, this.div({ class: 'small-btn', click: this.showBoardSize.bind(this) }, this.span('back')), this.div({ class: 'small-btn play', click: this.play.bind(this, 'private') }, this.span('play'))));
 	    } else if (this.state.page === 'SHOW_BOARD_SIZE') {
 	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play', size: '19', click: this.selectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play', size: '13', click: this.selectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.selectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
 	          _this.setState({ page: 'MAIN_MENU' });

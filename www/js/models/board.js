@@ -6,11 +6,12 @@ import socketAPI from '../api/socket_api.js'
 // go board class
 class Board {
   // 9x9 13x13 19x19
-  constructor({size, playerColor, playerID, opponentID}) {
+  constructor({size, playerColor, playerID, opponentID, komi}) {
     this.size = size || 19
     this.playerColor = playerColor || 'black'
     this.playerID = playerID || null
     this.opponentID = opponentID || null
+    this.komi = komi || 0
 
     this.board = []
 
@@ -146,11 +147,11 @@ class Board {
       }
     }
 
-    console.log(boardData)
+    // console.log(boardData)
     console.log(whiteScore)
     console.log(blackScore)
 
-    /**toastr.success**/alert(`white score: ${whiteScore}, black score: ${blackScore}`)
+    /**toastr.success**/alert(`white score: ${whiteScore}+${this.komi}=${whiteScore+this.komi}, black score: ${blackScore}`)
 
     location.reload()
   }

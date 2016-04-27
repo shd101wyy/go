@@ -114,7 +114,7 @@ io.on('connection', function(socket) {
     socketMap[userID] = socket
   })
 
-  socket.on('invite-match', function(opponentID, size) {
+  socket.on('invite-match', function(opponentID, size, color, komi) {
     if (opponentID === socket.userID) return
 
     if (inGame[opponentID]) {
@@ -129,8 +129,8 @@ io.on('connection', function(socket) {
       socket.emit('invitation-sent', opponentID)
       */
       // assume I am black and opponent is white
-      socket.emit('start-match', {size: size, color: 'black', opponentID: opponentID})
-      socketMap[opponentID].emit('start-match', {size: size, color: 'white', opponentID: socket.userID})
+      socket.emit('start-match', {size: size, color: color, opponentID: opponentID, komi: komi})
+      socketMap[opponentID].emit('start-match', {size: size, color: (color === 'white' ? 'black' : 'white'), opponentID: socket.userID, komi: komi})
 
       inGame[socket.userID] = true
       inGame[opponentID] = true

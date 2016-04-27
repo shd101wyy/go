@@ -176,8 +176,8 @@ SimpleDOM.prototype.diff = function(element, d) {
       if (!events[key]) {
         removeEvent(element, key, _eventListeners[key])
       }
-      _eventListeners = null
     }
+    _eventListeners = null
     if (findEvent) {
       element._eventListeners = events
     } else {
