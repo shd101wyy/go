@@ -1192,7 +1192,7 @@
 
 	    _classCallCheck(this, Board);
 
-	    this.size = size || 19;
+	    this.size = parseInt(size) || 19;
 	    this.playerColor = playerColor || 'black';
 	    this.playerID = playerID || null;
 	    this.opponentID = opponentID || null;

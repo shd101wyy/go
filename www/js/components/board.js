@@ -16,7 +16,7 @@ let GridTouch = Simple.Component({
   onClick: function(e) {
     e.preventDefault()
     e.stopPropagation()
-    
+
     let row = this.props.row,
         col = this.props.col,
         board = this.props.board
@@ -101,7 +101,7 @@ let GridTouch = Simple.Component({
         dot = this.div({class: 'dot dot-19'})
       }
     }
-
+    
     return this.div({ class: 'grid-touch',
                       style: style,
                       click: this.onClick.bind(this),

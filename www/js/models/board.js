@@ -8,7 +8,7 @@ import userAPI from '../api/user_api.js'
 class Board {
   // 9x9 13x13 19x19
   constructor({size, playerColor, playerID, opponentID, komi, ranked}) {
-    this.size = size || 19
+    this.size = parseInt(size) || 19
     this.playerColor = playerColor || 'black'
     this.playerID = playerID || null
     this.opponentID = opponentID || null
