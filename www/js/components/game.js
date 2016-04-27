@@ -11,6 +11,7 @@ let Game = Simple.Component({
       page: 'SHOW_LOGIN_SIGNUP',
       playerID: null,
       opponentID: null,
+      MMR: 0,
       size: null,
       color: null,
       board: null
@@ -26,7 +27,7 @@ let Game = Simple.Component({
     if (this.props.page === 'SHOW_LOGIN_SIGNUP') {
       return Signup_Login()
     } else if (this.props.page === 'SHOW_MENU') {
-      return Menu({playerID: this.props.playerID})
+      return Menu({playerID: this.props.playerID, MMR: this.props.MMR})
     } else if (this.props.page === 'SHOW_MATCH') {
       return Match({board: this.props.board})
     }

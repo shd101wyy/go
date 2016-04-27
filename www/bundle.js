@@ -184,6 +184,7 @@
 	      page: 'SHOW_LOGIN_SIGNUP',
 	      playerID: null,
 	      opponentID: null,
+	      MMR: 0,
 	      size: null,
 	      color: null,
 	      board: null
@@ -201,7 +202,7 @@
 	    if (this.props.page === 'SHOW_LOGIN_SIGNUP') {
 	      return (0, _signup_login2.default)();
 	    } else if (this.props.page === 'SHOW_MENU') {
-	      return (0, _menu2.default)({ playerID: this.props.playerID });
+	      return (0, _menu2.default)({ playerID: this.props.playerID, MMR: this.props.MMR });
 	    } else if (this.props.page === 'SHOW_MATCH') {
 	      return (0, _match2.default)({ board: this.props.board });
 	    }
@@ -784,6 +785,7 @@
 
 	var emitter = _Simple2.default.createEmitter({
 	  playerID: null,
+	  MMR: 0,
 	  opponentID: null,
 	  board: null,
 	  chat: {
@@ -800,6 +802,7 @@
 
 	emitter.on(_signup_login2.default);
 
+	// MATCH
 	emitter.on('start-match', function (_ref) {
 	  var opponentID = _ref.opponentID;
 	  var size = _ref.size;
@@ -871,6 +874,7 @@
 	  this.state.board.opponentResign();
 	});
 
+	// CHAT
 	emitter.on('chat-register-self', function (data, component) {
 	  this.state.chat.component = component;
 	  this.state.chat.messages = [];
@@ -911,6 +915,15 @@
 	  var komi = _ref6.komi;
 
 	  _socket_api2.default.inviteMatch({ opponentID: opponentID, size: size, color: color, komi: komi });
+	});
+
+	// MENU
+	emitter.on('request-top-50-players', function (data, component) {
+	  _user_api2.default.requestTop50Players(function (res) {
+	    if (res && res.length) {
+	      component.setState({ leaderboards: res });
+	    }
+	  });
 	});
 
 	exports.default = emitter;
@@ -1085,7 +1098,26 @@
 	        if (callback) callback(null);
 	      }
 	    });
+	  },
+
+	  requestTop50Players: function requestTop50Players(callback) {
+	    $.ajax('/top50', {
+	      type: 'GET',
+	      dataType: 'json',
+	      success: function success(res) {
+	        console.log('get top 50 players', res);
+	        if (res) {
+	          if (callback) callback(res);else callback(null);
+	        } else if (callback) {
+	          callback(null);
+	        }
+	      },
+	      error: function error(res) {
+	        if (callback) callback(null);
+	      }
+	    });
 	  }
+
 	};
 
 	exports.default = userAPI;
@@ -1119,8 +1151,9 @@
 	    _user_api2.default.checkAuth(function (res) {
 	      if (res && res.success) {
 	        _this.state.playerID = res.userID;
+	        _this.state.MMR = res.MMR;
 	        _socket_api2.default.userLoggedIn(_this.state.playerID);
-	        component.setProps({ page: 'SHOW_MENU', playerID: _this.state.playerID });
+	        component.setProps({ page: 'SHOW_MENU', playerID: _this.state.playerID, MMR: _this.state.MMR });
 	      }
 	    });
 	  },
@@ -1136,8 +1169,9 @@
 	        toastr.error('Failed to signin');
 	      } else {
 	        _this2.state.playerID = res.userID;
+	        _this2.state.MMR = res.MMR;
 	        _socket_api2.default.userLoggedIn(_this2.state.playerID);
-	        _this2.state.gameComponent.setProps({ page: 'SHOW_MENU', playerID: _this2.state.playerID });
+	        _this2.state.gameComponent.setProps({ page: 'SHOW_MENU', playerID: _this2.state.playerID, MMR: _this2.state.MMR });
 	      }
 	    });
 	  },
@@ -1154,8 +1188,9 @@
 	        toastr.error('Failed to signup');
 	      } else {
 	        _this3.state.playerID = res.userID;
+	        _this3.state.MMR = res.MMR;
 	        _socket_api2.default.userLoggedIn(_this3.state.playerID);
-	        _this3.state.gameComponent.setProps({ page: 'SHOW_MENU', playerID: _this3.state.playerID });
+	        _this3.state.gameComponent.setProps({ page: 'SHOW_MENU', playerID: _this3.state.playerID, MMR: _this3.state.MMR });
 	      }
 	    });
 	  }
@@ -1628,12 +1663,14 @@
 	     *  MAIN_MENU
 	     *  SHOW_BOARD_SIZE
 	     *  SHOW_MATCH_OPTIONS
+	     *  SHOW_LEARDERBOARDS
 	     */
 	    this.state = { page: 'MAIN_MENU',
 	      size: null,
 	      color: 'black',
 	      komi: 5.5,
-	      opponentID: '' };
+	      opponentID: '',
+	      leaderboards: [] };
 	  },
 
 	  selectBoardSize: function selectBoardSize(size, e) {
@@ -1685,15 +1722,28 @@
 
 	    this.emit('find-private-match', { opponentID: opponentID, size: size, color: color, komi: komi });
 	  },
+
+	  showLeaderboards: function showLeaderboards() {
+	    this.emit('request-top-50-players');
+	    this.setState({ page: 'SHOW_LEARDERBOARDS' });
+	  },
+
 	  render: function render() {
 	    var _this = this;
 
 	    if (this.state.page === 'SHOW_MATCH_OPTIONS') {
-	      return this.div({ class: 'menu' }, this.div({ class: 'pick-opponent' }, this.p({ class: 'title' }, 'Opponent ID'), this.input({ placeholder: 'enter opponent id here', value: this.state.opponentID, ref: 'opponentID', input: function input() {
+	      return this.div({ class: 'menu' }, this.div({ class: 'pick-opponent' }, this.p({ class: 'title' }, 'Opponent ID'), this.input({ placeholder: 'opponent id here', value: this.state.opponentID, ref: 'opponentID', input: function input() {
 	          _this.state.opponentID = _this.refs.opponentID.value;
 	        } })), this.div({ class: 'pick-color' }, this.p({ class: 'title' }, 'Your Color'), this.div({ class: 'color-group' }, this.div({ class: 'black color ' + (this.state.color === 'black' ? 'selected' : ''), click: this.selectColor.bind(this, 'black') }, this.span('Black')), this.div({ class: 'white color ' + (this.state.color === 'white' ? 'selected' : ''), click: this.selectColor.bind(this, 'white') }, this.span('White')), this.div({ class: 'random color ' + (this.state.color === 'random' ? 'selected' : ''), click: this.selectColor.bind(this, 'random') }, this.span('Random')))), this.div({ class: 'pick-komi' }, this.p({ class: 'title' }, 'Komi'), this.input({ value: this.state.komi, ref: 'komi' })), this.div({ class: 'bottom-button-group' }, this.div({ class: 'small-btn', click: this.showBoardSize.bind(this) }, this.span('back')), this.div({ class: 'small-btn play', click: this.play.bind(this, 'private') }, this.span('play'))));
 	    } else if (this.state.page === 'SHOW_BOARD_SIZE') {
 	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play', size: '19', click: this.selectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play', size: '13', click: this.selectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.selectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
+	          _this.setState({ page: 'MAIN_MENU' });
+	        } }, this.span('Back')));
+	    } else if (this.state.page === 'SHOW_LEARDERBOARDS') {
+	      var list = this.state.leaderboards.map(function (l) {
+	        return _this.div({ class: 'player ' + (l.userID === _this.props.playerID ? 'me' : '') }, _this.p({ class: 'ID' }, 'ID: ', _this.span(l.userID)), _this.p({ class: 'MMR' }, l.MMR));
+	      });
+	      return this.div({ class: 'leaderboards' }, this.p({ class: 'title' }, 'Your MMR is ', this.span(this.props.MMR)), this.div({ class: 'list' }, list), this.div({ class: 'btn', click: function click() {
 	          _this.setState({ page: 'MAIN_MENU' });
 	        } }, this.span('Back')));
 	    } else {
@@ -1701,7 +1751,7 @@
 	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Go! ' + this.props.playerID), this.div({ class: 'button private-match',
 	        click: function click() {
 	          _this.setState({ page: 'SHOW_BOARD_SIZE' });
-	        } }, this.span('Private Match')), this.div({ class: 'button public-match' }, this.span('Public Match')), this.div({ class: 'button' }, this.span('Bot Match')));
+	        } }, this.span('Private Match')), this.div({ class: 'button public-match' }, this.span('Public Match')), this.div({ class: 'button' }, this.span('Ranked Match')), this.div({ class: 'button', click: this.showLeaderboards.bind(this) }, this.span('Leaderboards')));
 	    }
 	  }
 	});

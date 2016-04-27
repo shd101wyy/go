@@ -56,7 +56,27 @@ let userAPI = {
         if (callback) callback(null)
       }
     })
+  },
+
+  requestTop50Players: function(callback) {
+    $.ajax('/top50', {
+      type: 'GET',
+      dataType: 'json',
+      success: function(res) {
+        console.log('get top 50 players', res)
+        if (res) {
+          if (callback) callback(res)
+          else callback(null)
+        } else if (callback) {
+          callback(null)
+        }
+      },
+      error: function(res) {
+        if (callback) callback(null)
+      }
+    })
   }
+
 }
 
 export default userAPI

@@ -7,6 +7,7 @@ import Board from '../models/board.js'
 
 let emitter = Simple.createEmitter({
   playerID: null,
+  MMR: 0,
   opponentID: null,
   board: null,
   chat: {
@@ -23,6 +24,7 @@ emitter.registerId('emitter')
 
 emitter.on(signupLogin)
 
+// MATCH
 emitter.on('start-match', function({opponentID, size, color, komi}) {
   this.state.opponentID = opponentID
   this.state.board = new Board({playerID: this.state.playerID, opponentID, size, playerColor: color, komi})
@@ -82,6 +84,8 @@ emitter.on('opponent-resign', function() {
   this.state.board.opponentResign()
 })
 
+
+// CHAT
 emitter.on('chat-register-self', function(data, component) {
   this.state.chat.component = component
   this.state.chat.messages = []
@@ -114,6 +118,14 @@ emitter.on('find-private-match', function({opponentID, size, color, komi}, compo
   socketAPI.inviteMatch({opponentID, size, color, komi})
 })
 
+// MENU
+emitter.on('request-top-50-players', function(data, component) {
+  userAPI.requestTop50Players(function(res) {
+    if (res && res.length) {
+      component.setState({leaderboards: res})
+    }
+  })
+})
 
 
 export default emitter

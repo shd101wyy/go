@@ -22,6 +22,7 @@ var userSchema = new Schema({
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
     userID: {type: String, required: true, unique: true},
+    MMR: {type: Number, required: false, default: 1000}
 })
 
 // create model that uses the schema

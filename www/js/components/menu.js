@@ -11,12 +11,14 @@ let Menu = Simple.Component({
      *  MAIN_MENU
      *  SHOW_BOARD_SIZE
      *  SHOW_MATCH_OPTIONS
+     *  SHOW_LEARDERBOARDS
      */
     this.state = {  page: 'MAIN_MENU',
                     size: null,
                     color: 'black',
                     komi: 5.5,
-                    opponentID: ''}
+                    opponentID: '',
+                    leaderboards: []}
   },
 
   selectBoardSize: function(size, e) {
@@ -68,12 +70,18 @@ let Menu = Simple.Component({
 
     this.emit('find-private-match', {opponentID, size, color, komi})
   },
+
+  showLeaderboards: function() {
+    this.emit('request-top-50-players')
+    this.setState({page: 'SHOW_LEARDERBOARDS'})
+  },
+
   render: function() {
     if (this.state.page === 'SHOW_MATCH_OPTIONS') {
       return this.div({class: 'menu'},
                 this.div({class: 'pick-opponent'},
                   this.p({class: 'title'}, 'Opponent ID'),
-                  this.input({placeholder: 'enter opponent id here', value: this.state.opponentID, ref: 'opponentID', input: ()=> {this.state.opponentID = this.refs.opponentID.value}})),
+                  this.input({placeholder: 'opponent id here', value: this.state.opponentID, ref: 'opponentID', input: ()=> {this.state.opponentID = this.refs.opponentID.value}})),
                 this.div({class: 'pick-color'},
                   this.p({class: 'title'}, 'Your Color'),
                   this.div({class: 'color-group'},
@@ -99,6 +107,18 @@ let Menu = Simple.Component({
                   this.span({size: '9'}, '9x9')),
                 this.div({class: 'button back', click: ()=> {this.setState({page: 'MAIN_MENU'})}},
                   this.span('Back')))
+    } else if (this.state.page === 'SHOW_LEARDERBOARDS') {
+      let list = this.state.leaderboards.map(l => {
+        return this.div({class: 'player ' + (l.userID === this.props.playerID ? 'me' : '')},
+                  this.p({class: 'ID'}, 'ID: ',
+                    this.span(l.userID)),
+                  this.p({class: 'MMR'}, l.MMR))
+      })
+      return this.div({class: 'leaderboards'},
+              this.p({class: 'title'}, 'Your MMR is ', this.span(this.props.MMR)),
+              this.div({class: 'list'}, list),
+              this.div({class: 'btn', click: ()=> {this.setState({page: 'MAIN_MENU'})}}, this.span('Back')))
+
     } else {// if (this.state.page === 'MAIN_MENU') {
       return this.div({class: 'menu'},
                 this.p({class: 'menu-title'}, `Go! ${this.props.playerID}`),
@@ -108,7 +128,9 @@ let Menu = Simple.Component({
                 this.div({class: 'button public-match'},
                   this.span('Public Match')),
                 this.div({class: 'button'},
-                  this.span('Bot Match')))
+                  this.span('Ranked Match')),
+                this.div({class: 'button', click: this.showLeaderboards.bind(this)},
+                  this.span('Leaderboards')))
     }
   }
 })

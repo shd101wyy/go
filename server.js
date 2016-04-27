@@ -32,7 +32,7 @@ app.get('/', function(req, res){
 
 app.get('/auth', function(req, res) {
   if (req.session.userID) {
-    res.json({success: true, userID: req.session.userID})
+    res.json({success: true, userID: req.session.userID, MMR: req.session.MMR})
   } else {
     res.send('null')
   }
@@ -54,8 +54,8 @@ app.post('/signin', function(req, res) {
       res.send('null')
     } else {
       console.log('signin successfully')
-      req.session.userID = users[0].userID
-      res.json({success: true, userID: users[0].userID})
+      req.session.userID = {userID: users[0].userID, MMR: users[0].MMR}
+      res.json({success: true, userID: users[0].userID, MMR: users[0].MMR})
     }
   })
 })
@@ -80,10 +80,25 @@ app.post('/signup', function(req, res) {
       res.send('null')
     } else {
       console.log('signup successfully')
-      req.session.userID = userID
-      res.json({success: true, userID: userID})
+      req.session.userID = {userID, MMR: 1000}
+      res.json({success: true, userID: userID, MMR: 1000})
     }
   })
+})
+
+app.get('/top50', function(req, res) {
+  db_User
+    .find({})
+    .sort({'MMR': -1})
+    .limit(50)
+    .exec(function(err, users) {
+      if (err) {
+        console.log('failed to get top50 users', err)
+        res.send('null')
+      } else {
+        res.json(users.map((user) => {return {userID: user.userID, MMR: user.MMR}} ))
+      }
+    })
 })
 
 app.get('/logout', function(req, res) {

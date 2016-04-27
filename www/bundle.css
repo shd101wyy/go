@@ -298,6 +298,65 @@ body {
 .menu .bottom-button-group .small-btn.play:hover {
   background-color: #3d8a61;
 }
+.leaderboards {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #C5A30D;
+  border-radius: 6px;
+  color: #fff;
+  padding: 48px;
+  box-sizing: border-box;
+}
+.leaderboards .title {
+  font-size: 24px;
+  border-bottom: 2px solid white;
+  padding-bottom: 4px;
+}
+.leaderboards .title span {
+  font-size: 32px;
+}
+.leaderboards .list {
+  height: 560px;
+  overflow-y: scroll;
+}
+.leaderboards .list::-webkit-scrollbar {
+  display: none;
+}
+.leaderboards .list .player {
+  padding: 12px;
+  display: flex;
+  flex-direction: row;
+}
+.leaderboards .list .player.me {
+  border: 2px dotted white;
+}
+.leaderboards .list .ID {
+  margin: 4px;
+  font-size: 16px;
+  width: 50%;
+}
+.leaderboards .list .ID span {
+  margin-left: 16px;
+}
+.leaderboards .list .MMR {
+  margin: 4px;
+  font-size: 16px;
+}
+.leaderboards .btn {
+  width: 64px;
+  padding: 12px;
+  text-align: center;
+  background-color: #C5760D;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+.leaderboards .btn:hover {
+  cursor: pointer;
+}
 .signup-login-page {
   position: absolute;
   width: 100%;
