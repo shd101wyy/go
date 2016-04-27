@@ -60,90 +60,17 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	/*
-	class GameManager {
-	  constructor() {
-	    this.$game = $('.game')
-	    userAPI.checkAuth((res)=> {
-	      if (res && res.success) {
-	        this.playerID = res.userID
-	        // $('.user-id').html('User ID: ' + this.playerID)
-	        socketAPI.userLoggedIn(this.playerID)
-	        this.showMenu()
-	      } else {
-	        this.signup_login_page = new Signup_Login()
-	        this.signup_login_page.appendTo($('.game'))
-	      }
-	    })
-
-	    document.body.addEventListener('touchmove', function(e){ e.preventDefault()})
-
-	    // this.startNewMatch(19, 'white', 'opponentID')
-	  }
-
-	  setPlayerID(id) {
-	    this.playerID = id
-	  }
-
-	  startNewMatch(size, playerColor, opponentID) {
-	    this.board = new Board({  size,
-	                              playerColor,
-	                              playerID: this.playerID,
-	                              opponentID,
-	                              gameManager: this})
-	    this.board.render(this.$game)
-	    // this.board.appendTo(this.$game)
-
-	    this.boardMenu = new BoardMenu(this.board)
-	    this.boardMenu.appendTo(this.$game)
-	  }
-
-	  updateBoardMenu() {
-	    this.boardMenu.forceUpdate()
-	  }
-
-	  showMenu() {
-	    if (this.signup_login_page) {
-	      this.signup_login_page.remove()
-	      this.signup_login_page = null
-	    }
-
-	    if (this.board) {
-	      this.board.remove()
-	      this.board = null
-	    }
-
-	    if (this.boardMenu) {
-	      this.boardMenu.remove()
-	      this.boardMenu = null
-	    }
-
-	    // TODO: remove board
-
-	    this.menu = new Menu(this)
-	    this.menu.appendTo($('.game'))
-	  }
-	}
-
-	*/
-
-	// 没什么卵用的 loading screen
-	/**
-	$('.loading-screen .logo').fadeIn(1000, ()=> {
-	  setTimeout(()=> {
-	    $('.loading-screen .logo').fadeOut(1000, ()=> {
-	      $('.loading-screen').remove()
-	    })
-	  }, 1600)
-	})
-	*/
-	$('.loading-screen').remove();
+	// loading screen
+	$('.loading-screen .logo').fadeIn(1000, function () {
+	  setTimeout(function () {
+	    $('.loading-screen .logo').fadeOut(1000, function () {
+	      $('.loading-screen').remove();
+	    });
+	  }, 1600);
+	});
 
 	var game = (0, _game2.default)();
 	_Simple2.default.render((0, _game2.default)(), document.getElementById('game'));
-
-	// let emitter = game.emitter
-	// emitter.emit('start-match', {opponentID: 'shd101wyy2', size: 9, color: 'black'})
 
 /***/ },
 /* 1 */
@@ -2377,6 +2304,7 @@
 	    messages.push({ id: playerID, message: message, me: true });
 	    component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages });
 	  },
+
 	  'receive-message': function receiveMessage(_ref2) {
 	    var opponentID = _ref2.opponentID;
 	    var message = _ref2.message;

@@ -15,6 +15,7 @@ let chat = {
     messages.push({id: playerID, message: message, me: true})
     component.setProps({playerID, opponentID, messages})
   },
+
   'receive-message': function({opponentID, message}) {
     let messages = this.state.chat.messages,
         playerID = this.state.playerID
