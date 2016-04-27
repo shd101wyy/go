@@ -27,6 +27,8 @@ let Chat = Simple.Component({
   init: function() {
     this.emit('chat-register-self')
   },
+  //componentDidMount: function() {
+  //},
   onInput: function(e) {
     if (e.which === 13) {
       let message = e.target.value.trim()

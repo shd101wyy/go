@@ -59,7 +59,6 @@ let Menu = Simple.Component({
     this.setState({page: 'SHOW_BOARD_SIZE'})
   },
   play: function(mode) {
-    console.log(mode, this.refs.komi.value)
     let komi = this.refs.komi.value
 
     if (isNaN(komi) || komi.trim() === '') {

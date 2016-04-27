@@ -52,7 +52,8 @@ emitter.on('board-put-stone', function({row, col}, component) {
   let res = board.addStone(row, col)
 
   if (res === true) {
-    this.state.matchComponent.setProps({board: board, messages: this.state.chat.messages})
+    socketAPI.sendMove(this.state.opponentID, row, col)
+    this.state.matchComponent.setProps({board: board, messages: this.state.chat.messages.slice(0)})
   } else {
     component.setState({'showIcon': res})
 
@@ -69,12 +70,12 @@ emitter.on('board-receive-move', function({row, col}) {
   } else {
     board.addStone(row, col)
   }
-  this.state.matchComponent.setProps({board: board, messages: this.state.chat.messages})
+  this.state.matchComponent.setProps({board: board, messages: this.state.chat.messages.slice(0)})
 })
 
 emitter.on('pass', function() {
   this.state.board.pass()
-  this.state.matchComponent.setProps({board: this.state.board, messages: this.state.chat.messages})
+  this.state.matchComponent.setProps({board: this.state.board, messages: this.state.chat.messages.slice(0)})
 })
 
 emitter.on('resign', function() {
@@ -93,16 +94,13 @@ emitter.on('opponent-resign', function() {
 // CHAT
 emitter.on('chat-register-self', function(data, component) {
   this.state.chat.component = component
-  this.state.chat.messages = []
 })
 
 emitter.on('send-message', function({message}, component) {
   let playerID = this.state.playerID,
       opponentID = this.state.opponentID
 
-  console.log('send message', {playerID, opponentID, message})
   socketAPI.sendMessage({ playerID, opponentID, message })
-
   let messages = this.state.chat.messages
   messages.push({id: playerID, message: message, me: true})
   component.setProps({playerID, opponentID, messages})
@@ -115,7 +113,7 @@ emitter.on('receive-message', function({opponentID, message}) {
   messages.push({id: opponentID, message: message, me: false})
 
   if (this.state.chat.component) {
-    this.state.chat.component.setProps({playerID, opponentID, messages})
+    this.state.chat.component.setProps({playerID, opponentID, messages: messages.slice(0)})
   }
 })
 

@@ -839,7 +839,8 @@
 	  var res = board.addStone(row, col);
 
 	  if (res === true) {
-	    this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages });
+	    _socket_api2.default.sendMove(this.state.opponentID, row, col);
+	    this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
 	  } else {
 	    component.setState({ 'showIcon': res });
 
@@ -860,12 +861,12 @@
 	  } else {
 	    board.addStone(row, col);
 	  }
-	  this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages });
+	  this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
 	});
 
 	emitter.on('pass', function () {
 	  this.state.board.pass();
-	  this.state.matchComponent.setProps({ board: this.state.board, messages: this.state.chat.messages });
+	  this.state.matchComponent.setProps({ board: this.state.board, messages: this.state.chat.messages.slice(0) });
 	});
 
 	emitter.on('resign', function () {
@@ -883,7 +884,6 @@
 	// CHAT
 	emitter.on('chat-register-self', function (data, component) {
 	  this.state.chat.component = component;
-	  this.state.chat.messages = [];
 	});
 
 	emitter.on('send-message', function (_ref4, component) {
@@ -892,9 +892,7 @@
 	  var playerID = this.state.playerID,
 	      opponentID = this.state.opponentID;
 
-	  console.log('send message', { playerID: playerID, opponentID: opponentID, message: message });
 	  _socket_api2.default.sendMessage({ playerID: playerID, opponentID: opponentID, message: message });
-
 	  var messages = this.state.chat.messages;
 	  messages.push({ id: playerID, message: message, me: true });
 	  component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages });
@@ -910,7 +908,7 @@
 	  messages.push({ id: opponentID, message: message, me: false });
 
 	  if (this.state.chat.component) {
-	    this.state.chat.component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages });
+	    this.state.chat.component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages.slice(0) });
 	  }
 	});
 
@@ -1015,7 +1013,7 @@
 	});
 
 	socket.on('receive-match-invitation', function (playerID, opponentID, size, color, komi) {
-	  var $el = $('<div> <p> ' + opponentID + ' invites to play go! </p>\n                      <p> board size: ' + size + ' </p>\n                      <button class=\'accept\'> accept </button>\n                      <button> decline </button>\n               </div>');
+	  var $el = $('<div> <p> ' + opponentID + ' invites you to play go! </p>\n                      <p> board size: ' + size + ' </p>\n                      <button class=\'accept\'> accept </button>\n                      <button> decline </button>\n               </div>');
 	  toastr.options = { "timeOut": "30000" };
 	  toastr.info($el);
 	  toastr.options = { "timeOut": "5000" };
@@ -1055,7 +1053,6 @@
 	});
 
 	socket.on('receive-message', function (opponentID, message) {
-	  console.log('receive message');
 	  _Simple2.default.Emitter.getEmitterById('emitter').emit('receive-message', { opponentID: opponentID, message: message });
 	});
 
@@ -1634,10 +1631,6 @@
 
 	      this.justPass = false;
 
-	      if (this.opponentID) {
-	        _socket_api2.default.sendMove(this.opponentID, row, col);
-	      }
-
 	      this.lastMove = [row, col];
 	      return true;
 	    }
@@ -2036,7 +2029,6 @@
 	    this.setState({ page: 'SHOW_BOARD_SIZE' });
 	  },
 	  play: function play(mode) {
-	    console.log(mode, this.refs.komi.value);
 	    var komi = this.refs.komi.value;
 
 	    if (isNaN(komi) || komi.trim() === '') {
@@ -2192,7 +2184,10 @@
 	      showIcon: false
 	    };
 	  },
-	  onClick: function onClick() {
+	  onClick: function onClick(e) {
+	    e.preventDefault();
+	    e.stopPropagation();
+
 	    var row = this.props.row,
 	        col = this.props.col,
 	        board = this.props.board;
@@ -2429,6 +2424,8 @@
 	  init: function init() {
 	    this.emit('chat-register-self');
 	  },
+	  //componentDidMount: function() {
+	  //},
 	  onInput: function onInput(e) {
 	    if (e.which === 13) {
 	      var message = e.target.value.trim();

@@ -13,7 +13,10 @@ let GridTouch = Simple.Component({
       showIcon: false
     }
   },
-  onClick: function() {
+  onClick: function(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    
     let row = this.props.row,
         col = this.props.col,
         board = this.props.board

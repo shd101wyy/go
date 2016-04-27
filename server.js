@@ -18,6 +18,9 @@ function encrypt(text){
   return crypted;
 }
 
+let socketMap = {} // key is userID, value is socket
+let inGame = {}
+
 app.use(session({
   secret: '1234567890QWERTY',
 }))
@@ -32,7 +35,9 @@ app.get('/', function(req, res){
 
 app.get('/auth', function(req, res) {
   if (req.session.userID) {
-    res.json({success: true, userID: req.session.userID, MMR: req.session.MMR})
+    db_User.findOne({userID}, function(err, user) {
+      res.join({success: true, userID: user.userID, MMR: user.MMR})
+    })
   } else {
     res.send('null')
   }
@@ -54,7 +59,7 @@ app.post('/signin', function(req, res) {
       res.send('null')
     } else {
       console.log('signin successfully')
-      req.session.userID = {userID: users[0].userID, MMR: users[0].MMR}
+      req.session.userID = users[0].userID
       res.json({success: true, userID: users[0].userID, MMR: users[0].MMR})
     }
   })
@@ -80,7 +85,7 @@ app.post('/signup', function(req, res) {
       res.send('null')
     } else {
       console.log('signup successfully')
-      req.session.userID = {userID, MMR: 1000}
+      req.session.userID = userID
       res.json({success: true, userID: userID, MMR: 1000})
     }
   })
@@ -172,8 +177,6 @@ function makeid() {
 
 
 // socket.io
-let socketMap = {} // key is userID, value is socket
-let inGame = {}
 io.on('connection', function(socket) {
   console.log('user connect: ' + socket.id)
 

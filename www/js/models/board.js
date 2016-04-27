@@ -289,10 +289,6 @@ class Board {
 
     this.justPass = false
 
-    if (this.opponentID) {
-      socketAPI.sendMove(this.opponentID, row, col)
-    }
-
     this.lastMove = [row, col]
     return true
   }

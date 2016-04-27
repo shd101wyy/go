@@ -43,7 +43,7 @@ socket.on('invitation-sent', function(opponentID) {
 })
 
 socket.on('receive-match-invitation', function(playerID, opponentID, size, color, komi) {
-  let $el = $(`<div> <p> ${opponentID} invites to play go! </p>
+  let $el = $(`<div> <p> ${opponentID} invites you to play go! </p>
                       <p> board size: ${size} </p>
                       <button class='accept'> accept </button>
                       <button> decline </button>
@@ -88,7 +88,6 @@ socket.on('opponent-disconnect', function(opponentID) {
 })
 
 socket.on('receive-message', function(opponentID, message) {
-  console.log('receive message')
   Simple.Emitter.getEmitterById('emitter').emit('receive-message', {opponentID, message})
 })
 
