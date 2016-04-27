@@ -192,18 +192,34 @@ io.on('connection', function(socket) {
 
     if (socketMap[opponentID]) {
       // TODO: assume after sent, accpet immediately...
-      /*
-      socketMap[opponentID].emit('receive-match-invitation', socket.userID)
+      socketMap[opponentID].emit('receive-match-invitation', opponentID, socket.userID, size, (color === 'white' ? 'black' : 'white'), komi)
       socket.emit('invitation-sent', opponentID)
-      */
+      return
+    } else { // not found
+      socket.emit('opponent-not-found', opponentID)
+    }
+  })
+
+  socket.on('accept-invitation', function(data) {
+    let playerID = socket.userID,
+        opponentID = data.opponentID,
+        size = data.size,
+        color = data.color,
+        komi = data.komi
+
+    if (inGame[opponentID]) {
+      socket.emit('opponnet-in-game', opponentID)
+      return
+    }
+
+    if (socketMap[opponentID]) {
       // assume I am black and opponent is white
       socket.emit('start-match', {size: size, color: color, opponentID: opponentID, komi: komi, ranked: false})
       socketMap[opponentID].emit('start-match', {size: size, color: (color === 'white' ? 'black' : 'white'), opponentID: socket.userID, komi: komi, ranked: false})
 
       inGame[socket.userID] = true
       inGame[opponentID] = true
-
-    } else { // not found
+    } else {
       socket.emit('opponent-not-found', opponentID)
     }
   })

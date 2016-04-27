@@ -1011,11 +1011,18 @@
 	});
 
 	socket.on('invitation-sent', function (opponentID) {
-	  toastr.warning('opponent ' + opponentID + ' not found');
+	  toastr.warning('Invitation to ' + opponentID + ' is sent');
 	});
 
-	socket.on('receive-match-invitation', function (opponentID) {
-	  alert('receive match invitation from ' + opponentID);
+	socket.on('receive-match-invitation', function (playerID, opponentID, size, color, komi) {
+	  var $el = $('<div> <p> ' + opponentID + ' invites to play go! </p>\n                      <p> board size: ' + size + ' </p>\n                      <button class=\'accept\'> accept </button>\n                      <button> decline </button>\n               </div>');
+	  toastr.options = { "timeOut": "30000" };
+	  toastr.info($el);
+	  toastr.options = { "timeOut": "5000" };
+
+	  $('.accept', $el).click(function () {
+	    socket.emit('accept-invitation', { playerID: playerID, opponentID: opponentID, size: size, color: color, komi: komi });
+	  });
 	});
 
 	socket.on('start-match', function (data) {

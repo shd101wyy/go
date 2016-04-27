@@ -39,11 +39,23 @@ socket.on('opponent-not-found', function(opponentID) {
 })
 
 socket.on('invitation-sent', function(opponentID) {
-  toastr.warning('opponent ' + opponentID + ' not found')
+  toastr.warning('Invitation to ' + opponentID + ' is sent')
 })
 
-socket.on('receive-match-invitation', function(opponentID) {
-  alert('receive match invitation from ' + opponentID)
+socket.on('receive-match-invitation', function(playerID, opponentID, size, color, komi) {
+  let $el = $(`<div> <p> ${opponentID} invites to play go! </p>
+                      <p> board size: ${size} </p>
+                      <button class='accept'> accept </button>
+                      <button> decline </button>
+               </div>`)
+  toastr.options = {"timeOut": "30000"}
+  toastr.info($el)
+  toastr.options = {"timeOut": "5000"}
+
+  $('.accept', $el).click(function() {
+    socket.emit('accept-invitation', {playerID, opponentID, size, color, komi})
+
+  })
 })
 
 socket.on('start-match', function(data) {
