@@ -761,14 +761,6 @@
 	  value: true
 	});
 
-	var _socket_api = __webpack_require__(7);
-
-	var _socket_api2 = _interopRequireDefault(_socket_api);
-
-	var _user_api = __webpack_require__(8);
-
-	var _user_api2 = _interopRequireDefault(_user_api);
-
 	var _Simple = __webpack_require__(1);
 
 	var _Simple2 = _interopRequireDefault(_Simple);
@@ -777,9 +769,17 @@
 
 	var _signup_login2 = _interopRequireDefault(_signup_login);
 
-	var _board = __webpack_require__(10);
+	var _chat = __webpack_require__(19);
 
-	var _board2 = _interopRequireDefault(_board);
+	var _chat2 = _interopRequireDefault(_chat);
+
+	var _menu = __webpack_require__(20);
+
+	var _menu2 = _interopRequireDefault(_menu);
+
+	var _match = __webpack_require__(21);
+
+	var _match2 = _interopRequireDefault(_match);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -802,164 +802,9 @@
 	emitter.registerId('emitter');
 
 	emitter.on(_signup_login2.default);
-
-	// MATCH
-	emitter.on('start-match', function (_ref) {
-	  var opponentID = _ref.opponentID;
-	  var size = _ref.size;
-	  var color = _ref.color;
-	  var komi = _ref.komi;
-	  var ranked = _ref.ranked;
-
-	  this.state.opponentID = opponentID;
-	  this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color, komi: komi, ranked: ranked });
-
-	  if (this.state.menuComponent) {
-	    // as componentDidUnmount is not implemented in Simple library...
-	    this.state.menuComponent.stopTimer();
-	  }
-
-	  var gameComponent = this.state.gameComponent;
-	  gameComponent.setProps({ page: 'SHOW_MATCH', board: this.state.board });
-	});
-
-	emitter.on('match-register-self', function (data, component) {
-	  this.state.matchComponent = component;
-	});
-
-	emitter.on('board-register-self', function (data, component) {
-	  this.state.boardComponent = component;
-	});
-
-	emitter.on('board-put-stone', function (_ref2, component) {
-	  var row = _ref2.row;
-	  var col = _ref2.col;
-
-	  var board = this.state.board;
-	  if (!board.isMyTurn()) return;
-	  var res = board.addStone(row, col);
-
-	  if (res === true) {
-	    _socket_api2.default.sendMove(this.state.opponentID, row, col);
-	    this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
-	  } else {
-	    component.setState({ 'showIcon': res });
-
-	    setTimeout(function () {
-	      component.setState({ 'showIcon': false });
-	    }, 2000);
-	  }
-	});
-
-	emitter.on('board-receive-move', function (_ref3) {
-	  var row = _ref3.row;
-	  var col = _ref3.col;
-
-	  var board = this.state.board;
-	  if (row === -1 || col === -1) {
-	    // pass
-	    board.nextTurn(true);
-	  } else {
-	    board.addStone(row, col);
-	  }
-	  this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
-	});
-
-	emitter.on('pass', function () {
-	  this.state.board.pass();
-	  this.state.matchComponent.setProps({ board: this.state.board, messages: this.state.chat.messages.slice(0) });
-	});
-
-	emitter.on('resign', function () {
-	  this.state.board.resign();
-	});
-
-	emitter.on('opponent-score', function () {
-	  this.state.board.score();
-	});
-
-	emitter.on('opponent-resign', function () {
-	  this.state.board.opponentResign();
-	});
-
-	// CHAT
-	emitter.on('chat-register-self', function (data, component) {
-	  this.state.chat.component = component;
-	});
-
-	emitter.on('send-message', function (_ref4, component) {
-	  var message = _ref4.message;
-
-	  var playerID = this.state.playerID,
-	      opponentID = this.state.opponentID;
-
-	  _socket_api2.default.sendMessage({ playerID: playerID, opponentID: opponentID, message: message });
-	  var messages = this.state.chat.messages;
-	  messages.push({ id: playerID, message: message, me: true });
-	  component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages });
-	});
-
-	emitter.on('receive-message', function (_ref5) {
-	  var opponentID = _ref5.opponentID;
-	  var message = _ref5.message;
-
-	  var messages = this.state.chat.messages,
-	      playerID = this.state.playerID;
-
-	  messages.push({ id: opponentID, message: message, me: false });
-
-	  if (this.state.chat.component) {
-	    this.state.chat.component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages.slice(0) });
-	  }
-	});
-
-	emitter.on('find-private-match', function (_ref6, component) {
-	  var opponentID = _ref6.opponentID;
-	  var size = _ref6.size;
-	  var color = _ref6.color;
-	  var komi = _ref6.komi;
-
-	  _socket_api2.default.inviteMatch({ opponentID: opponentID, size: size, color: color, komi: komi });
-	});
-
-	// MENU
-	emitter.on('request-top-50-players', function (data, component) {
-	  _user_api2.default.requestTop50Players(function (res) {
-	    if (res && res.length) {
-	      component.setState({ leaderboards: res });
-	    }
-	  });
-	});
-
-	emitter.on('start-finding-ranked-match', function (_ref7, component) {
-	  var playerID = _ref7.playerID;
-	  var MMR = _ref7.MMR;
-	  var size = _ref7.size;
-
-	  this.state.menuComponent = component;
-	  _user_api2.default.findRankedMatch({ playerID: playerID, MMR: MMR, size: size });
-	});
-
-	emitter.on('stop-finding-ranked-match', function (_ref8, component) {
-	  var playerID = _ref8.playerID;
-
-	  _user_api2.default.stopFindingRankedMatch({ playerID: playerID });
-	});
-
-	emitter.on('start-finding-public-match', function (_ref9, component) {
-	  var playerID = _ref9.playerID;
-	  var MMR = _ref9.MMR;
-	  var size = _ref9.size;
-
-	  this.state.menuComponent = component;
-	  _user_api2.default.findPublicMatch({ playerID: playerID, MMR: MMR, size: size });
-	});
-
-	emitter.on('stop-finding-public-match', function (_ref10, component) {
-	  var playerID = _ref10.playerID;
-
-	  _user_api2.default.stopFindingPublicMatch({ playerID: playerID });
-	});
+	emitter.on(_chat2.default);
+	emitter.on(_menu2.default);
+	emitter.on(_match2.default);
 
 	exports.default = emitter;
 
@@ -2495,6 +2340,237 @@
 	});
 
 	exports.default = Chat;
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _socket_api = __webpack_require__(7);
+
+	var _socket_api2 = _interopRequireDefault(_socket_api);
+
+	var _user_api = __webpack_require__(8);
+
+	var _user_api2 = _interopRequireDefault(_user_api);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var chat = {
+	  'chat-register-self': function chatRegisterSelf(data, component) {
+	    this.state.chat.component = component;
+	  },
+
+	  'send-message': function sendMessage(_ref, component) {
+	    var message = _ref.message;
+
+	    var playerID = this.state.playerID,
+	        opponentID = this.state.opponentID;
+
+	    _socket_api2.default.sendMessage({ playerID: playerID, opponentID: opponentID, message: message });
+	    var messages = this.state.chat.messages;
+	    messages.push({ id: playerID, message: message, me: true });
+	    component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages });
+	  },
+	  'receive-message': function receiveMessage(_ref2) {
+	    var opponentID = _ref2.opponentID;
+	    var message = _ref2.message;
+
+	    var messages = this.state.chat.messages,
+	        playerID = this.state.playerID;
+
+	    messages.push({ id: opponentID, message: message, me: false });
+
+	    if (this.state.chat.component) {
+	      this.state.chat.component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages.slice(0) });
+	    }
+	  }
+	};
+
+	exports.default = chat;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _socket_api = __webpack_require__(7);
+
+	var _socket_api2 = _interopRequireDefault(_socket_api);
+
+	var _user_api = __webpack_require__(8);
+
+	var _user_api2 = _interopRequireDefault(_user_api);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var menu = {
+	  'request-top-50-players': function requestTop50Players(data, component) {
+	    _user_api2.default.requestTop50Players(function (res) {
+	      if (res && res.length) {
+	        component.setState({ leaderboards: res });
+	      }
+	    });
+	  },
+
+	  'find-private-match': function findPrivateMatch(_ref, component) {
+	    var opponentID = _ref.opponentID;
+	    var size = _ref.size;
+	    var color = _ref.color;
+	    var komi = _ref.komi;
+
+	    _socket_api2.default.inviteMatch({ opponentID: opponentID, size: size, color: color, komi: komi });
+	  },
+
+	  'start-finding-ranked-match': function startFindingRankedMatch(_ref2, component) {
+	    var playerID = _ref2.playerID;
+	    var MMR = _ref2.MMR;
+	    var size = _ref2.size;
+
+	    this.state.menuComponent = component;
+	    _user_api2.default.findRankedMatch({ playerID: playerID, MMR: MMR, size: size });
+	  },
+
+	  'stop-finding-ranked-match': function stopFindingRankedMatch(_ref3, component) {
+	    var playerID = _ref3.playerID;
+
+	    _user_api2.default.stopFindingRankedMatch({ playerID: playerID });
+	  },
+
+	  'start-finding-public-match': function startFindingPublicMatch(_ref4, component) {
+	    var playerID = _ref4.playerID;
+	    var MMR = _ref4.MMR;
+	    var size = _ref4.size;
+
+	    this.state.menuComponent = component;
+	    _user_api2.default.findPublicMatch({ playerID: playerID, MMR: MMR, size: size });
+	  },
+
+	  'stop-finding-public-match': function stopFindingPublicMatch(_ref5, component) {
+	    var playerID = _ref5.playerID;
+
+	    _user_api2.default.stopFindingPublicMatch({ playerID: playerID });
+	  }
+	};
+
+	exports.default = menu;
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _socket_api = __webpack_require__(7);
+
+	var _socket_api2 = _interopRequireDefault(_socket_api);
+
+	var _user_api = __webpack_require__(8);
+
+	var _user_api2 = _interopRequireDefault(_user_api);
+
+	var _board = __webpack_require__(10);
+
+	var _board2 = _interopRequireDefault(_board);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var match = {
+	  'start-match': function startMatch(_ref) {
+	    var opponentID = _ref.opponentID;
+	    var size = _ref.size;
+	    var color = _ref.color;
+	    var komi = _ref.komi;
+	    var ranked = _ref.ranked;
+
+	    this.state.opponentID = opponentID;
+	    this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color, komi: komi, ranked: ranked });
+
+	    if (this.state.menuComponent) {
+	      // as componentDidUnmount is not implemented in Simple library...
+	      this.state.menuComponent.stopTimer();
+	    }
+
+	    var gameComponent = this.state.gameComponent;
+	    gameComponent.setProps({ page: 'SHOW_MATCH', board: this.state.board });
+	  },
+
+	  'match-register-self': function matchRegisterSelf(data, component) {
+	    this.state.matchComponent = component;
+	  },
+
+	  'board-register-self': function boardRegisterSelf(data, component) {
+	    this.state.boardComponent = component;
+	  },
+
+	  'board-put-stone': function boardPutStone(_ref2, component) {
+	    var row = _ref2.row;
+	    var col = _ref2.col;
+
+	    var board = this.state.board;
+	    if (!board.isMyTurn()) return;
+	    var res = board.addStone(row, col);
+
+	    if (res === true) {
+	      _socket_api2.default.sendMove(this.state.opponentID, row, col);
+	      this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
+	    } else {
+	      component.setState({ 'showIcon': res });
+
+	      setTimeout(function () {
+	        component.setState({ 'showIcon': false });
+	      }, 2000);
+	    }
+	  },
+
+	  'board-receive-move': function boardReceiveMove(_ref3) {
+	    var row = _ref3.row;
+	    var col = _ref3.col;
+
+	    var board = this.state.board;
+	    if (row === -1 || col === -1) {
+	      // pass
+	      board.nextTurn(true);
+	    } else {
+	      board.addStone(row, col);
+	    }
+	    this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
+	  },
+
+	  'pass': function pass() {
+	    this.state.board.pass();
+	    this.state.matchComponent.setProps({ board: this.state.board, messages: this.state.chat.messages.slice(0) });
+	  },
+
+	  'resign': function resign() {
+	    this.state.board.resign();
+	  },
+
+	  'opponent-score': function opponentScore() {
+	    this.state.board.score();
+	  },
+
+	  'opponent-resign': function opponentResign() {
+	    this.state.board.opponentResign();
+	  }
+
+	};
+
+	exports.default = match;
 
 /***/ }
 /******/ ]);

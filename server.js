@@ -37,7 +37,7 @@ app.get('/auth', function(req, res) {
   let userID = req.session.userID
   if (userID) {
     db_User.findOne({userID}, function(err, user) {
-      res.join({success: true, userID: user.userID, MMR: user.MMR})
+      res.json({success: true, userID: user.userID, MMR: user.MMR})
     })
   } else {
     res.send('null')
