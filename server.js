@@ -106,6 +106,59 @@ app.get('/logout', function(req, res) {
   res.send({success: true})
 })
 
+
+// Ranked Match
+let rankedMatchPool = {} // key is playerID, value is MMR
+app.post('/find_ranked_match', function(req, res) {
+  let playerID = req.body.playerID,
+      MMR = req.body.MMR,
+      size = req.body.size
+
+  for (let key in rankedMatchPool) {
+    let mmr = rankedMatchPool[key]
+    if (Math.abs(MMR - mmr) < 100) {
+      console.log('ranked match: find opponent')
+      let color = Math.random() < 0.5 ? 'black' : 'white'
+      socketMap[playerID].emit('start-match', {size: size, color: color, opponentID: key, komi: 5.5, ranked: true})
+      socketMap[key].emit('start-match', {size: size, color: (color === 'white' ? 'black' : 'white'), opponentID: playerID, komi: 5.5, ranked: true})
+
+      inGame[playerID] = true
+      inGame[key] = true
+
+      delete(rankedMatchPool[playerID])
+      delete(rankedMatchPool[key])
+
+      return
+    }
+  }
+
+  // didn't find suitable opponent
+  rankedMatchPool[playerID] = MMR
+})
+
+app.post('/stop_finding_ranked_match', function(req, res) {
+  let playerID = req.body.playerID
+
+  delete(rankedMatchPool[playerID])
+})
+
+app.post('/win_ranked', function(req, res) {
+  let playerID = req.body.playerID,
+      opponentID = req.body.opponentID
+  db_User.findOne({userID: playerID}, function(err, user) {
+    user.MMR += 24
+    user.save()
+  })
+})
+
+app.post('/lose_ranked', function(req, res) {
+  let playerID = req.body.playerID,
+      opponentID = req.body.opponentID
+  db_User.findOne({userID: playerID}, function(err, user) {
+    user.MMR -= 25
+    user.save()
+  })})
+
 // helper functions
 function makeid() {
     let text = "";
@@ -144,8 +197,8 @@ io.on('connection', function(socket) {
       socket.emit('invitation-sent', opponentID)
       */
       // assume I am black and opponent is white
-      socket.emit('start-match', {size: size, color: color, opponentID: opponentID, komi: komi})
-      socketMap[opponentID].emit('start-match', {size: size, color: (color === 'white' ? 'black' : 'white'), opponentID: socket.userID, komi: komi})
+      socket.emit('start-match', {size: size, color: color, opponentID: opponentID, komi: komi, ranked: false})
+      socketMap[opponentID].emit('start-match', {size: size, color: (color === 'white' ? 'black' : 'white'), opponentID: socket.userID, komi: komi, ranked: false})
 
       inGame[socket.userID] = true
       inGame[opponentID] = true
@@ -196,6 +249,7 @@ io.on('connection', function(socket) {
     console.log('user disconnect: ' + socket.userID)
     inGame[socket.userID] = false
     delete(socketMap[socket.userID])
+    delete(rankedMatchPool[socket.userID])
   })
 
 })

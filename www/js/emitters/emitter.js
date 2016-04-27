@@ -17,7 +17,8 @@ let emitter = Simple.createEmitter({
 
   boardComponent: null,
   matchComponent: null,
-  gameComponent: null,
+  menuComponent: null,
+  gameComponent: null
 })
 
 emitter.registerId('emitter')
@@ -25,9 +26,13 @@ emitter.registerId('emitter')
 emitter.on(signupLogin)
 
 // MATCH
-emitter.on('start-match', function({opponentID, size, color, komi}) {
+emitter.on('start-match', function({opponentID, size, color, komi, ranked}) {
   this.state.opponentID = opponentID
-  this.state.board = new Board({playerID: this.state.playerID, opponentID, size, playerColor: color, komi})
+  this.state.board = new Board({playerID: this.state.playerID, opponentID, size, playerColor: color, komi, ranked})
+
+  if (ranked) {
+    this.state.menuComponent.stopTimer()
+  }
 
   let gameComponent = this.state.gameComponent
   gameComponent.setProps({page: 'SHOW_MATCH', board: this.state.board})
@@ -125,6 +130,15 @@ emitter.on('request-top-50-players', function(data, component) {
       component.setState({leaderboards: res})
     }
   })
+})
+
+emitter.on('start-finding-ranked-match', function({playerID, MMR, size}, component) {
+  this.state.menuComponent = component
+  userAPI.findRankedMatch({playerID, MMR, size})
+})
+
+emitter.on('stop-finding-ranked-match', function({playerID}, component) {
+  userAPI.stopFindingRankedMatch({playerID})
 })
 
 

@@ -50,9 +50,10 @@ socket.on('start-match', function(data) {
   let size = data.size,
       color = data.color,
       opponentID = data.opponentID,
-      komi = data.komi
+      komi = data.komi,
+      ranked = data.ranked
 
-  Simple.Emitter.getEmitterById('emitter').emit('start-match', {opponentID, size, color, komi})
+  Simple.Emitter.getEmitterById('emitter').emit('start-match', {opponentID, size, color, komi, ranked})
 })
 
 socket.on('receive-move', function(data) {

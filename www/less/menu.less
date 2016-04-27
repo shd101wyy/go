@@ -14,6 +14,10 @@
   padding: 48px;
   box-sizing: border-box;
 
+  &.ranked {
+    background-color: #792B2B;
+  }
+
   .menu-title {
     margin-top: 0;
     margin-bottom: 24px;
@@ -38,6 +42,19 @@
     text-align: center;
     font-size: 28px;
     cursor: pointer;
+
+    &.locked {
+      background-color: #222;
+      color: white;
+
+      span {
+        text-decoration: line-through;
+      }
+
+      &:hover {
+        background: #111;
+      }
+    }
 
     &:hover {
       background: #E0EAF2;

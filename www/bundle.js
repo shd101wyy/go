@@ -46,15 +46,15 @@
 
 	'use strict';
 
-	var _Simple = __webpack_require__(2);
+	var _Simple = __webpack_require__(1);
 
 	var _Simple2 = _interopRequireDefault(_Simple);
 
-	var _game = __webpack_require__(1);
+	var _game = __webpack_require__(5);
 
 	var _game2 = _interopRequireDefault(_game);
 
-	var _menu = __webpack_require__(13);
+	var _menu = __webpack_require__(14);
 
 	var _menu2 = _interopRequireDefault(_menu);
 
@@ -154,74 +154,8 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _Simple = __webpack_require__(2);
-
-	var _Simple2 = _interopRequireDefault(_Simple);
-
-	var _emitter = __webpack_require__(6);
-
-	var _emitter2 = _interopRequireDefault(_emitter);
-
-	var _signup_login = __webpack_require__(12);
-
-	var _signup_login2 = _interopRequireDefault(_signup_login);
-
-	var _menu = __webpack_require__(13);
-
-	var _menu2 = _interopRequireDefault(_menu);
-
-	var _match = __webpack_require__(14);
-
-	var _match2 = _interopRequireDefault(_match);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Game = _Simple2.default.Component({
-	  emitter: _emitter2.default,
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      page: 'SHOW_LOGIN_SIGNUP',
-	      playerID: null,
-	      opponentID: null,
-	      MMR: 0,
-	      size: null,
-	      color: null,
-	      board: null
-	    };
-	  },
-	  init: function init() {
-	    document.body.addEventListener('touchmove', function (e) {
-	      e.preventDefault();
-	    });
-	  },
-	  componentDidMount: function componentDidMount() {
-	    this.emit('check-auth');
-	  },
-	  render: function render() {
-	    if (this.props.page === 'SHOW_LOGIN_SIGNUP') {
-	      return (0, _signup_login2.default)();
-	    } else if (this.props.page === 'SHOW_MENU') {
-	      return (0, _menu2.default)({ playerID: this.props.playerID, MMR: this.props.MMR });
-	    } else if (this.props.page === 'SHOW_MATCH') {
-	      return (0, _match2.default)({ board: this.props.board });
-	    }
-	  }
-	});
-
-	exports.default = Game;
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var Component = __webpack_require__(3);
-	var Emitter = __webpack_require__(5);
+	var Component = __webpack_require__(2);
+	var Emitter = __webpack_require__(4);
 
 	var render = function render(component, domElement) {
 	  var element = component._initialRender();
@@ -256,12 +190,12 @@
 	exports.render = render;
 
 /***/ },
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var SimpleDOM = __webpack_require__(4);
+	var SimpleDOM = __webpack_require__(3);
 
 	function createSimpleComponent(methods) {
 	  var SimpleComponent = function SimpleComponent(props) {
@@ -324,7 +258,7 @@
 	module.exports = Component;
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -662,7 +596,7 @@
 	module.exports = SimpleDOM;
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -752,6 +686,72 @@
 	module.exports = Emitter;
 
 /***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Simple = __webpack_require__(1);
+
+	var _Simple2 = _interopRequireDefault(_Simple);
+
+	var _emitter = __webpack_require__(6);
+
+	var _emitter2 = _interopRequireDefault(_emitter);
+
+	var _signup_login = __webpack_require__(13);
+
+	var _signup_login2 = _interopRequireDefault(_signup_login);
+
+	var _menu = __webpack_require__(14);
+
+	var _menu2 = _interopRequireDefault(_menu);
+
+	var _match = __webpack_require__(15);
+
+	var _match2 = _interopRequireDefault(_match);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Game = _Simple2.default.Component({
+	  emitter: _emitter2.default,
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      page: 'SHOW_LOGIN_SIGNUP',
+	      playerID: null,
+	      opponentID: null,
+	      MMR: 0,
+	      size: null,
+	      color: null,
+	      board: null
+	    };
+	  },
+	  init: function init() {
+	    document.body.addEventListener('touchmove', function (e) {
+	      e.preventDefault();
+	    });
+	  },
+	  componentDidMount: function componentDidMount() {
+	    this.emit('check-auth');
+	  },
+	  render: function render() {
+	    if (this.props.page === 'SHOW_LOGIN_SIGNUP') {
+	      return (0, _signup_login2.default)();
+	    } else if (this.props.page === 'SHOW_MENU') {
+	      return (0, _menu2.default)({ playerID: this.props.playerID, MMR: this.props.MMR });
+	    } else if (this.props.page === 'SHOW_MATCH') {
+	      return (0, _match2.default)({ board: this.props.board });
+	    }
+	  }
+	});
+
+	exports.default = Game;
+
+/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -769,7 +769,7 @@
 
 	var _user_api2 = _interopRequireDefault(_user_api);
 
-	var _Simple = __webpack_require__(2);
+	var _Simple = __webpack_require__(1);
 
 	var _Simple2 = _interopRequireDefault(_Simple);
 
@@ -795,6 +795,7 @@
 
 	  boardComponent: null,
 	  matchComponent: null,
+	  menuComponent: null,
 	  gameComponent: null
 	});
 
@@ -808,9 +809,14 @@
 	  var size = _ref.size;
 	  var color = _ref.color;
 	  var komi = _ref.komi;
+	  var ranked = _ref.ranked;
 
 	  this.state.opponentID = opponentID;
-	  this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color, komi: komi });
+	  this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color, komi: komi, ranked: ranked });
+
+	  if (ranked) {
+	    this.state.menuComponent.stopTimer();
+	  }
 
 	  var gameComponent = this.state.gameComponent;
 	  gameComponent.setProps({ page: 'SHOW_MATCH', board: this.state.board });
@@ -926,6 +932,21 @@
 	  });
 	});
 
+	emitter.on('start-finding-ranked-match', function (_ref7, component) {
+	  var playerID = _ref7.playerID;
+	  var MMR = _ref7.MMR;
+	  var size = _ref7.size;
+
+	  this.state.menuComponent = component;
+	  _user_api2.default.findRankedMatch({ playerID: playerID, MMR: MMR, size: size });
+	});
+
+	emitter.on('stop-finding-ranked-match', function (_ref8, component) {
+	  var playerID = _ref8.playerID;
+
+	  _user_api2.default.stopFindingRankedMatch({ playerID: playerID });
+	});
+
 	exports.default = emitter;
 
 /***/ },
@@ -938,7 +959,7 @@
 	  value: true
 	});
 
-	var _Simple = __webpack_require__(2);
+	var _Simple = __webpack_require__(1);
 
 	var _Simple2 = _interopRequireDefault(_Simple);
 
@@ -1001,9 +1022,10 @@
 	  var size = data.size,
 	      color = data.color,
 	      opponentID = data.opponentID,
-	      komi = data.komi;
+	      komi = data.komi,
+	      ranked = data.ranked;
 
-	  _Simple2.default.Emitter.getEmitterById('emitter').emit('start-match', { opponentID: opponentID, size: size, color: color, komi: komi });
+	  _Simple2.default.Emitter.getEmitterById('emitter').emit('start-match', { opponentID: opponentID, size: size, color: color, komi: komi, ranked: ranked });
 	});
 
 	socket.on('receive-move', function (data) {
@@ -1116,6 +1138,68 @@
 	        if (callback) callback(null);
 	      }
 	    });
+	  },
+
+	  findRankedMatch: function findRankedMatch(_ref, callback) {
+	    var playerID = _ref.playerID;
+	    var MMR = _ref.MMR;
+	    var size = _ref.size;
+
+	    $.ajax('/find_ranked_match', {
+	      type: 'POST',
+	      dataType: 'json',
+	      data: { playerID: playerID, MMR: MMR, size: size },
+	      success: function success(res) {
+	        if (res) {
+	          if (callback) callback(res);else callback(null);
+	        } else if (callback) {
+	          callback(null);
+	        }
+	      },
+	      error: function error(res) {
+	        if (callback) callback(null);
+	      }
+	    });
+	  },
+
+	  stopFindingRankedMatch: function stopFindingRankedMatch(_ref2, callback) {
+	    var playerID = _ref2.playerID;
+
+	    $.ajax('/stop_finding_ranked_match', {
+	      type: 'POST',
+	      dataType: 'json',
+	      data: { playerID: playerID },
+	      success: function success(res) {
+	        if (res) {
+	          if (callback) callback(res);else callback(null);
+	        } else if (callback) {
+	          callback(null);
+	        }
+	      },
+	      error: function error(res) {
+	        if (callback) callback(null);
+	      }
+	    });
+	  },
+
+	  win: function win(_ref3) {
+	    var playerID = _ref3.playerID;
+	    var opponentID = _ref3.opponentID;
+
+	    $.ajax('/win_ranked', {
+	      type: 'POST',
+	      dataType: 'json',
+	      data: { playerID: playerID, opponentID: opponentID } });
+	  },
+
+	  lose: function lose(_ref4) {
+	    var playerID = _ref4.playerID;
+	    var opponentID = _ref4.opponentID;
+
+	    $.ajax('/lose_ranked', {
+	      type: 'POST',
+	      dataType: 'json',
+	      data: { playerID: playerID, opponentID: opponentID } });
 	  }
 
 	};
@@ -1210,13 +1294,17 @@
 
 	var _history2 = _interopRequireDefault(_history);
 
-	var _stone2 = __webpack_require__(18);
+	var _stone2 = __webpack_require__(12);
 
 	var _stone3 = _interopRequireDefault(_stone2);
 
 	var _socket_api = __webpack_require__(7);
 
 	var _socket_api2 = _interopRequireDefault(_socket_api);
+
+	var _user_api = __webpack_require__(8);
+
+	var _user_api2 = _interopRequireDefault(_user_api);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1233,6 +1321,7 @@
 	    var playerID = _ref.playerID;
 	    var opponentID = _ref.opponentID;
 	    var komi = _ref.komi;
+	    var ranked = _ref.ranked;
 
 	    _classCallCheck(this, Board);
 
@@ -1241,6 +1330,7 @@
 	    this.playerID = playerID || null;
 	    this.opponentID = opponentID || null;
 	    this.komi = komi || 0;
+	    this.ranked = ranked || false;
 
 	    this.board = [];
 
@@ -1390,6 +1480,28 @@
 
 	      /**toastr.success**/alert('white score: ' + whiteScore + '+' + this.komi + '=' + (whiteScore + this.komi) + ', black score: ' + blackScore);
 
+	      if (this.ranked) {
+	        var w = whiteScore + this.komi,
+	            b = blackScore;
+	        if (this.playerColor === 'white') {
+	          if (w < b) {
+	            // lose
+	            _user_api2.default.lose({ playerID: this.playerID, opponentID: this.opponentID });
+	          } else if (w > b) {
+	            // win
+	            _user_api2.default.win({ playerID: this.playerID, opponentID: this.opponentID });
+	          }
+	        } else {
+	          if (b < w) {
+	            // lose
+	            _user_api2.default.lose({ playerID: this.playerID, opponentID: this.opponentID });
+	          } else if (b > w) {
+	            // win
+	            _user_api2.default.win({ playerID: this.playerID, opponentID: this.opponentID });
+	          }
+	        }
+	      }
+
 	      location.reload();
 	    }
 	  }, {
@@ -1415,12 +1527,20 @@
 	      _socket_api2.default.resign(this.playerID, this.opponentID);
 	      /**toastr.info**/alert('You resigned');
 
+	      if (this.ranked) {
+	        _user_api2.default.lose({ playerID: this.playerID, opponentID: this.opponentID });
+	      }
+
 	      location.reload();
 	    }
 	  }, {
 	    key: 'opponentResign',
 	    value: function opponentResign() {
 	      /**toastr.info**/alert('Opponent ' + this.opponentID + ' resigned');
+
+	      if (this.ranked) {
+	        _user_api2.default.win({ playerID: this.playerID, opponentID: this.opponentID });
+	      }
 
 	      location.reload();
 	    }
@@ -1577,521 +1697,6 @@
 
 /***/ },
 /* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _Simple = __webpack_require__(2);
-
-	var _Simple2 = _interopRequireDefault(_Simple);
-
-	var _emitter = __webpack_require__(6);
-
-	var _emitter2 = _interopRequireDefault(_emitter);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Signup_Login = _Simple2.default.Component({
-	  emitter: _emitter2.default,
-	  init: function init() {
-	    this.state = { showLogin: true };
-	  },
-	  render: function render() {
-	    var _this = this;
-
-	    return this.div({ class: 'signup-login-page' }, this.div({ class: 'container' }, this.div({ class: 'email field' }, this.input({ placeholder: 'Email', ref: 'email' })), this.div({ class: 'userID field ' + (this.state.showLogin ? 'hide' : 'show') }, this.input({ placeholder: 'User ID', ref: 'userID' })), this.div({ class: 'password field' }, this.input({ placeholder: 'Password', type: 'password', ref: 'password' })), this.div({ class: 'go', click: this.go.bind(this) }, 'Go'), this.a({ class: 'switch', click: function click() {
-	        _this.setState({ showLogin: !_this.state.showLogin });
-	      } }, this.state.showLogin ? 'Don\'t have account yet? Click me' : 'Already have an account? Click me')));
-	  },
-	  go: function go() {
-	    var email = this.refs.email.value,
-	        userID = this.refs.userID.value,
-	        password = this.refs.password.value;
-
-	    if (this.state.showLogin) {
-	      // login
-	      // missing information
-	      if (!email.length || !password.length) {
-	        return;
-	      }
-
-	      this.emit('login', { email: email, password: password });
-	    } else {
-	      // missing information
-	      if (!email.length || !userID.length || !password.length) {
-	        return;
-	      }
-
-	      this.emit('signup', { email: email, userID: userID, password: password });
-	    }
-	  }
-	});
-
-	exports.default = Signup_Login;
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _Simple = __webpack_require__(2);
-
-	var _Simple2 = _interopRequireDefault(_Simple);
-
-	var _emitter = __webpack_require__(6);
-
-	var _emitter2 = _interopRequireDefault(_emitter);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Menu = _Simple2.default.Component({
-	  emitter: _emitter2.default,
-	  getDefaultProps: function getDefaultProps() {
-	    return { playerID: null };
-	  },
-	  init: function init() {
-	    /**
-	     *  MAIN_MENU
-	     *  SHOW_BOARD_SIZE
-	     *  SHOW_MATCH_OPTIONS
-	     *  SHOW_LEARDERBOARDS
-	     */
-	    this.state = { page: 'MAIN_MENU',
-	      size: null,
-	      color: 'black',
-	      komi: 5.5,
-	      opponentID: '',
-	      leaderboards: [] };
-	  },
-
-	  selectBoardSize: function selectBoardSize(size, e) {
-	    e.stopPropagation();
-	    e.preventDefault();
-	    this.state.size = size;
-	    this.setState({ page: 'SHOW_MATCH_OPTIONS' });
-	    // let opponentID = prompt('enter opponent id')
-	    // this.emit('find-private-match', {opponentID, size})
-	  },
-	  selectColor: function selectColor(color) {
-	    this.setState({ color: color });
-	  },
-	  showBoardSize: function showBoardSize(e) {
-	    e.stopPropagation();
-	    e.preventDefault();
-	    this.setState({ page: 'SHOW_BOARD_SIZE' });
-	  },
-	  play: function play(mode) {
-	    console.log(mode, this.refs.komi.value);
-	    var komi = this.refs.komi.value;
-
-	    if (isNaN(komi) || komi.trim() === '') {
-	      toastr.warning('komi ' + komi + ' is an invalid number');
-	      return;
-	    }
-
-	    komi = Number(komi);
-
-	    var opponentID = this.refs.opponentID.value;
-	    if (!opponentID) {
-	      toastr.warning('please enter opponent ID');
-	      return;
-	    }
-
-	    this.state.komi = komi;
-	    this.state.opponentID = opponentID;
-
-	    var size = this.state.size,
-	        color = this.state.color;
-
-	    if (color === 'random') {
-	      if (Math.random() < 0.5) {
-	        color = 'black';
-	      } else {
-	        color = 'white';
-	      }
-	    }
-
-	    this.emit('find-private-match', { opponentID: opponentID, size: size, color: color, komi: komi });
-	  },
-
-	  showLeaderboards: function showLeaderboards() {
-	    this.emit('request-top-50-players');
-	    this.setState({ page: 'SHOW_LEARDERBOARDS' });
-	  },
-
-	  render: function render() {
-	    var _this = this;
-
-	    if (this.state.page === 'SHOW_MATCH_OPTIONS') {
-	      return this.div({ class: 'menu' }, this.div({ class: 'pick-opponent' }, this.p({ class: 'title' }, 'Opponent ID'), this.input({ placeholder: 'opponent id here', value: this.state.opponentID, ref: 'opponentID', input: function input() {
-	          _this.state.opponentID = _this.refs.opponentID.value;
-	        } })), this.div({ class: 'pick-color' }, this.p({ class: 'title' }, 'Your Color'), this.div({ class: 'color-group' }, this.div({ class: 'black color ' + (this.state.color === 'black' ? 'selected' : ''), click: this.selectColor.bind(this, 'black') }, this.span('Black')), this.div({ class: 'white color ' + (this.state.color === 'white' ? 'selected' : ''), click: this.selectColor.bind(this, 'white') }, this.span('White')), this.div({ class: 'random color ' + (this.state.color === 'random' ? 'selected' : ''), click: this.selectColor.bind(this, 'random') }, this.span('Random')))), this.div({ class: 'pick-komi' }, this.p({ class: 'title' }, 'Komi'), this.input({ value: this.state.komi, ref: 'komi' })), this.div({ class: 'bottom-button-group' }, this.div({ class: 'small-btn', click: this.showBoardSize.bind(this) }, this.span('back')), this.div({ class: 'small-btn play', click: this.play.bind(this, 'private') }, this.span('play'))));
-	    } else if (this.state.page === 'SHOW_BOARD_SIZE') {
-	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play', size: '19', click: this.selectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play', size: '13', click: this.selectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.selectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
-	          _this.setState({ page: 'MAIN_MENU' });
-	        } }, this.span('Back')));
-	    } else if (this.state.page === 'SHOW_LEARDERBOARDS') {
-	      var list = this.state.leaderboards.map(function (l) {
-	        return _this.div({ class: 'player ' + (l.userID === _this.props.playerID ? 'me' : '') }, _this.p({ class: 'ID' }, 'ID: ', _this.span(l.userID)), _this.p({ class: 'MMR' }, l.MMR));
-	      });
-	      return this.div({ class: 'leaderboards' }, this.p({ class: 'title' }, 'Your MMR is ', this.span(this.props.MMR)), this.div({ class: 'list' }, list), this.div({ class: 'btn', click: function click() {
-	          _this.setState({ page: 'MAIN_MENU' });
-	        } }, this.span('Back')));
-	    } else {
-	      // if (this.state.page === 'MAIN_MENU') {
-	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Go! ' + this.props.playerID), this.div({ class: 'button private-match',
-	        click: function click() {
-	          _this.setState({ page: 'SHOW_BOARD_SIZE' });
-	        } }, this.span('Private Match')), this.div({ class: 'button public-match' }, this.span('Public Match')), this.div({ class: 'button' }, this.span('Ranked Match')), this.div({ class: 'button', click: this.showLeaderboards.bind(this) }, this.span('Leaderboards')));
-	    }
-	  }
-	});
-
-	exports.default = Menu;
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _Simple = __webpack_require__(2);
-
-	var _Simple2 = _interopRequireDefault(_Simple);
-
-	var _emitter = __webpack_require__(6);
-
-	var _emitter2 = _interopRequireDefault(_emitter);
-
-	var _board = __webpack_require__(15);
-
-	var _board2 = _interopRequireDefault(_board);
-
-	var _board_menu = __webpack_require__(16);
-
-	var _board_menu2 = _interopRequireDefault(_board_menu);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Match = _Simple2.default.Component({
-	  emitter: _emitter2.default,
-	  getDefaultProps: function getDefaultProps() {
-	    return { board: null, messages: [] };
-	  },
-	  init: function init() {
-	    this.emit('match-register-self');
-	  },
-	  // componentDidMount doesn't work
-	  render: function render() {
-	    return this.div({ class: 'match' }, (0, _board2.default)({ board: this.props.board }), (0, _board_menu2.default)({ board: this.props.board, messages: this.props.messages }));
-	  }
-	});
-
-	exports.default = Match;
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _Simple = __webpack_require__(2);
-
-	var _Simple2 = _interopRequireDefault(_Simple);
-
-	var _emitter = __webpack_require__(6);
-
-	var _emitter2 = _interopRequireDefault(_emitter);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Stone = _Simple2.default.Component({});
-
-	var GridTouch = _Simple2.default.Component({
-	  emitter: _emitter2.default,
-	  init: function init() {
-	    this.state = {
-	      hover: false,
-	      showIcon: false
-	    };
-	  },
-	  onClick: function onClick() {
-	    var row = this.props.row,
-	        col = this.props.col,
-	        board = this.props.board;
-
-	    this.emit('board-put-stone', { row: row, col: col });
-	  },
-
-	  onMouseEnter: function onMouseEnter() {
-	    this.setState({ hover: true });
-	  },
-
-	  onMouseLeave: function onMouseLeave() {
-	    this.setState({ hover: false });
-	  },
-
-	  render: function render() {
-	    var row = this.props.row,
-	        col = this.props.col,
-	        gridSize = this.props.gridSize,
-	        board = this.props.board;
-
-	    var style = {
-	      width: gridSize,
-	      height: gridSize
-	    };
-
-	    // background: 'rgba(88, 149, 40, 0.5)'
-	    if (row < board.size - 1 && col < board.size - 1) {
-	      style.left = -gridSize / 2;
-	      style.top = -gridSize / 2;
-	    } else if (row === board.size - 1 && col === board.size - 1) {
-	      style.right = -gridSize / 2;
-	      style.bottom = -gridSize / 2;
-	    } else if (row === board.size - 1) {
-	      style.left = -gridSize / 2;
-	      style.bottom = -gridSize / 2;
-	    } else if (col === board.size - 1) {
-	      style.right = -gridSize / 2;
-	      style.top = -gridSize / 2;
-	    }
-
-	    if (board.board[row][col]) {
-	      var s = board.board[row][col];
-	      style.backgroundImage = 'url("' + s.image + '")';
-	      style.borderRadius = gridSize + 'px';
-
-	      var mark = null;
-	      if (board.lastMove && board.lastMove[0] === row && board.lastMove[1] === col) {
-	        mark = this.div({ class: s.color === 'black' ? 'mark-w' : 'mark-b',
-	          style: {
-	            width: gridSize,
-	            height: gridSize
-	          } });
-	      }
-
-	      return this.div({ class: 'stone ' + s.color,
-	        style: style }, mark);
-	    }
-
-	    if (this.state.showIcon) {
-	      return this.div({ class: this.state.showIcon,
-	        style: style });
-	    }
-
-	    var dot = null;
-
-	    if (board.size === 9) {
-	      if ((row === 2 || row === 6) && (col === 2 || col === 6) || row === 4 && col === 4) {
-	        dot = this.div({ class: 'dot' });
-	      }
-	    }
-
-	    if (board.size === 13) {
-	      if ((row === 3 || row === 9) && (col === 3 || col === 9) || row === 6 && col === 6) {
-	        dot = this.div({ class: 'dot' });
-	      }
-	    }
-
-	    if (board.size === 19) {
-	      if ((row === 3 || row === 9 || row === 15) && (col === 3 || col === 9 || col === 15) || row === 9 && col === 9) {
-	        dot = this.div({ class: 'dot dot-19' });
-	      }
-	    }
-
-	    return this.div({ class: 'grid-touch',
-	      style: style,
-	      click: this.onClick.bind(this),
-	      mouseenter: this.onMouseEnter.bind(this),
-	      mouseleave: this.onMouseLeave.bind(this) }, dot, this.state.hover && board.isMyTurn() ? this.div({ class: 'stone ' + (board.turn % 2 === 0 ? 'black' : 'white'),
-	      style: {
-	        width: gridSize,
-	        height: gridSize,
-	        borderRadius: gridSize + 'px',
-	        backgroundImage: 'url("' + board.getStoneImage() + '")',
-	        opacity: 0.5
-	      } }) : null);
-	  }
-	});
-
-	var GridRow = _Simple2.default.Component({
-	  render: function render() {
-	    var row = this.props.row,
-	        i = row,
-	        board = this.props.board,
-	        boardSize = 664 - 96,
-	        gridSize = boardSize / (board.size - 1);
-
-	    var grids = [];
-	    for (var j = 0; j < board.size - 1; j++) {
-	      grids.push(this.div({ style: { width: gridSize, height: gridSize }, class: 'grid' }, GridTouch({ row: i, col: j, gridSize: gridSize, board: board }), j === board.size - 2 ? GridTouch({ row: i, col: j + 1, gridSize: gridSize, board: board }) : null, i === board.size - 2 ? GridTouch({ row: i + 1, col: j, gridSize: gridSize, board: board }) : null, i === board.size - 2 && j === board.size - 2 ? GridTouch({ row: i + 1, col: j + 1, gridSize: gridSize, board: board }) : null));
-	    }
-	    return this.div({ class: 'grid-row' }, grids);
-	  }
-	});
-
-	var Board = _Simple2.default.Component({
-	  emitter: _emitter2.default,
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      board: null
-	    };
-	  },
-	  init: function init() {
-	    this.emit('board-register-self');
-	  },
-	  render: function render() {
-	    var board = this.props.board;
-
-	    var gridRow = [];
-	    for (var i = 0; i < board.size - 1; i++) {
-	      gridRow.push(GridRow({ row: i, board: board }));
-	    }
-	    return this.div({ class: 'board' }, gridRow);
-	  }
-	});
-
-	exports.default = Board;
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _Simple = __webpack_require__(2);
-
-	var _Simple2 = _interopRequireDefault(_Simple);
-
-	var _chat = __webpack_require__(17);
-
-	var _chat2 = _interopRequireDefault(_chat);
-
-	var _emitter = __webpack_require__(6);
-
-	var _emitter2 = _interopRequireDefault(_emitter);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Card = _Simple2.default.Component(function (_ref) {
-	  var board = _ref.board;
-	  var color = _ref.color;
-
-	  return this.div({ class: 'card ' + color + ' ' + (board.getColorForCurrentTurn() === color ? 'this-turn' : '') }, this.div({ class: 'profile-image' }), this.p({ class: 'name' }, board.playerColor === color ? board.playerID : board.opponentID), board.playerColor === color ? board.isMyTurn() ? this.div({ class: 'button-group' }, this.div({ class: 'pass' }, this.div({ class: 'btn pass-btn', click: function click() {
-	      _emitter2.default.emit('pass');
-	    } }, 'Pass')), this.div({ class: 'resign' }, this.div({ class: 'btn resign-btn', click: function click() {
-	      _emitter2.default.emit('resign');
-	    } }, 'Resign'))) : this.div({ class: 'button-group' }, color === 'black' ? 'White to move' : 'Black to move') : null);
-	});
-
-	/**
-	 * Require props:
-	 * 		playerID
-	 * 		opponentID
-	 * 		board
-	 */
-	var BoardMenu = _Simple2.default.Component({
-	  getDefaultProps: function getDefaultProps() {
-	    return { messages: [] };
-	  },
-	  render: function render() {
-	    return this.div({ class: 'board-menu' }, this.div({ class: 'players' }, this.div({ class: 'player' }, Card({ board: this.props.board, color: 'black' })), this.div({ class: 'player' }, Card({ board: this.props.board, color: 'white' }))), (0, _chat2.default)({ playerID: this.props.board.playerID,
-	      opponentID: this.props.board.opponentID,
-	      messages: this.props.messages }));
-	  }
-	});
-
-	exports.default = BoardMenu;
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _Simple = __webpack_require__(2);
-
-	var _Simple2 = _interopRequireDefault(_Simple);
-
-	var _emitter = __webpack_require__(6);
-
-	var _emitter2 = _interopRequireDefault(_emitter);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Message = _Simple2.default.Component(function (props) {
-	  var id = props.id,
-	      message = props.message,
-	      me = props.me;
-	  return this.div({ class: 'message-box ' + (me ? 'me' : '') }, this.p({ class: 'id' }, id + ':'), this.p({ class: 'message' }, message));
-	});
-
-	/**
-	 *
-	 * Require props:
-	 * 		playerID
-	 *   	opponentID
-	 *   	messages
-	 */
-	var Chat = _Simple2.default.Component({
-	  emitter: _emitter2.default,
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      messages: []
-	    };
-	  },
-	  init: function init() {
-	    this.emit('chat-register-self');
-	  },
-	  onInput: function onInput(e) {
-	    if (e.which === 13) {
-	      var message = e.target.value.trim();
-	      if (!message) return;
-	      this.emit('send-message', { message: message });
-	      e.target.value = '';
-	    }
-	  },
-
-	  render: function render() {
-	    var messagesDom = [];
-	    for (var i = this.props.messages.length - 1; i >= 0; i--) {
-	      messagesDom.push(Message(this.props.messages[i]));
-	    }
-	    return this.div({ class: 'chat-div' }, this.div({ class: 'chat-content' }, messagesDom), this.div({ class: 'input-box' }, this.input({ placeholder: 'enter your chat message here',
-	      keypress: this.onInput.bind(this) })));
-	  }
-	});
-
-	exports.default = Chat;
-
-/***/ },
-/* 18 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2285,6 +1890,558 @@
 	}();
 
 	exports.default = Stone;
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Simple = __webpack_require__(1);
+
+	var _Simple2 = _interopRequireDefault(_Simple);
+
+	var _emitter = __webpack_require__(6);
+
+	var _emitter2 = _interopRequireDefault(_emitter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Signup_Login = _Simple2.default.Component({
+	  emitter: _emitter2.default,
+	  init: function init() {
+	    this.state = { showLogin: true };
+	  },
+	  render: function render() {
+	    var _this = this;
+
+	    return this.div({ class: 'signup-login-page' }, this.div({ class: 'container' }, this.div({ class: 'email field' }, this.input({ placeholder: 'Email', ref: 'email' })), this.div({ class: 'userID field ' + (this.state.showLogin ? 'hide' : 'show') }, this.input({ placeholder: 'User ID', ref: 'userID' })), this.div({ class: 'password field' }, this.input({ placeholder: 'Password', type: 'password', ref: 'password' })), this.div({ class: 'go', click: this.go.bind(this) }, 'Go'), this.a({ class: 'switch', click: function click() {
+	        _this.setState({ showLogin: !_this.state.showLogin });
+	      } }, this.state.showLogin ? 'Don\'t have account yet? Click me' : 'Already have an account? Click me')));
+	  },
+	  go: function go() {
+	    var email = this.refs.email.value,
+	        userID = this.refs.userID.value,
+	        password = this.refs.password.value;
+
+	    if (this.state.showLogin) {
+	      // login
+	      // missing information
+	      if (!email.length || !password.length) {
+	        return;
+	      }
+
+	      this.emit('login', { email: email, password: password });
+	    } else {
+	      // missing information
+	      if (!email.length || !userID.length || !password.length) {
+	        return;
+	      }
+
+	      this.emit('signup', { email: email, userID: userID, password: password });
+	    }
+	  }
+	});
+
+	exports.default = Signup_Login;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Simple = __webpack_require__(1);
+
+	var _Simple2 = _interopRequireDefault(_Simple);
+
+	var _emitter = __webpack_require__(6);
+
+	var _emitter2 = _interopRequireDefault(_emitter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Menu = _Simple2.default.Component({
+	  emitter: _emitter2.default,
+	  getDefaultProps: function getDefaultProps() {
+	    return { playerID: null, MMR: 0 };
+	  },
+	  init: function init() {
+	    /**
+	     *  MAIN_MENU
+	     *  SHOW_BOARD_SIZE
+	     *  SHOW_MATCH_OPTIONS
+	     *  SHOW_LEARDERBOARDS
+	     *  SHOW_RANKED_MATCH
+	     *  RANKED_MATCH_FINDING_GAME
+	     */
+	    this.state = { page: 'MAIN_MENU',
+	      size: null,
+	      color: 'black',
+	      komi: 5.5,
+	      opponentID: '',
+	      leaderboards: [],
+	      time: 0 };
+	  },
+
+	  selectBoardSize: function selectBoardSize(size, e) {
+	    e.stopPropagation();
+	    e.preventDefault();
+	    this.state.size = size;
+	    this.setState({ page: 'SHOW_MATCH_OPTIONS' });
+	  },
+	  rankedSelectBoardSize: function rankedSelectBoardSize(size) {
+	    var _this = this;
+
+	    this.emit('start-finding-ranked-match', { playerID: this.props.playerID, MMR: this.props.MMR, size: size });
+
+	    this.setState({ page: 'RANKED_MATCH_FINDING_GAME' });
+
+	    var time = 0;
+	    this.interval = setInterval(function () {
+	      time += 1;
+	      _this.setState({ time: time });
+	    }, 1000);
+	  },
+	  stopFindingRankedMatch: function stopFindingRankedMatch() {
+	    this.emit('stop-finding-ranked-match', { playerID: this.props.playerID });
+
+	    clearInterval(this.interval);
+	    this.setState({ page: 'SHOW_RANKED_MATCH', time: 0 });
+	  },
+	  stopTimer: function stopTimer() {
+	    clearInterval(this.interval);
+	  },
+	  selectColor: function selectColor(color) {
+	    this.setState({ color: color });
+	  },
+	  showBoardSize: function showBoardSize(e) {
+	    e.stopPropagation();
+	    e.preventDefault();
+	    this.setState({ page: 'SHOW_BOARD_SIZE' });
+	  },
+	  play: function play(mode) {
+	    console.log(mode, this.refs.komi.value);
+	    var komi = this.refs.komi.value;
+
+	    if (isNaN(komi) || komi.trim() === '') {
+	      toastr.warning('komi ' + komi + ' is an invalid number');
+	      return;
+	    }
+
+	    komi = Number(komi);
+
+	    var opponentID = this.refs.opponentID.value;
+	    if (!opponentID) {
+	      toastr.warning('please enter opponent ID');
+	      return;
+	    }
+
+	    this.state.komi = komi;
+	    this.state.opponentID = opponentID;
+
+	    var size = this.state.size,
+	        color = this.state.color;
+
+	    if (color === 'random') {
+	      if (Math.random() < 0.5) {
+	        color = 'black';
+	      } else {
+	        color = 'white';
+	      }
+	    }
+
+	    this.emit('find-private-match', { opponentID: opponentID, size: size, color: color, komi: komi });
+	  },
+
+	  showLeaderboards: function showLeaderboards() {
+	    this.emit('request-top-50-players');
+	    this.setState({ page: 'SHOW_LEARDERBOARDS' });
+	  },
+
+	  showRankedMatch: function showRankedMatch() {
+	    this.setState({ page: 'SHOW_RANKED_MATCH' });
+	  },
+
+	  MMRNotHightEnough: function MMRNotHightEnough() {
+	    toastr.warning('Sorry, you MMR ' + this.props.MMR + ' is not high enough to challenge this board size');
+	  },
+
+	  render: function render() {
+	    var _this2 = this;
+
+	    if (this.state.page === 'SHOW_MATCH_OPTIONS') {
+	      return this.div({ class: 'menu' }, this.div({ class: 'pick-opponent' }, this.p({ class: 'title' }, 'Opponent ID'), this.input({ placeholder: 'opponent id here', value: this.state.opponentID, ref: 'opponentID', input: function input() {
+	          _this2.state.opponentID = _this2.refs.opponentID.value;
+	        } })), this.div({ class: 'pick-color' }, this.p({ class: 'title' }, 'Your Color'), this.div({ class: 'color-group' }, this.div({ class: 'black color ' + (this.state.color === 'black' ? 'selected' : ''), click: this.selectColor.bind(this, 'black') }, this.span('Black')), this.div({ class: 'white color ' + (this.state.color === 'white' ? 'selected' : ''), click: this.selectColor.bind(this, 'white') }, this.span('White')), this.div({ class: 'random color ' + (this.state.color === 'random' ? 'selected' : ''), click: this.selectColor.bind(this, 'random') }, this.span('Random')))), this.div({ class: 'pick-komi' }, this.p({ class: 'title' }, 'Komi'), this.input({ value: this.state.komi, ref: 'komi' })), this.div({ class: 'bottom-button-group' }, this.div({ class: 'small-btn', click: this.showBoardSize.bind(this) }, this.span('back')), this.div({ class: 'small-btn play', click: this.play.bind(this, 'private') }, this.span('play'))));
+	    } else if (this.state.page === 'SHOW_BOARD_SIZE') {
+	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play', size: '19', click: this.selectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play', size: '13', click: this.selectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.selectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
+	          _this2.setState({ page: 'MAIN_MENU' });
+	        } }, this.span('Back')));
+	    } else if (this.state.page === 'SHOW_LEARDERBOARDS') {
+	      var list = this.state.leaderboards.map(function (l) {
+	        return _this2.div({ class: 'player ' + (l.userID === _this2.props.playerID ? 'me' : '') }, _this2.p({ class: 'ID' }, 'ID: ', _this2.span(l.userID)), _this2.p({ class: 'MMR' }, l.MMR));
+	      });
+	      return this.div({ class: 'leaderboards' }, this.p({ class: 'title' }, 'Your MMR is ', this.span(this.props.MMR)), this.div({ class: 'list' }, list), this.div({ class: 'btn', click: function click() {
+	          _this2.setState({ page: 'MAIN_MENU' });
+	        } }, this.span('Back')));
+	    } else if (this.state.page === 'SHOW_RANKED_MATCH') {
+	      return this.div({ class: 'menu ranked' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play' + (this.props.MMR < 1600 ? ' locked' : ''), size: '19', click: this.props.MMR < 1600 ? this.MMRNotHightEnough.bind(this) : this.rankedSelectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play' + (this.props.MMR < 1300 ? ' locked' : ''), size: '13', click: this.props.MMR < 1300 ? this.MMRNotHightEnough.bind(this) : this.rankedSelectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.rankedSelectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
+	          _this2.setState({ page: 'MAIN_MENU' });
+	        } }, this.span('Back')));
+	    } else if (this.state.page === 'RANKED_MATCH_FINDING_GAME') {
+	      return this.div({ class: 'menu ranked' }, this.p({ style: 'font-size: 32px;' }, 'Finding Match ...'), this.p({ style: 'font-size: 18px; margin-left: 32px;' }, this.state.time + 's'), this.div({ click: this.stopFindingRankedMatch.bind(this), style: 'padding: 12px; border: 2px solid white; width: 143px; text-align: center; margin-top: 32px; cursor: pointer;' }, 'Stop Finding Match'));
+	    } else {
+	      // if (this.state.page === 'MAIN_MENU') {
+	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Go! ' + this.props.playerID), this.div({ class: 'button private-match',
+	        click: function click() {
+	          _this2.setState({ page: 'SHOW_BOARD_SIZE' });
+	        } }, this.span('Private Match')), this.div({ class: 'button public-match' }, this.span('Public Match')), this.div({ class: 'button', click: this.showRankedMatch.bind(this) }, this.span('Ranked Match')), this.div({ class: 'button', click: this.showLeaderboards.bind(this) }, this.span('Leaderboards')));
+	    }
+	  }
+	});
+
+	exports.default = Menu;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Simple = __webpack_require__(1);
+
+	var _Simple2 = _interopRequireDefault(_Simple);
+
+	var _emitter = __webpack_require__(6);
+
+	var _emitter2 = _interopRequireDefault(_emitter);
+
+	var _board = __webpack_require__(16);
+
+	var _board2 = _interopRequireDefault(_board);
+
+	var _board_menu = __webpack_require__(17);
+
+	var _board_menu2 = _interopRequireDefault(_board_menu);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Match = _Simple2.default.Component({
+	  emitter: _emitter2.default,
+	  getDefaultProps: function getDefaultProps() {
+	    return { board: null, messages: [] };
+	  },
+	  init: function init() {
+	    this.emit('match-register-self');
+	  },
+	  // componentDidMount doesn't work
+	  render: function render() {
+	    return this.div({ class: 'match' }, (0, _board2.default)({ board: this.props.board }), (0, _board_menu2.default)({ board: this.props.board, messages: this.props.messages }));
+	  }
+	});
+
+	exports.default = Match;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Simple = __webpack_require__(1);
+
+	var _Simple2 = _interopRequireDefault(_Simple);
+
+	var _emitter = __webpack_require__(6);
+
+	var _emitter2 = _interopRequireDefault(_emitter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Stone = _Simple2.default.Component({});
+
+	var GridTouch = _Simple2.default.Component({
+	  emitter: _emitter2.default,
+	  init: function init() {
+	    this.state = {
+	      hover: false,
+	      showIcon: false
+	    };
+	  },
+	  onClick: function onClick() {
+	    var row = this.props.row,
+	        col = this.props.col,
+	        board = this.props.board;
+
+	    this.emit('board-put-stone', { row: row, col: col });
+	  },
+
+	  onMouseEnter: function onMouseEnter() {
+	    this.setState({ hover: true });
+	  },
+
+	  onMouseLeave: function onMouseLeave() {
+	    this.setState({ hover: false });
+	  },
+
+	  render: function render() {
+	    var row = this.props.row,
+	        col = this.props.col,
+	        gridSize = this.props.gridSize,
+	        board = this.props.board;
+
+	    var style = {
+	      width: gridSize,
+	      height: gridSize
+	    };
+
+	    // background: 'rgba(88, 149, 40, 0.5)'
+	    if (row < board.size - 1 && col < board.size - 1) {
+	      style.left = -gridSize / 2;
+	      style.top = -gridSize / 2;
+	    } else if (row === board.size - 1 && col === board.size - 1) {
+	      style.right = -gridSize / 2;
+	      style.bottom = -gridSize / 2;
+	    } else if (row === board.size - 1) {
+	      style.left = -gridSize / 2;
+	      style.bottom = -gridSize / 2;
+	    } else if (col === board.size - 1) {
+	      style.right = -gridSize / 2;
+	      style.top = -gridSize / 2;
+	    }
+
+	    if (board.board[row][col]) {
+	      var s = board.board[row][col];
+	      style.backgroundImage = 'url("' + s.image + '")';
+	      style.borderRadius = gridSize + 'px';
+
+	      var mark = null;
+	      if (board.lastMove && board.lastMove[0] === row && board.lastMove[1] === col) {
+	        mark = this.div({ class: s.color === 'black' ? 'mark-w' : 'mark-b',
+	          style: {
+	            width: gridSize,
+	            height: gridSize
+	          } });
+	      }
+
+	      return this.div({ class: 'stone ' + s.color,
+	        style: style }, mark);
+	    }
+
+	    if (this.state.showIcon) {
+	      return this.div({ class: this.state.showIcon,
+	        style: style });
+	    }
+
+	    var dot = null;
+
+	    if (board.size === 9) {
+	      if ((row === 2 || row === 6) && (col === 2 || col === 6) || row === 4 && col === 4) {
+	        dot = this.div({ class: 'dot' });
+	      }
+	    }
+
+	    if (board.size === 13) {
+	      if ((row === 3 || row === 9) && (col === 3 || col === 9) || row === 6 && col === 6) {
+	        dot = this.div({ class: 'dot' });
+	      }
+	    }
+
+	    if (board.size === 19) {
+	      if ((row === 3 || row === 9 || row === 15) && (col === 3 || col === 9 || col === 15) || row === 9 && col === 9) {
+	        dot = this.div({ class: 'dot dot-19' });
+	      }
+	    }
+
+	    return this.div({ class: 'grid-touch',
+	      style: style,
+	      click: this.onClick.bind(this),
+	      mouseenter: this.onMouseEnter.bind(this),
+	      mouseleave: this.onMouseLeave.bind(this) }, dot, this.state.hover && board.isMyTurn() ? this.div({ class: 'stone ' + (board.turn % 2 === 0 ? 'black' : 'white'),
+	      style: {
+	        width: gridSize,
+	        height: gridSize,
+	        borderRadius: gridSize + 'px',
+	        backgroundImage: 'url("' + board.getStoneImage() + '")',
+	        opacity: 0.5
+	      } }) : null);
+	  }
+	});
+
+	var GridRow = _Simple2.default.Component({
+	  render: function render() {
+	    var row = this.props.row,
+	        i = row,
+	        board = this.props.board,
+	        boardSize = 664 - 96,
+	        gridSize = boardSize / (board.size - 1);
+
+	    var grids = [];
+	    for (var j = 0; j < board.size - 1; j++) {
+	      grids.push(this.div({ style: { width: gridSize, height: gridSize }, class: 'grid' }, GridTouch({ row: i, col: j, gridSize: gridSize, board: board }), j === board.size - 2 ? GridTouch({ row: i, col: j + 1, gridSize: gridSize, board: board }) : null, i === board.size - 2 ? GridTouch({ row: i + 1, col: j, gridSize: gridSize, board: board }) : null, i === board.size - 2 && j === board.size - 2 ? GridTouch({ row: i + 1, col: j + 1, gridSize: gridSize, board: board }) : null));
+	    }
+	    return this.div({ class: 'grid-row' }, grids);
+	  }
+	});
+
+	var Board = _Simple2.default.Component({
+	  emitter: _emitter2.default,
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      board: null
+	    };
+	  },
+	  init: function init() {
+	    this.emit('board-register-self');
+	  },
+	  render: function render() {
+	    var board = this.props.board;
+
+	    var gridRow = [];
+	    for (var i = 0; i < board.size - 1; i++) {
+	      gridRow.push(GridRow({ row: i, board: board }));
+	    }
+	    return this.div({ class: 'board' }, gridRow);
+	  }
+	});
+
+	exports.default = Board;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Simple = __webpack_require__(1);
+
+	var _Simple2 = _interopRequireDefault(_Simple);
+
+	var _chat = __webpack_require__(18);
+
+	var _chat2 = _interopRequireDefault(_chat);
+
+	var _emitter = __webpack_require__(6);
+
+	var _emitter2 = _interopRequireDefault(_emitter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Card = _Simple2.default.Component(function (_ref) {
+	  var board = _ref.board;
+	  var color = _ref.color;
+
+	  return this.div({ class: 'card ' + color + ' ' + (board.getColorForCurrentTurn() === color ? 'this-turn' : '') }, this.div({ class: 'profile-image' }), this.p({ class: 'name' }, board.playerColor === color ? board.playerID : board.opponentID), board.playerColor === color ? board.isMyTurn() ? this.div({ class: 'button-group' }, this.div({ class: 'pass' }, this.div({ class: 'btn pass-btn', click: function click() {
+	      _emitter2.default.emit('pass');
+	    } }, 'Pass')), this.div({ class: 'resign' }, this.div({ class: 'btn resign-btn', click: function click() {
+	      _emitter2.default.emit('resign');
+	    } }, 'Resign'))) : this.div({ class: 'button-group' }, color === 'black' ? 'White to move' : 'Black to move') : null);
+	});
+
+	/**
+	 * Require props:
+	 * 		playerID
+	 * 		opponentID
+	 * 		board
+	 */
+	var BoardMenu = _Simple2.default.Component({
+	  getDefaultProps: function getDefaultProps() {
+	    return { messages: [] };
+	  },
+	  render: function render() {
+	    return this.div({ class: 'board-menu' }, this.div({ class: 'players' }, this.div({ class: 'player' }, Card({ board: this.props.board, color: 'black' })), this.div({ class: 'player' }, Card({ board: this.props.board, color: 'white' }))), (0, _chat2.default)({ playerID: this.props.board.playerID,
+	      opponentID: this.props.board.opponentID,
+	      messages: this.props.messages }));
+	  }
+	});
+
+	exports.default = BoardMenu;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _Simple = __webpack_require__(1);
+
+	var _Simple2 = _interopRequireDefault(_Simple);
+
+	var _emitter = __webpack_require__(6);
+
+	var _emitter2 = _interopRequireDefault(_emitter);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Message = _Simple2.default.Component(function (props) {
+	  var id = props.id,
+	      message = props.message,
+	      me = props.me;
+	  return this.div({ class: 'message-box ' + (me ? 'me' : '') }, this.p({ class: 'id' }, id + ':'), this.p({ class: 'message' }, message));
+	});
+
+	/**
+	 *
+	 * Require props:
+	 * 		playerID
+	 *   	opponentID
+	 *   	messages
+	 */
+	var Chat = _Simple2.default.Component({
+	  emitter: _emitter2.default,
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      messages: []
+	    };
+	  },
+	  init: function init() {
+	    this.emit('chat-register-self');
+	  },
+	  onInput: function onInput(e) {
+	    if (e.which === 13) {
+	      var message = e.target.value.trim();
+	      if (!message) return;
+	      this.emit('send-message', { message: message });
+	      e.target.value = '';
+	    }
+	  },
+
+	  render: function render() {
+	    var messagesDom = [];
+	    for (var i = this.props.messages.length - 1; i >= 0; i--) {
+	      messagesDom.push(Message(this.props.messages[i]));
+	    }
+	    return this.div({ class: 'chat-div' }, this.div({ class: 'chat-content' }, messagesDom), this.div({ class: 'input-box' }, this.input({ placeholder: 'enter your chat message here',
+	      keypress: this.onInput.bind(this) })));
+	  }
+	});
+
+	exports.default = Chat;
 
 /***/ }
 /******/ ]);

@@ -2,16 +2,18 @@ import History from './history.js'
 import Stone from './stone.js'
 
 import socketAPI from '../api/socket_api.js'
+import userAPI from '../api/user_api.js'
 
 // go board class
 class Board {
   // 9x9 13x13 19x19
-  constructor({size, playerColor, playerID, opponentID, komi}) {
+  constructor({size, playerColor, playerID, opponentID, komi, ranked}) {
     this.size = size || 19
     this.playerColor = playerColor || 'black'
     this.playerID = playerID || null
     this.opponentID = opponentID || null
     this.komi = komi || 0
+    this.ranked = ranked || false
 
     this.board = []
 
@@ -153,6 +155,24 @@ class Board {
 
     /**toastr.success**/alert(`white score: ${whiteScore}+${this.komi}=${whiteScore+this.komi}, black score: ${blackScore}`)
 
+    if (this.ranked) {
+      let w = whiteScore + this.komi,
+          b = blackScore
+      if (this.playerColor === 'white') {
+        if (w < b) { // lose
+          userAPI.lose({playerID: this.playerID, opponentID: this.opponentID})
+        } else if (w > b) { // win
+          userAPI.win({playerID: this.playerID, opponentID: this.opponentID})
+        }
+      } else {
+        if (b < w) { // lose
+          userAPI.lose({playerID: this.playerID, opponentID: this.opponentID})
+        } else if (b > w) { // win
+          userAPI.win({playerID: this.playerID, opponentID: this.opponentID})
+        }
+      }
+    }
+
     location.reload()
   }
 
@@ -176,11 +196,19 @@ class Board {
     socketAPI.resign(this.playerID, this.opponentID)
     /**toastr.info**/alert('You resigned')
 
+    if (this.ranked) {
+      userAPI.lose({playerID: this.playerID, opponentID: this.opponentID})
+    }
+
     location.reload()
   }
 
   opponentResign() {
     /**toastr.info**/alert('Opponent ' + this.opponentID + ' resigned')
+
+    if (this.ranked) {
+      userAPI.win({playerID: this.playerID, opponentID: this.opponentID})
+    }
 
     location.reload()
   }

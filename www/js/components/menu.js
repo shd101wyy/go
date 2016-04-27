@@ -4,7 +4,7 @@ import emitter from '../emitters/emitter.js'
 let Menu = Simple.Component({
   emitter: emitter,
   getDefaultProps: function() {
-    return {playerID: null}
+    return {playerID: null, MMR: 0}
   },
   init: function() {
     /**
@@ -12,13 +12,16 @@ let Menu = Simple.Component({
      *  SHOW_BOARD_SIZE
      *  SHOW_MATCH_OPTIONS
      *  SHOW_LEARDERBOARDS
+     *  SHOW_RANKED_MATCH
+     *  RANKED_MATCH_FINDING_GAME
      */
     this.state = {  page: 'MAIN_MENU',
                     size: null,
                     color: 'black',
                     komi: 5.5,
                     opponentID: '',
-                    leaderboards: []}
+                    leaderboards: [],
+                    time: 0}
   },
 
   selectBoardSize: function(size, e) {
@@ -26,8 +29,26 @@ let Menu = Simple.Component({
     e.preventDefault()
     this.state.size = size
     this.setState({page: 'SHOW_MATCH_OPTIONS'})
-    // let opponentID = prompt('enter opponent id')
-    // this.emit('find-private-match', {opponentID, size})
+  },
+  rankedSelectBoardSize: function(size) {
+    this.emit('start-finding-ranked-match', {playerID: this.props.playerID, MMR: this.props.MMR, size})
+
+    this.setState({page: 'RANKED_MATCH_FINDING_GAME'})
+
+    let time = 0
+    this.interval = setInterval(()=> {
+      time += 1
+      this.setState({time})
+    }, 1000)
+  },
+  stopFindingRankedMatch: function() {
+    this.emit('stop-finding-ranked-match', {playerID: this.props.playerID})
+
+    clearInterval(this.interval)
+    this.setState({page: 'SHOW_RANKED_MATCH', time: 0})
+  },
+  stopTimer: function() {
+    clearInterval(this.interval)
   },
   selectColor: function(color) {
     this.setState({color})
@@ -76,6 +97,14 @@ let Menu = Simple.Component({
     this.setState({page: 'SHOW_LEARDERBOARDS'})
   },
 
+  showRankedMatch: function() {
+    this.setState({page: 'SHOW_RANKED_MATCH'})
+  },
+
+  MMRNotHightEnough: function() {
+    toastr.warning('Sorry, you MMR ' + this.props.MMR + ' is not high enough to challenge this board size')
+  },
+
   render: function() {
     if (this.state.page === 'SHOW_MATCH_OPTIONS') {
       return this.div({class: 'menu'},
@@ -119,6 +148,22 @@ let Menu = Simple.Component({
               this.div({class: 'list'}, list),
               this.div({class: 'btn', click: ()=> {this.setState({page: 'MAIN_MENU'})}}, this.span('Back')))
 
+    } else if (this.state.page === 'SHOW_RANKED_MATCH') {
+      return this.div({class: 'menu ranked'},
+               this.p({class: 'menu-title'}, 'Board Size'),
+               this.div({class: 'button play' + (this.props.MMR < 1600 ? ' locked' : '' ), size: '19', click: (this.props.MMR < 1600 ? this.MMRNotHightEnough.bind(this) : this.rankedSelectBoardSize.bind(this, 19))},
+                 this.span({size: '19'}, '19x19')),
+               this.div({class: 'button play' + (this.props.MMR < 1300 ? ' locked' : '' ), size: '13', click: (this.props.MMR < 1300 ? this.MMRNotHightEnough.bind(this) : this.rankedSelectBoardSize.bind(this, 13))},
+                 this.span({size: '13'}, '13x13')),
+               this.div({class: 'button play', size: '9', click: this.rankedSelectBoardSize.bind(this, 9)},
+                 this.span({size: '9'}, '9x9')),
+               this.div({class: 'button back', click: ()=> {this.setState({page: 'MAIN_MENU'})}},
+                 this.span('Back')))
+    } else if (this.state.page === 'RANKED_MATCH_FINDING_GAME') {
+      return this.div({class: 'menu ranked'},
+                this.p({style: 'font-size: 32px;'}, 'Finding Match ...'),
+                this.p({style: 'font-size: 18px; margin-left: 32px;'}, `${this.state.time}s`),
+                this.div({click: this.stopFindingRankedMatch.bind(this), style: 'padding: 12px; border: 2px solid white; width: 143px; text-align: center; margin-top: 32px; cursor: pointer;'}, 'Stop Finding Match'))
     } else {// if (this.state.page === 'MAIN_MENU') {
       return this.div({class: 'menu'},
                 this.p({class: 'menu-title'}, `Go! ${this.props.playerID}`),
@@ -127,7 +172,7 @@ let Menu = Simple.Component({
                   this.span('Private Match')),
                 this.div({class: 'button public-match'},
                   this.span('Public Match')),
-                this.div({class: 'button'},
+                this.div({class: 'button', click: this.showRankedMatch.bind(this)},
                   this.span('Ranked Match')),
                 this.div({class: 'button', click: this.showLeaderboards.bind(this)},
                   this.span('Leaderboards')))

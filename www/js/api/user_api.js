@@ -75,6 +75,58 @@ let userAPI = {
         if (callback) callback(null)
       }
     })
+  },
+
+  findRankedMatch: function({playerID, MMR, size}, callback) {
+    $.ajax('/find_ranked_match', {
+      type: 'POST',
+      dataType: 'json',
+      data: {playerID, MMR, size},
+      success: function(res) {
+        if (res) {
+          if (callback) callback(res)
+          else callback(null)
+        } else if (callback) {
+          callback(null)
+        }
+      },
+      error: function(res) {
+        if (callback) callback(null)
+      }
+    })
+  },
+
+  stopFindingRankedMatch: function({playerID}, callback) {
+    $.ajax('/stop_finding_ranked_match', {
+      type: 'POST',
+      dataType: 'json',
+      data: {playerID},
+      success: function(res) {
+        if (res) {
+          if (callback) callback(res)
+          else callback(null)
+        } else if (callback) {
+          callback(null)
+        }
+      },
+      error: function(res) {
+        if (callback) callback(null)
+      }
+    })
+  },
+
+  win: function({playerID, opponentID}) {
+    $.ajax('/win_ranked', {
+      type: 'POST',
+      dataType: 'json',
+      data: {playerID, opponentID}})
+  },
+
+  lose: function({playerID, opponentID}) {
+    $.ajax('/lose_ranked', {
+      type: 'POST',
+      dataType: 'json',
+      data: {playerID, opponentID}})
   }
 
 }

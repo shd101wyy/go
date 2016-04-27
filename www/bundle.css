@@ -169,6 +169,9 @@ body {
   padding: 48px;
   box-sizing: border-box;
 }
+.menu.ranked {
+  background-color: #792B2B;
+}
 .menu .menu-title {
   margin-top: 0;
   margin-bottom: 24px;
@@ -193,6 +196,16 @@ body {
   text-align: center;
   font-size: 28px;
   cursor: pointer;
+}
+.menu .button.locked {
+  background-color: #222;
+  color: white;
+}
+.menu .button.locked span {
+  text-decoration: line-through;
+}
+.menu .button.locked:hover {
+  background: #111;
 }
 .menu .button:hover {
   background: #E0EAF2;
