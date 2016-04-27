@@ -139,11 +139,6 @@
 	*/
 	$('.loading-screen').remove();
 
-	// window.gameManager = new GameManager()
-	// let board = new Board({size: 9})
-	//board.board[1][1] = {color: 'black'}
-	// board.score()
-
 	var game = (0, _game2.default)();
 	_Simple2.default.render((0, _game2.default)(), document.getElementById('game'));
 
@@ -472,23 +467,26 @@
 	    }
 
 	    // set attributes
-	    for (var i = 0; i < element.attributes.length; i++) {
-	      element.removeAttribute(element.attributes[i].name);
+	    // for (let i = 0; i < element.attributes.length; i++) {
+	    while (element.attributes.length > 0) {
+	      element.removeAttribute(element.attributes[0].name);
 	    }
 
 	    var eventsLength = 0,
 	        _eventListeners = element._eventListeners || {},
-	        events = {};
+	        events = {},
+	        findEvent = false;
 
 	    if (d.attributes) {
 	      for (var key in d.attributes) {
 	        var val = d.attributes[key];
 	        if (isNativeEvent(key)) {
+	          findEvent = true;
 	          if (_eventListeners[key] !== val) {
 	            removeEvent(element, key, _eventListeners[key]);
 	            addEvent(element, key, val);
-	            _eventListeners[key] = val;
-	            events[key] = true;
+	            // _eventListeners[key] = val
+	            events[key] = val;
 	          }
 	        } else if (key === 'ref') {
 	          this.owner.refs[val] = element;
@@ -506,29 +504,35 @@
 	      if (!events[_key]) {
 	        removeEvent(element, _key, _eventListeners[_key]);
 	      }
+	      _eventListeners = null;
+	    }
+	    if (findEvent) {
+	      element._eventListeners = events;
+	    } else {
+	      element._eventListeners = undefined;
 	    }
 
 	    // diff children
 	    if (element.children.length === d.children.length) {
-	      for (var _i = 0; _i < element.children.length; _i++) {
-	        d.children[_i]._render(element.children[_i], true);
+	      for (var i = 0; i < element.children.length; i++) {
+	        d.children[i]._render(element.children[i], true);
 	      }
 	    } else if (element.children.length > d.children.length) {
-	      var _i2 = 0;
-	      for (; _i2 < d.children.length; _i2++) {
-	        d.children[_i2]._render(element.children[_i2], true);
+	      var _i = 0;
+	      for (; _i < d.children.length; _i++) {
+	        d.children[_i]._render(element.children[_i], true);
 	      }
 	      while (element.children.length !== d.children.length) {
-	        element.removeChild(element.children[_i2]);
+	        element.removeChild(element.children[_i]);
 	      }
 	    } else {
 	      // if (element.children.length < d.children.length) {
-	      var _i3 = 0;
-	      for (; _i3 < element.children.length; _i3++) {
-	        d.children[_i3]._render(element.children[_i3], true);
+	      var _i2 = 0;
+	      for (; _i2 < element.children.length; _i2++) {
+	        d.children[_i2]._render(element.children[_i2], true);
 	      }
-	      for (; _i3 < d.children.length; _i3++) {
-	        element.appendChild(d.children[_i3]._initialRender());
+	      for (; _i2 < d.children.length; _i2++) {
+	        element.appendChild(d.children[_i2]._initialRender());
 	      }
 	    }
 	    return element;
@@ -550,7 +554,8 @@
 	};
 
 	SimpleDOM.prototype.generateDOM = function () {
-	  var _eventListeners = { _length: 0 };
+	  var _eventListeners = {},
+	      eventLength = 0;
 
 	  this.element = document.createElement(this.tagName);
 
@@ -564,7 +569,7 @@
 	      if (isNativeEvent(key)) {
 	        addEvent(this.element, key, val);
 	        _eventListeners[key] = val;
-	        _eventListeners._length += 1;
+	        eventLength += 1;
 	      } else if (key === 'ref') {
 	        this.owner.refs[val] = this.element;
 	      } else if (key === 'style' && val.constructor === Object) {
@@ -577,7 +582,7 @@
 	    }
 	  }
 
-	  if (_eventListeners._length) {
+	  if (eventLength) {
 	    this.element._eventListeners = _eventListeners; // HACK
 	  }
 
@@ -623,12 +628,12 @@
 	    function appendChildren(args) {
 	      var offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
-	      for (var _i4 = offset; _i4 < args.length; _i4++) {
-	        if (args[_i4]) {
-	          if (args[_i4].constructor === Array) {
-	            appendChildren(args[_i4]);
+	      for (var _i3 = offset; _i3 < args.length; _i3++) {
+	        if (args[_i3]) {
+	          if (args[_i3].constructor === Array) {
+	            appendChildren(args[_i3]);
 	          } else {
-	            children.push(args[_i4]);
+	            children.push(args[_i3]);
 	          }
 	        }
 	      }
@@ -961,11 +966,11 @@
 	};
 
 	socket.on('opponent-not-found', function (opponentID) {
-	  alert('opponent ' + opponentID + ' not found');
+	  toastr.warning('opponent ' + opponentID + ' not found');
 	});
 
 	socket.on('invitation-sent', function (opponentID) {
-	  alert('opponent ' + opponentID + ' not found');
+	  toastr.warning('opponent ' + opponentID + ' not found');
 	});
 
 	socket.on('receive-match-invitation', function (opponentID) {
@@ -996,12 +1001,16 @@
 	});
 
 	socket.on('opponent-disconnect', function (opponentID) {
-	  alert('opponent disconnect: ' + opponentID);
+	  toastr.warning('opponent disconnect: ' + opponentID);
 	});
 
 	socket.on('receive-message', function (opponentID, message) {
 	  console.log('receive message');
 	  _Simple2.default.Emitter.getEmitterById('emitter').emit('receive-message', { opponentID: opponentID, message: message });
+	});
+
+	socket.on('opponnet-in-game', function (opponentID) {
+	  toastr.warning(opponentID + ' is currently in the game.');
 	});
 
 	exports.default = socketAPI;
@@ -1116,7 +1125,7 @@
 
 	    _user_api2.default.signin(email, password, function (res) {
 	      if (!res) {
-	        alert('Failed to signin');
+	        toastr.error('Failed to signin');
 	      } else {
 	        _this2.state.playerID = res.userID;
 	        _socket_api2.default.userLoggedIn(_this2.state.playerID);
@@ -1134,7 +1143,7 @@
 
 	    _user_api2.default.signup(email, userID, password, function (res) {
 	      if (!res) {
-	        alert('Failed to signup');
+	        toastr.error('Failed to signup');
 	      } else {
 	        _this3.state.playerID = res.userID;
 	        _socket_api2.default.userLoggedIn(_this3.state.playerID);
@@ -1334,7 +1343,7 @@
 	      console.log(whiteScore);
 	      console.log(blackScore);
 
-	      alert('white score: ' + whiteScore + ', black score: ' + blackScore);
+	      /**toastr.success**/alert('white score: ' + whiteScore + ', black score: ' + blackScore);
 
 	      location.reload();
 	    }
@@ -1359,14 +1368,14 @@
 	    value: function resign() {
 	      console.log('resign');
 	      _socket_api2.default.resign(this.playerID, this.opponentID);
-	      alert('You resigned');
+	      /**toastr.info**/alert('You resigned');
 
 	      location.reload();
 	    }
 	  }, {
 	    key: 'opponentResign',
 	    value: function opponentResign() {
-	      alert('Opponent ' + this.opponentID + ' resigned');
+	      /**toastr.info**/alert('Opponent ' + this.opponentID + ' resigned');
 
 	      location.reload();
 	    }
@@ -1605,23 +1614,47 @@
 	    return { playerID: null };
 	  },
 	  init: function init() {
-	    this.state = { showBoardSize: false };
+	    /**
+	     *  MAIN_MENU
+	     *  SHOW_BOARD_SIZE
+	     *  SHOW_MATCH_OPTIONS
+	     */
+	    this.state = { page: 'MAIN_MENU',
+	      size: null,
+	      color: 'black',
+	      komi: 5.5 };
 	  },
-	  selectBoardSize: function selectBoardSize(size) {
-	    var opponentID = prompt('enter opponent id');
-	    this.emit('find-private-match', { opponentID: opponentID, size: size });
+
+	  selectBoardSize: function selectBoardSize(size, e) {
+	    e.stopPropagation();
+	    e.preventDefault();
+	    this.state.size = size;
+	    this.setState({ page: 'SHOW_MATCH_OPTIONS' });
+	    // let opponentID = prompt('enter opponent id')
+	    // this.emit('find-private-match', {opponentID, size})
+	  },
+	  selectColor: function selectColor(color) {
+	    this.setState({ color: color });
+	  },
+	  showBoardSize: function showBoardSize(e) {
+	    e.stopPropagation();
+	    e.preventDefault();
+	    this.setState({ page: 'SHOW_BOARD_SIZE' });
 	  },
 	  render: function render() {
 	    var _this = this;
 
-	    if (this.state.showBoardSize) {
+	    if (this.state.page === 'SHOW_MATCH_OPTIONS') {
+	      return this.div({ class: 'menu' }, this.div({ class: 'pick-color' }, this.p({ class: 'title' }, 'Your Color'), this.div({ class: 'color-group' }, this.div({ class: 'black color ' + (this.state.color === 'black' ? 'selected' : ''), click: this.selectColor.bind(this, 'black') }, this.span('Black')), this.div({ class: 'white color ' + (this.state.color === 'white' ? 'selected' : ''), click: this.selectColor.bind(this, 'white') }, this.span('White')), this.div({ class: 'random color ' + (this.state.color === 'random' ? 'selected' : ''), click: this.selectColor.bind(this, 'random') }, this.span('Random')))), this.div({ class: 'pick-komi' }, this.p({ class: 'title' }, 'Komi'), this.input({ value: this.state.komi })), this.div({ class: 'bottom-button-group' }, this.div({ class: 'small-btn', click: this.showBoardSize.bind(this) }, this.span('back')), this.div({ class: 'small-btn play' }, this.span('play'))));
+	    } else if (this.state.page === 'SHOW_BOARD_SIZE') {
 	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play', size: '19', click: this.selectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play', size: '13', click: this.selectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.selectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
-	          _this.setState({ showBoardSize: false });
+	          _this.setState({ page: 'MAIN_MENU' });
 	        } }, this.span('Back')));
 	    } else {
+	      // if (this.state.page === 'MAIN_MENU') {
 	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Go! ' + this.props.playerID), this.div({ class: 'button private-match',
 	        click: function click() {
-	          _this.setState({ showBoardSize: true });
+	          _this.setState({ page: 'SHOW_BOARD_SIZE' });
 	        } }, this.span('Private Match')), this.div({ class: 'button public-match' }, this.span('Public Match')), this.div({ class: 'button' }, this.span('Bot Match')));
 	    }
 	  }

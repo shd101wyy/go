@@ -35,11 +35,11 @@ let socketAPI = {
 }
 
 socket.on('opponent-not-found', function(opponentID) {
-  alert('opponent ' + opponentID + ' not found')
+  toastr.warning('opponent ' + opponentID + ' not found')
 })
 
 socket.on('invitation-sent', function(opponentID) {
-  alert('opponent ' + opponentID + ' not found')
+  toastr.warning('opponent ' + opponentID + ' not found')
 })
 
 socket.on('receive-match-invitation', function(opponentID) {
@@ -70,12 +70,16 @@ socket.on('opponent-score', function() {
 })
 
 socket.on('opponent-disconnect', function(opponentID) {
-  alert('opponent disconnect: ' + opponentID)
+  toastr.warning('opponent disconnect: ' + opponentID)
 })
 
 socket.on('receive-message', function(opponentID, message) {
   console.log('receive message')
   Simple.Emitter.getEmitterById('emitter').emit('receive-message', {opponentID, message})
+})
+
+socket.on('opponnet-in-game', function(opponentID) {
+  toastr.warning(opponentID + ' is currently in the game.')
 })
 
 export default socketAPI

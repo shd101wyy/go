@@ -150,7 +150,7 @@ class Board {
     console.log(whiteScore)
     console.log(blackScore)
 
-    alert(`white score: ${whiteScore}, black score: ${blackScore}`)
+    /**toastr.success**/alert(`white score: ${whiteScore}, black score: ${blackScore}`)
 
     location.reload()
   }
@@ -173,13 +173,13 @@ class Board {
   resign() {
     console.log('resign')
     socketAPI.resign(this.playerID, this.opponentID)
-    alert('You resigned')
+    /**toastr.info**/alert('You resigned')
 
     location.reload()
   }
 
   opponentResign() {
-    alert('Opponent ' + this.opponentID + ' resigned')
+    /**toastr.info**/alert('Opponent ' + this.opponentID + ' resigned')
 
     location.reload()
   }

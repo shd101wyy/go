@@ -105,6 +105,7 @@ function makeid() {
 
 // socket.io
 let socketMap = {} // key is userID, value is socket
+let inGame = {}
 io.on('connection', function(socket) {
   console.log('user connect: ' + socket.id)
 
@@ -116,6 +117,11 @@ io.on('connection', function(socket) {
   socket.on('invite-match', function(opponentID, size) {
     if (opponentID === socket.userID) return
 
+    if (inGame[opponentID]) {
+      socket.emit('opponnet-in-game', opponentID)
+      return
+    }
+
     if (socketMap[opponentID]) {
       // TODO: assume after sent, accpet immediately...
       /*
@@ -125,6 +131,10 @@ io.on('connection', function(socket) {
       // assume I am black and opponent is white
       socket.emit('start-match', {size: size, color: 'black', opponentID: opponentID})
       socketMap[opponentID].emit('start-match', {size: size, color: 'white', opponentID: socket.userID})
+
+      inGame[socket.userID] = true
+      inGame[opponentID] = true
+
     } else { // not found
       socket.emit('opponent-not-found', opponentID)
     }
@@ -169,6 +179,7 @@ io.on('connection', function(socket) {
 
   socket.on("disconnect", function() {
     console.log('user disconnect: ' + socket.userID)
+    inGame[socket.userID] = false
     delete(socketMap[socket.userID])
   })
 

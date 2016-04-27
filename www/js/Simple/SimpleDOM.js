@@ -139,23 +139,26 @@ SimpleDOM.prototype.diff = function(element, d) {
     }
 
     // set attributes
-    for (let i = 0; i < element.attributes.length; i++) {
-      element.removeAttribute(element.attributes[i].name)
+    // for (let i = 0; i < element.attributes.length; i++) {
+    while(element.attributes.length > 0) {
+      element.removeAttribute(element.attributes[0].name)
     }
 
     let eventsLength = 0,
         _eventListeners = element._eventListeners || {},
-        events = {}
+        events = {},
+        findEvent = false
 
     if (d.attributes) {
       for (let key in d.attributes) {
         let val = d.attributes[key]
         if (isNativeEvent(key)) {
+          findEvent = true
           if (_eventListeners[key] !== val) {
             removeEvent(element, key, _eventListeners[key])
             addEvent(element, key, val)
-            _eventListeners[key] = val
-            events[key] = true
+            // _eventListeners[key] = val
+            events[key] = val
           }
         } else if (key === 'ref') {
           this.owner.refs[val] = element
@@ -173,6 +176,12 @@ SimpleDOM.prototype.diff = function(element, d) {
       if (!events[key]) {
         removeEvent(element, key, _eventListeners[key])
       }
+      _eventListeners = null
+    }
+    if (findEvent) {
+      element._eventListeners = events
+    } else {
+      element._eventListeners = undefined
     }
 
     // diff children
@@ -214,7 +223,8 @@ SimpleDOM.prototype.appendChildrenDOMElements = function(children) {
 }
 
 SimpleDOM.prototype.generateDOM = function() {
-  let _eventListeners = {_length: 0}
+  let _eventListeners = {},
+      eventLength = 0
 
   this.element = document.createElement(this.tagName)
 
@@ -228,7 +238,7 @@ SimpleDOM.prototype.generateDOM = function() {
       if (isNativeEvent(key)) {
         addEvent(this.element, key, val)
         _eventListeners[key] = val
-        _eventListeners._length += 1
+        eventLength += 1
       } else if (key === 'ref') {
         this.owner.refs[val] = this.element
       } else if (key === 'style' && val.constructor === Object) {
@@ -241,7 +251,7 @@ SimpleDOM.prototype.generateDOM = function() {
     }
   }
 
-  if (_eventListeners._length) {
+  if (eventLength) {
     this.element._eventListeners = _eventListeners // HACK
   }
 

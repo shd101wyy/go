@@ -17,7 +17,7 @@ let signupLogin = {
   'login': function({email, password}, component) {
     userAPI.signin(email, password, (res)=> {
       if (!res) {
-        alert('Failed to signin')
+        toastr.error('Failed to signin')
       } else {
         this.state.playerID = res.userID
         socketAPI.userLoggedIn(this.state.playerID)
@@ -29,7 +29,7 @@ let signupLogin = {
   'signup': function({email, userID, password}) {
     userAPI.signup(email, userID, password, (res)=> {
       if (!res) {
-        alert('Failed to signup')
+        toastr.error('Failed to signup')
       } else {
         this.state.playerID = res.userID
         socketAPI.userLoggedIn(this.state.playerID)
