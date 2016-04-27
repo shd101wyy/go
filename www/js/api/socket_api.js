@@ -1,13 +1,12 @@
 'use strict'
 
-import Simple from 'Simple'
+import Simple from '../Simple/Simple.js'
 
 if (!window.socket) {
   window.socket = io()
 }
 
 let socket = window.socket
-let emitters = {}
 
 let socketAPI = {
   inviteMatch: function(opponentID, size) {
@@ -30,9 +29,8 @@ let socketAPI = {
     socket.emit('score', userID, opponentID)
   },
 
-  sendMessage: function({playerID, opponentID, message, chatEmitter}) {
+  sendMessage: function({playerID, opponentID, message}) {
     socket.emit('send-message', playerID, opponentID, message)
-    emitters.chatEmitter = chatEmitter
   }
 }
 
@@ -53,27 +51,22 @@ socket.on('start-match', function(data) {
       color = data.color,
       opponentID = data.opponentID
 
-  $('.menu').remove()
-  window.gameManager.startNewMatch(size, color, opponentID)
+  Simple.Emitter.getEmitterById('emitter').emit('start-match', {opponentID, size, color})
 })
 
 socket.on('receive-move', function(data) {
   let row = data[0],
       col = data[1]
 
-  if (row === -1 || col === -1) { // pass
-    window.gameManager.board.nextTurn(true)
-  } else {
-    window.gameManager.board.addStone(row, col)
-  }
+  Simple.Emitter.getEmitterById('emitter').emit('board-receive-move', {row, col})
 })
 
 socket.on('opponent-resign', function() {
-  window.gameManager.board.opponentResign()
+  Simple.Emitter.getEmitterById('emitter').emit('opponent-resign')
 })
 
 socket.on('opponent-score', function() {
-  window.gameManager.board.score()
+  Simple.Emitter.getEmitterById('emitter').emit('opponent-score')
 })
 
 socket.on('opponent-disconnect', function(opponentID) {
@@ -82,10 +75,7 @@ socket.on('opponent-disconnect', function(opponentID) {
 
 socket.on('receive-message', function(opponentID, message) {
   console.log('receive message')
-  let chatEmitter = Simple.Emitter.getEmitterById('chat')
-  if (chatEmitter) {
-    chatEmitter.emit('receive-message', {opponentID, message})
-  }
+  Simple.Emitter.getEmitterById('emitter').emit('receive-message', {opponentID, message})
 })
 
-module.exports = socketAPI
+export default socketAPI

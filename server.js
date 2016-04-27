@@ -146,7 +146,7 @@ io.on('connection', function(socket) {
     if (socketMap[opponentID]) {
       socketMap[opponentID].emit('opponent-resign', userID)
     } else {
-      socekt.emit('opponent-disconnect')
+      socket.emit('opponent-disconnect')
     }
   })
 
@@ -155,7 +155,7 @@ io.on('connection', function(socket) {
     if (socketMap[opponentID]) {
       socketMap[opponentID].emit('opponent-score', userID)
     } else {
-      socekt.emit('opponent-disconnect')
+      socket.emit('opponent-disconnect')
     }
   })
 
@@ -163,7 +163,7 @@ io.on('connection', function(socket) {
     if (socketMap[opponentID]) {
       socketMap[opponentID].emit('receive-message', userID, message)
     } else {
-      socekt.emit('opponent-disconnect')
+      socket.emit('opponent-disconnect')
     }
   })
 

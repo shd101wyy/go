@@ -77,7 +77,7 @@ class Board extends Simple {
     this.gameManager.updateBoardMenu()
   }
 
-  addStone(row, col) {
+  addStone(row, col, element) {
     if (this.board[row][col]) return
 
     let $stone = $(`<div class="stone ${this.turn % 2 === 0 ? 'black' : 'white'}" style='width: ${this.stoneSize}px; height: ${this.stoneSize}px; border-radius: ${this.stoneSize}px; background-image: url("${this.getStoneImage()}");' data-row=${row} data-col=${col} id="stone-${row}-${col}"> </div>`)
@@ -92,7 +92,7 @@ class Board extends Simple {
 
     // console.log('enter here')
 
-    this.checkCapture(row, col)
+    this.checkCapture(row, col, element)
   }
 
   removeStone(row, col) {

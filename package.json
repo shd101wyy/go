@@ -14,7 +14,6 @@
   "author": "shd101wyy",
   "license": "MIT",
   "dependencies": {
-    "Simple": "0.0.2-4-alpha",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "express-session": "^1.13.0",

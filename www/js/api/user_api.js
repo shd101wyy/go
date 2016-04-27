@@ -59,4 +59,4 @@ let userAPI = {
   }
 }
 
-module.exports = userAPI
+export default userAPI

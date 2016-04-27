@@ -1,14 +1,9 @@
 'use strict'
 
-
-let Stone = require('./stone.js').Stone
-let Board = require('./board.js')
-let socketAPI = require('./api/socket_api.js')
-let userAPI = require('./api/user_api.js')
-let Menu = require('./menu.js')
-let Signup_Login = require('./signup_login.js')
-let BoardMenu = require('./board_menu.js')
-
+import Simple from './Simple/Simple.js'
+import Game from './components/game.js'
+import Menu from './components/menu.js'
+/*
 class GameManager {
   constructor() {
     this.$game = $('.game')
@@ -73,7 +68,10 @@ class GameManager {
   }
 }
 
+*/
+
 // 没什么卵用的 loading screen
+/**
 $('.loading-screen .logo').fadeIn(1000, ()=> {
   setTimeout(()=> {
     $('.loading-screen .logo').fadeOut(1000, ()=> {
@@ -81,8 +79,17 @@ $('.loading-screen .logo').fadeIn(1000, ()=> {
     })
   }, 1600)
 })
+*/
+$('.loading-screen').remove()
 
-window.gameManager = new GameManager()
+
+// window.gameManager = new GameManager()
 // let board = new Board({size: 9})
 //board.board[1][1] = {color: 'black'}
 // board.score()
+
+let game = Game()
+Simple.render(Game(), document.getElementById('game'))
+
+// let emitter = game.emitter
+// emitter.emit('start-match', {opponentID: 'shd101wyy2', size: 9, color: 'black'})
