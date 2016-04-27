@@ -30,7 +30,7 @@ emitter.on('start-match', function({opponentID, size, color, komi, ranked}) {
   this.state.opponentID = opponentID
   this.state.board = new Board({playerID: this.state.playerID, opponentID, size, playerColor: color, komi, ranked})
 
-  if (ranked) {
+  if (this.state.menuComponent) { // as componentDidUnmount is not implemented in Simple library...
     this.state.menuComponent.stopTimer()
   }
 
@@ -137,6 +137,15 @@ emitter.on('start-finding-ranked-match', function({playerID, MMR, size}, compone
 
 emitter.on('stop-finding-ranked-match', function({playerID}, component) {
   userAPI.stopFindingRankedMatch({playerID})
+})
+
+emitter.on('start-finding-public-match', function({playerID, MMR, size}, component) {
+  this.state.menuComponent = component
+  userAPI.findPublicMatch({playerID, MMR, size})
+})
+
+emitter.on('stop-finding-public-match', function({playerID}, component) {
+  userAPI.stopFindingPublicMatch({playerID})
 })
 
 

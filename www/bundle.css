@@ -172,6 +172,9 @@ body {
 .menu.ranked {
   background-color: #792B2B;
 }
+.menu.public {
+  background-color: #398ecc;
+}
 .menu .menu-title {
   margin-top: 0;
   margin-bottom: 24px;

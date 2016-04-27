@@ -34,7 +34,8 @@ app.get('/', function(req, res){
 })
 
 app.get('/auth', function(req, res) {
-  if (req.session.userID) {
+  let userID = req.session.userID
+  if (userID) {
     db_User.findOne({userID}, function(err, user) {
       res.join({success: true, userID: user.userID, MMR: user.MMR})
     })
@@ -113,15 +114,16 @@ app.get('/logout', function(req, res) {
 
 
 // Ranked Match
-let rankedMatchPool = {} // key is playerID, value is MMR
+let rankedMatchPool = {} // key is playerID, value is {MMR, size}
 app.post('/find_ranked_match', function(req, res) {
   let playerID = req.body.playerID,
       MMR = req.body.MMR,
       size = req.body.size
 
   for (let key in rankedMatchPool) {
-    let mmr = rankedMatchPool[key]
-    if (Math.abs(MMR - mmr) < 100) {
+    let mmr = rankedMatchPool[key].MMR,
+        s = rankedMatchPool[key].size
+    if (Math.abs(MMR - mmr) < 100 && s === size) {
       console.log('ranked match: find opponent')
       let color = Math.random() < 0.5 ? 'black' : 'white'
       socketMap[playerID].emit('start-match', {size: size, color: color, opponentID: key, komi: 5.5, ranked: true})
@@ -138,13 +140,49 @@ app.post('/find_ranked_match', function(req, res) {
   }
 
   // didn't find suitable opponent
-  rankedMatchPool[playerID] = MMR
+  rankedMatchPool[playerID] = {MMR, size}
 })
 
 app.post('/stop_finding_ranked_match', function(req, res) {
   let playerID = req.body.playerID
 
   delete(rankedMatchPool[playerID])
+})
+
+// public match
+let publicMatchPool = {} // key is playerID, value is {MMR, size}
+app.post('/find_public_match', function(req, res) {
+  let playerID = req.body.playerID,
+      MMR = req.body.MMR,
+      size = req.body.size
+
+  for (let key in publicMatchPool) {
+    let mmr = publicMatchPool[key].MMR,
+        s = publicMatchPool[key].size
+    if (Math.abs(MMR - mmr) < 200 && s === size) {
+      console.log('public match: find opponent')
+      let color = Math.random() < 0.5 ? 'black' : 'white'
+      socketMap[playerID].emit('start-match', {size: size, color: color, opponentID: key, komi: 5.5, ranked: false})
+      socketMap[key].emit('start-match', {size: size, color: (color === 'white' ? 'black' : 'white'), opponentID: playerID, komi: 5.5, ranked: false})
+
+      inGame[playerID] = true
+      inGame[key] = true
+
+      delete(publicMatchPool[playerID])
+      delete(publicMatchPool[key])
+
+      return
+    }
+  }
+
+  // didn't find suitable opponent
+  publicMatchPool[playerID] = {MMR, size}
+})
+
+app.post('/stop_finding_public_match', function(req, res) {
+  let playerID = req.body.playerID
+
+  delete(publicMatchPool[playerID])
 })
 
 app.post('/win_ranked', function(req, res) {
@@ -269,6 +307,7 @@ io.on('connection', function(socket) {
     inGame[socket.userID] = false
     delete(socketMap[socket.userID])
     delete(rankedMatchPool[socket.userID])
+    delete(publicMatchPool[socket.userID])
   })
 
 })

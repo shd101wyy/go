@@ -814,7 +814,8 @@
 	  this.state.opponentID = opponentID;
 	  this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color, komi: komi, ranked: ranked });
 
-	  if (ranked) {
+	  if (this.state.menuComponent) {
+	    // as componentDidUnmount is not implemented in Simple library...
 	    this.state.menuComponent.stopTimer();
 	  }
 
@@ -943,6 +944,21 @@
 	  var playerID = _ref8.playerID;
 
 	  _user_api2.default.stopFindingRankedMatch({ playerID: playerID });
+	});
+
+	emitter.on('start-finding-public-match', function (_ref9, component) {
+	  var playerID = _ref9.playerID;
+	  var MMR = _ref9.MMR;
+	  var size = _ref9.size;
+
+	  this.state.menuComponent = component;
+	  _user_api2.default.findPublicMatch({ playerID: playerID, MMR: MMR, size: size });
+	});
+
+	emitter.on('stop-finding-public-match', function (_ref10, component) {
+	  var playerID = _ref10.playerID;
+
+	  _user_api2.default.stopFindingPublicMatch({ playerID: playerID });
 	});
 
 	exports.default = emitter;
@@ -1144,7 +1160,7 @@
 	    });
 	  },
 
-	  findRankedMatch: function findRankedMatch(_ref, callback) {
+	  findRankedMatch: function findRankedMatch(_ref) {
 	    var playerID = _ref.playerID;
 	    var MMR = _ref.MMR;
 	    var size = _ref.size;
@@ -1152,43 +1168,45 @@
 	    $.ajax('/find_ranked_match', {
 	      type: 'POST',
 	      dataType: 'json',
-	      data: { playerID: playerID, MMR: MMR, size: size },
-	      success: function success(res) {
-	        if (res) {
-	          if (callback) callback(res);else callback(null);
-	        } else if (callback) {
-	          callback(null);
-	        }
-	      },
-	      error: function error(res) {
-	        if (callback) callback(null);
-	      }
+	      data: { playerID: playerID, MMR: MMR, size: size }
 	    });
 	  },
 
-	  stopFindingRankedMatch: function stopFindingRankedMatch(_ref2, callback) {
+	  stopFindingRankedMatch: function stopFindingRankedMatch(_ref2) {
 	    var playerID = _ref2.playerID;
 
 	    $.ajax('/stop_finding_ranked_match', {
 	      type: 'POST',
 	      dataType: 'json',
-	      data: { playerID: playerID },
-	      success: function success(res) {
-	        if (res) {
-	          if (callback) callback(res);else callback(null);
-	        } else if (callback) {
-	          callback(null);
-	        }
-	      },
-	      error: function error(res) {
-	        if (callback) callback(null);
-	      }
+	      data: { playerID: playerID }
 	    });
 	  },
 
-	  win: function win(_ref3) {
+	  findPublicMatch: function findPublicMatch(_ref3) {
 	    var playerID = _ref3.playerID;
-	    var opponentID = _ref3.opponentID;
+	    var MMR = _ref3.MMR;
+	    var size = _ref3.size;
+
+	    $.ajax('/find_public_match', {
+	      type: 'POST',
+	      dataType: 'json',
+	      data: { playerID: playerID, MMR: MMR, size: size }
+	    });
+	  },
+
+	  stopFindingPublicMatch: function stopFindingPublicMatch(_ref4) {
+	    var playerID = _ref4.playerID;
+
+	    $.ajax('/stop_finding_public_match', {
+	      type: 'POST',
+	      dataType: 'json',
+	      data: { playerID: playerID }
+	    });
+	  },
+
+	  win: function win(_ref5) {
+	    var playerID = _ref5.playerID;
+	    var opponentID = _ref5.opponentID;
 
 	    $.ajax('/win_ranked', {
 	      type: 'POST',
@@ -1196,9 +1214,9 @@
 	      data: { playerID: playerID, opponentID: opponentID } });
 	  },
 
-	  lose: function lose(_ref4) {
-	    var playerID = _ref4.playerID;
-	    var opponentID = _ref4.opponentID;
+	  lose: function lose(_ref6) {
+	    var playerID = _ref6.playerID;
+	    var opponentID = _ref6.opponentID;
 
 	    $.ajax('/lose_ranked', {
 	      type: 'POST',
@@ -1980,8 +1998,10 @@
 	     *  SHOW_BOARD_SIZE
 	     *  SHOW_MATCH_OPTIONS
 	     *  SHOW_LEARDERBOARDS
+	     *  SHOW_PUBLIC_MATCH
 	     *  SHOW_RANKED_MATCH
 	     *  RANKED_MATCH_FINDING_GAME
+	     *  PUBLIC_MATCH_FINDING_GAME
 	     */
 	    this.state = { page: 'MAIN_MENU',
 	      size: null,
@@ -2019,6 +2039,25 @@
 	  },
 	  stopTimer: function stopTimer() {
 	    clearInterval(this.interval);
+	  },
+	  publicSelectBoardSize: function publicSelectBoardSize(size) {
+	    var _this2 = this;
+
+	    this.emit('start-finding-public-match', { playerID: this.props.playerID, MMR: this.props.MMR, size: size });
+
+	    this.setState({ page: 'PUBLIC_MATCH_FINDING_GAME' });
+
+	    var time = 0;
+	    this.interval = setInterval(function () {
+	      time += 1;
+	      _this2.setState({ time: time });
+	    }, 1000);
+	  },
+	  stopFindingPublicMatch: function stopFindingPublicMatch() {
+	    this.emit('stop-finding-public-match', { playerID: this.props.playerID });
+
+	    clearInterval(this.interval);
+	    this.setState({ page: 'SHOW_PUBLIC_MATCH', time: 0 });
 	  },
 	  selectColor: function selectColor(color) {
 	    this.setState({ color: color });
@@ -2066,6 +2105,10 @@
 	    this.setState({ page: 'SHOW_LEARDERBOARDS' });
 	  },
 
+	  showPublicMatch: function showPublicMatch() {
+	    this.setState({ page: 'SHOW_PUBLIC_MATCH' });
+	  },
+
 	  showRankedMatch: function showRankedMatch() {
 	    this.setState({ page: 'SHOW_RANKED_MATCH' });
 	  },
@@ -2075,35 +2118,41 @@
 	  },
 
 	  render: function render() {
-	    var _this2 = this;
+	    var _this3 = this;
 
 	    if (this.state.page === 'SHOW_MATCH_OPTIONS') {
 	      return this.div({ class: 'menu' }, this.div({ class: 'pick-opponent' }, this.p({ class: 'title' }, 'Opponent ID'), this.input({ placeholder: 'opponent id here', value: this.state.opponentID, ref: 'opponentID', input: function input() {
-	          _this2.state.opponentID = _this2.refs.opponentID.value;
+	          _this3.state.opponentID = _this3.refs.opponentID.value;
 	        } })), this.div({ class: 'pick-color' }, this.p({ class: 'title' }, 'Your Color'), this.div({ class: 'color-group' }, this.div({ class: 'black color ' + (this.state.color === 'black' ? 'selected' : ''), click: this.selectColor.bind(this, 'black') }, this.span('Black')), this.div({ class: 'white color ' + (this.state.color === 'white' ? 'selected' : ''), click: this.selectColor.bind(this, 'white') }, this.span('White')), this.div({ class: 'random color ' + (this.state.color === 'random' ? 'selected' : ''), click: this.selectColor.bind(this, 'random') }, this.span('Random')))), this.div({ class: 'pick-komi' }, this.p({ class: 'title' }, 'Komi'), this.input({ value: this.state.komi, ref: 'komi' })), this.div({ class: 'bottom-button-group' }, this.div({ class: 'small-btn', click: this.showBoardSize.bind(this) }, this.span('back')), this.div({ class: 'small-btn play', click: this.play.bind(this, 'private') }, this.span('play'))));
 	    } else if (this.state.page === 'SHOW_BOARD_SIZE') {
 	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play', size: '19', click: this.selectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play', size: '13', click: this.selectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.selectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
-	          _this2.setState({ page: 'MAIN_MENU' });
+	          _this3.setState({ page: 'MAIN_MENU' });
 	        } }, this.span('Back')));
 	    } else if (this.state.page === 'SHOW_LEARDERBOARDS') {
 	      var list = this.state.leaderboards.map(function (l) {
-	        return _this2.div({ class: 'player ' + (l.userID === _this2.props.playerID ? 'me' : '') }, _this2.p({ class: 'ID' }, 'ID: ', _this2.span(l.userID)), _this2.p({ class: 'MMR' }, l.MMR));
+	        return _this3.div({ class: 'player ' + (l.userID === _this3.props.playerID ? 'me' : '') }, _this3.p({ class: 'ID' }, 'ID: ', _this3.span(l.userID)), _this3.p({ class: 'MMR' }, l.MMR));
 	      });
 	      return this.div({ class: 'leaderboards' }, this.p({ class: 'title' }, 'Your MMR is ', this.span(this.props.MMR)), this.div({ class: 'list' }, list), this.div({ class: 'btn', click: function click() {
-	          _this2.setState({ page: 'MAIN_MENU' });
+	          _this3.setState({ page: 'MAIN_MENU' });
 	        } }, this.span('Back')));
 	    } else if (this.state.page === 'SHOW_RANKED_MATCH') {
 	      return this.div({ class: 'menu ranked' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play' + (this.props.MMR < 1600 ? ' locked' : ''), size: '19', click: this.props.MMR < 1600 ? this.MMRNotHightEnough.bind(this) : this.rankedSelectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play' + (this.props.MMR < 1300 ? ' locked' : ''), size: '13', click: this.props.MMR < 1300 ? this.MMRNotHightEnough.bind(this) : this.rankedSelectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.rankedSelectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
-	          _this2.setState({ page: 'MAIN_MENU' });
+	          _this3.setState({ page: 'MAIN_MENU' });
 	        } }, this.span('Back')));
 	    } else if (this.state.page === 'RANKED_MATCH_FINDING_GAME') {
 	      return this.div({ class: 'menu ranked' }, this.p({ style: 'font-size: 32px;' }, 'Finding Match ...'), this.p({ style: 'font-size: 18px; margin-left: 32px;' }, this.state.time + 's'), this.div({ click: this.stopFindingRankedMatch.bind(this), style: 'padding: 12px; border: 2px solid white; width: 143px; text-align: center; margin-top: 32px; cursor: pointer;' }, 'Stop Finding Match'));
+	    } else if (this.state.page === 'SHOW_PUBLIC_MATCH') {
+	      return this.div({ class: 'menu public' }, this.p({ class: 'menu-title' }, 'Board Size'), this.div({ class: 'button play', size: '19', click: this.publicSelectBoardSize.bind(this, 19) }, this.span({ size: '19' }, '19x19')), this.div({ class: 'button play', size: '13', click: this.publicSelectBoardSize.bind(this, 13) }, this.span({ size: '13' }, '13x13')), this.div({ class: 'button play', size: '9', click: this.publicSelectBoardSize.bind(this, 9) }, this.span({ size: '9' }, '9x9')), this.div({ class: 'button back', click: function click() {
+	          _this3.setState({ page: 'MAIN_MENU' });
+	        } }, this.span('Back')));
+	    } else if (this.state.page === 'PUBLIC_MATCH_FINDING_GAME') {
+	      return this.div({ class: 'menu public' }, this.p({ style: 'font-size: 32px;' }, 'Finding Match ...'), this.p({ style: 'font-size: 18px; margin-left: 32px;' }, this.state.time + 's'), this.div({ click: this.stopFindingPublicMatch.bind(this), style: 'padding: 12px; border: 2px solid white; width: 143px; text-align: center; margin-top: 32px; cursor: pointer;' }, 'Stop Finding Match'));
 	    } else {
 	      // if (this.state.page === 'MAIN_MENU') {
 	      return this.div({ class: 'menu' }, this.p({ class: 'menu-title' }, 'Go! ' + this.props.playerID), this.div({ class: 'button private-match',
 	        click: function click() {
-	          _this2.setState({ page: 'SHOW_BOARD_SIZE' });
-	        } }, this.span('Private Match')), this.div({ class: 'button public-match' }, this.span('Public Match')), this.div({ class: 'button', click: this.showRankedMatch.bind(this) }, this.span('Ranked Match')), this.div({ class: 'button', click: this.showLeaderboards.bind(this) }, this.span('Leaderboards')));
+	          _this3.setState({ page: 'SHOW_BOARD_SIZE' });
+	        } }, this.span('Private Match')), this.div({ class: 'button public-match', click: this.showPublicMatch.bind(this) }, this.span('Public Match')), this.div({ class: 'button', click: this.showRankedMatch.bind(this) }, this.span('Ranked Match')), this.div({ class: 'button', click: this.showLeaderboards.bind(this) }, this.span('Leaderboards')));
 	    }
 	  }
 	});

@@ -12,8 +12,10 @@ let Menu = Simple.Component({
      *  SHOW_BOARD_SIZE
      *  SHOW_MATCH_OPTIONS
      *  SHOW_LEARDERBOARDS
+     *  SHOW_PUBLIC_MATCH
      *  SHOW_RANKED_MATCH
      *  RANKED_MATCH_FINDING_GAME
+     *  PUBLIC_MATCH_FINDING_GAME
      */
     this.state = {  page: 'MAIN_MENU',
                     size: null,
@@ -49,6 +51,23 @@ let Menu = Simple.Component({
   },
   stopTimer: function() {
     clearInterval(this.interval)
+  },
+  publicSelectBoardSize: function(size) {
+    this.emit('start-finding-public-match', {playerID: this.props.playerID, MMR: this.props.MMR, size})
+
+    this.setState({page: 'PUBLIC_MATCH_FINDING_GAME'})
+
+    let time = 0
+    this.interval = setInterval(()=> {
+      time += 1
+      this.setState({time})
+    }, 1000)
+  },
+  stopFindingPublicMatch: function() {
+    this.emit('stop-finding-public-match', {playerID: this.props.playerID})
+
+    clearInterval(this.interval)
+    this.setState({page: 'SHOW_PUBLIC_MATCH', time: 0})
   },
   selectColor: function(color) {
     this.setState({color})
@@ -94,6 +113,10 @@ let Menu = Simple.Component({
   showLeaderboards: function() {
     this.emit('request-top-50-players')
     this.setState({page: 'SHOW_LEARDERBOARDS'})
+  },
+
+  showPublicMatch: function() {
+    this.setState({page: 'SHOW_PUBLIC_MATCH'})
   },
 
   showRankedMatch: function() {
@@ -163,13 +186,29 @@ let Menu = Simple.Component({
                 this.p({style: 'font-size: 32px;'}, 'Finding Match ...'),
                 this.p({style: 'font-size: 18px; margin-left: 32px;'}, `${this.state.time}s`),
                 this.div({click: this.stopFindingRankedMatch.bind(this), style: 'padding: 12px; border: 2px solid white; width: 143px; text-align: center; margin-top: 32px; cursor: pointer;'}, 'Stop Finding Match'))
+    } else if (this.state.page === 'SHOW_PUBLIC_MATCH') {
+      return this.div({class: 'menu public'},
+               this.p({class: 'menu-title'}, 'Board Size'),
+               this.div({class: 'button play', size: '19', click: this.publicSelectBoardSize.bind(this, 19)},
+                 this.span({size: '19'}, '19x19')),
+               this.div({class: 'button play', size: '13', click: this.publicSelectBoardSize.bind(this, 13)},
+                 this.span({size: '13'}, '13x13')),
+               this.div({class: 'button play', size: '9', click: this.publicSelectBoardSize.bind(this, 9)},
+                 this.span({size: '9'}, '9x9')),
+               this.div({class: 'button back', click: ()=> {this.setState({page: 'MAIN_MENU'})}},
+                 this.span('Back')))
+    } else if (this.state.page === 'PUBLIC_MATCH_FINDING_GAME') {
+      return this.div({class: 'menu public'},
+                this.p({style: 'font-size: 32px;'}, 'Finding Match ...'),
+                this.p({style: 'font-size: 18px; margin-left: 32px;'}, `${this.state.time}s`),
+                this.div({click: this.stopFindingPublicMatch.bind(this), style: 'padding: 12px; border: 2px solid white; width: 143px; text-align: center; margin-top: 32px; cursor: pointer;'}, 'Stop Finding Match'))
     } else {// if (this.state.page === 'MAIN_MENU') {
       return this.div({class: 'menu'},
                 this.p({class: 'menu-title'}, `Go! ${this.props.playerID}`),
                 this.div({class: 'button private-match',
                           click: ()=> {this.setState({page: 'SHOW_BOARD_SIZE'})}},
                   this.span('Private Match')),
-                this.div({class: 'button public-match'},
+                this.div({class: 'button public-match', click: this.showPublicMatch.bind(this)},
                   this.span('Public Match')),
                 this.div({class: 'button', click: this.showRankedMatch.bind(this)},
                   this.span('Ranked Match')),

@@ -77,41 +77,35 @@ let userAPI = {
     })
   },
 
-  findRankedMatch: function({playerID, MMR, size}, callback) {
+  findRankedMatch: function({playerID, MMR, size}) {
     $.ajax('/find_ranked_match', {
       type: 'POST',
       dataType: 'json',
-      data: {playerID, MMR, size},
-      success: function(res) {
-        if (res) {
-          if (callback) callback(res)
-          else callback(null)
-        } else if (callback) {
-          callback(null)
-        }
-      },
-      error: function(res) {
-        if (callback) callback(null)
-      }
+      data: {playerID, MMR, size}
     })
   },
 
-  stopFindingRankedMatch: function({playerID}, callback) {
+  stopFindingRankedMatch: function({playerID}) {
     $.ajax('/stop_finding_ranked_match', {
       type: 'POST',
       dataType: 'json',
-      data: {playerID},
-      success: function(res) {
-        if (res) {
-          if (callback) callback(res)
-          else callback(null)
-        } else if (callback) {
-          callback(null)
-        }
-      },
-      error: function(res) {
-        if (callback) callback(null)
-      }
+      data: {playerID}
+    })
+  },
+
+  findPublicMatch: function({playerID, MMR, size}) {
+    $.ajax('/find_public_match', {
+      type: 'POST',
+      dataType: 'json',
+      data: {playerID, MMR, size}
+    })
+  },
+
+  stopFindingPublicMatch: function({playerID}) {
+    $.ajax('/stop_finding_public_match', {
+      type: 'POST',
+      dataType: 'json',
+      data: {playerID}
     })
   },
 
