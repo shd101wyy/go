@@ -159,7 +159,8 @@ let Menu = Simple.Component({
                 this.div({class: 'button back', click: ()=> {this.setState({page: 'MAIN_MENU'})}},
                   this.span('Back')))
     } else if (this.state.page === 'SHOW_LEARDERBOARDS') {
-      let list = this.state.leaderboards.map(l => {
+      let leaderboards = this.state.leaderboards.sort((x, y) => x.MMR < y.MMR) // sort by MMR
+      let list = leaderboards.map(l => {
         return this.div({class: 'player ' + (l.userID === this.props.playerID ? 'me' : '')},
                   this.p({class: 'ID'}, 'ID: ',
                     this.span(l.userID)),

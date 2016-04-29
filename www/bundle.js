@@ -54,7 +54,7 @@
 
 	var _game2 = _interopRequireDefault(_game);
 
-	var _menu = __webpack_require__(14);
+	var _menu = __webpack_require__(17);
 
 	var _menu2 = _interopRequireDefault(_menu);
 
@@ -642,15 +642,15 @@
 
 	var _emitter2 = _interopRequireDefault(_emitter);
 
-	var _signup_login = __webpack_require__(13);
+	var _signup_login = __webpack_require__(16);
 
 	var _signup_login2 = _interopRequireDefault(_signup_login);
 
-	var _menu = __webpack_require__(14);
+	var _menu = __webpack_require__(17);
 
 	var _menu2 = _interopRequireDefault(_menu);
 
-	var _match = __webpack_require__(15);
+	var _match = __webpack_require__(18);
 
 	var _match2 = _interopRequireDefault(_match);
 
@@ -704,19 +704,19 @@
 
 	var _Simple2 = _interopRequireDefault(_Simple);
 
-	var _signup_login = __webpack_require__(9);
+	var _signup_login = __webpack_require__(7);
 
 	var _signup_login2 = _interopRequireDefault(_signup_login);
 
-	var _chat = __webpack_require__(19);
+	var _chat = __webpack_require__(10);
 
 	var _chat2 = _interopRequireDefault(_chat);
 
-	var _menu = __webpack_require__(20);
+	var _menu = __webpack_require__(11);
 
 	var _menu2 = _interopRequireDefault(_menu);
 
-	var _match = __webpack_require__(21);
+	var _match = __webpack_require__(12);
 
 	var _match2 = _interopRequireDefault(_match);
 
@@ -749,6 +749,82 @@
 
 /***/ },
 /* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _socket_api = __webpack_require__(8);
+
+	var _socket_api2 = _interopRequireDefault(_socket_api);
+
+	var _user_api = __webpack_require__(9);
+
+	var _user_api2 = _interopRequireDefault(_user_api);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var signupLogin = {
+	  'check-auth': function checkAuth(data, component) {
+	    var _this = this;
+
+	    console.log('check auth');
+	    this.state.gameComponent = component;
+	    _user_api2.default.checkAuth(function (res) {
+	      if (res && res.success) {
+	        _this.state.playerID = res.userID;
+	        _this.state.MMR = res.MMR;
+	        _socket_api2.default.userLoggedIn(_this.state.playerID);
+	        component.setProps({ page: 'SHOW_MENU', playerID: _this.state.playerID, MMR: _this.state.MMR });
+	      }
+	    });
+	  },
+
+	  'login': function login(_ref, component) {
+	    var _this2 = this;
+
+	    var email = _ref.email;
+	    var password = _ref.password;
+
+	    _user_api2.default.signin(email, password, function (res) {
+	      if (!res) {
+	        toastr.error('Failed to signin');
+	      } else {
+	        _this2.state.playerID = res.userID;
+	        _this2.state.MMR = res.MMR;
+	        _socket_api2.default.userLoggedIn(_this2.state.playerID);
+	        _this2.state.gameComponent.setProps({ page: 'SHOW_MENU', playerID: _this2.state.playerID, MMR: _this2.state.MMR });
+	      }
+	    });
+	  },
+
+	  'signup': function signup(_ref2) {
+	    var _this3 = this;
+
+	    var email = _ref2.email;
+	    var userID = _ref2.userID;
+	    var password = _ref2.password;
+
+	    _user_api2.default.signup(email, userID, password, function (res) {
+	      if (!res) {
+	        toastr.error('Failed to signup');
+	      } else {
+	        _this3.state.playerID = res.userID;
+	        _this3.state.MMR = res.MMR;
+	        _socket_api2.default.userLoggedIn(_this3.state.playerID);
+	        _this3.state.gameComponent.setProps({ page: 'SHOW_MENU', playerID: _this3.state.playerID, MMR: _this3.state.MMR });
+	      }
+	    });
+	  }
+	};
+
+	exports.default = signupLogin;
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -863,7 +939,7 @@
 	exports.default = socketAPI;
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1013,7 +1089,7 @@
 	exports.default = userAPI;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1022,93 +1098,249 @@
 	  value: true
 	});
 
-	var _socket_api = __webpack_require__(7);
+	var _socket_api = __webpack_require__(8);
 
 	var _socket_api2 = _interopRequireDefault(_socket_api);
 
-	var _user_api = __webpack_require__(8);
+	var _user_api = __webpack_require__(9);
 
 	var _user_api2 = _interopRequireDefault(_user_api);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var signupLogin = {
-	  'check-auth': function checkAuth(data, component) {
-	    var _this = this;
-
-	    console.log('check auth');
-	    this.state.gameComponent = component;
-	    _user_api2.default.checkAuth(function (res) {
-	      if (res && res.success) {
-	        _this.state.playerID = res.userID;
-	        _this.state.MMR = res.MMR;
-	        _socket_api2.default.userLoggedIn(_this.state.playerID);
-	        component.setProps({ page: 'SHOW_MENU', playerID: _this.state.playerID, MMR: _this.state.MMR });
-	      }
-	    });
+	var chat = {
+	  'chat-register-self': function chatRegisterSelf(data, component) {
+	    this.state.chat.component = component;
 	  },
 
-	  'login': function login(_ref, component) {
-	    var _this2 = this;
+	  'send-message': function sendMessage(_ref, component) {
+	    var message = _ref.message;
 
-	    var email = _ref.email;
-	    var password = _ref.password;
+	    var playerID = this.state.playerID,
+	        opponentID = this.state.opponentID;
 
-	    _user_api2.default.signin(email, password, function (res) {
-	      if (!res) {
-	        toastr.error('Failed to signin');
-	      } else {
-	        _this2.state.playerID = res.userID;
-	        _this2.state.MMR = res.MMR;
-	        _socket_api2.default.userLoggedIn(_this2.state.playerID);
-	        _this2.state.gameComponent.setProps({ page: 'SHOW_MENU', playerID: _this2.state.playerID, MMR: _this2.state.MMR });
-	      }
-	    });
+	    _socket_api2.default.sendMessage({ playerID: playerID, opponentID: opponentID, message: message });
+	    var messages = this.state.chat.messages;
+	    messages.push({ id: playerID, message: message, me: true });
+	    component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages });
 	  },
 
-	  'signup': function signup(_ref2) {
-	    var _this3 = this;
+	  'receive-message': function receiveMessage(_ref2) {
+	    var opponentID = _ref2.opponentID;
+	    var message = _ref2.message;
 
-	    var email = _ref2.email;
-	    var userID = _ref2.userID;
-	    var password = _ref2.password;
+	    var messages = this.state.chat.messages,
+	        playerID = this.state.playerID;
 
-	    _user_api2.default.signup(email, userID, password, function (res) {
-	      if (!res) {
-	        toastr.error('Failed to signup');
-	      } else {
-	        _this3.state.playerID = res.userID;
-	        _this3.state.MMR = res.MMR;
-	        _socket_api2.default.userLoggedIn(_this3.state.playerID);
-	        _this3.state.gameComponent.setProps({ page: 'SHOW_MENU', playerID: _this3.state.playerID, MMR: _this3.state.MMR });
-	      }
-	    });
+	    messages.push({ id: opponentID, message: message, me: false });
+
+	    if (this.state.chat.component) {
+	      this.state.chat.component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages.slice(0) });
+	    }
 	  }
 	};
 
-	exports.default = signupLogin;
+	exports.default = chat;
 
 /***/ },
-/* 10 */
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _socket_api = __webpack_require__(8);
+
+	var _socket_api2 = _interopRequireDefault(_socket_api);
+
+	var _user_api = __webpack_require__(9);
+
+	var _user_api2 = _interopRequireDefault(_user_api);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var menu = {
+	  'request-top-50-players': function requestTop50Players(data, component) {
+	    _user_api2.default.requestTop50Players(function (res) {
+	      if (res && res.length) {
+	        component.setState({ leaderboards: res });
+	      }
+	    });
+	  },
+
+	  'find-private-match': function findPrivateMatch(_ref, component) {
+	    var opponentID = _ref.opponentID;
+	    var size = _ref.size;
+	    var color = _ref.color;
+	    var komi = _ref.komi;
+
+	    _socket_api2.default.inviteMatch({ opponentID: opponentID, size: size, color: color, komi: komi });
+	  },
+
+	  'start-finding-ranked-match': function startFindingRankedMatch(_ref2, component) {
+	    var playerID = _ref2.playerID;
+	    var MMR = _ref2.MMR;
+	    var size = _ref2.size;
+
+	    this.state.menuComponent = component;
+	    _user_api2.default.findRankedMatch({ playerID: playerID, MMR: MMR, size: size });
+	  },
+
+	  'stop-finding-ranked-match': function stopFindingRankedMatch(_ref3, component) {
+	    var playerID = _ref3.playerID;
+
+	    _user_api2.default.stopFindingRankedMatch({ playerID: playerID });
+	  },
+
+	  'start-finding-public-match': function startFindingPublicMatch(_ref4, component) {
+	    var playerID = _ref4.playerID;
+	    var MMR = _ref4.MMR;
+	    var size = _ref4.size;
+
+	    this.state.menuComponent = component;
+	    _user_api2.default.findPublicMatch({ playerID: playerID, MMR: MMR, size: size });
+	  },
+
+	  'stop-finding-public-match': function stopFindingPublicMatch(_ref5, component) {
+	    var playerID = _ref5.playerID;
+
+	    _user_api2.default.stopFindingPublicMatch({ playerID: playerID });
+	  }
+	};
+
+	exports.default = menu;
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _socket_api = __webpack_require__(8);
+
+	var _socket_api2 = _interopRequireDefault(_socket_api);
+
+	var _user_api = __webpack_require__(9);
+
+	var _user_api2 = _interopRequireDefault(_user_api);
+
+	var _board = __webpack_require__(13);
+
+	var _board2 = _interopRequireDefault(_board);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var match = {
+	  'start-match': function startMatch(_ref) {
+	    var opponentID = _ref.opponentID;
+	    var size = _ref.size;
+	    var color = _ref.color;
+	    var komi = _ref.komi;
+	    var ranked = _ref.ranked;
+
+	    this.state.opponentID = opponentID;
+	    this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color, komi: komi, ranked: ranked });
+
+	    if (this.state.menuComponent) {
+	      // as componentDidUnmount is not implemented in Simple library...
+	      this.state.menuComponent.stopTimer();
+	    }
+
+	    var gameComponent = this.state.gameComponent;
+	    gameComponent.setProps({ page: 'SHOW_MATCH', board: this.state.board });
+	  },
+
+	  'match-register-self': function matchRegisterSelf(data, component) {
+	    this.state.matchComponent = component;
+	  },
+
+	  'board-register-self': function boardRegisterSelf(data, component) {
+	    this.state.boardComponent = component;
+	  },
+
+	  'board-put-stone': function boardPutStone(_ref2, component) {
+	    var row = _ref2.row;
+	    var col = _ref2.col;
+
+	    var board = this.state.board;
+	    if (!board.isMyTurn()) return;
+	    var res = board.addStone(row, col);
+
+	    if (res === true) {
+	      _socket_api2.default.sendMove(this.state.opponentID, row, col);
+	      this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
+	    } else {
+	      component.setState({ 'showIcon': res });
+
+	      setTimeout(function () {
+	        component.setState({ 'showIcon': false });
+	      }, 2000);
+	    }
+	  },
+
+	  'board-receive-move': function boardReceiveMove(_ref3) {
+	    var row = _ref3.row;
+	    var col = _ref3.col;
+
+	    var board = this.state.board;
+	    if (row === -1 || col === -1) {
+	      // pass
+	      board.nextTurn(true);
+	    } else {
+	      board.addStone(row, col);
+	    }
+	    this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
+	  },
+
+	  'pass': function pass() {
+	    this.state.board.pass();
+	    this.state.matchComponent.setProps({ board: this.state.board, messages: this.state.chat.messages.slice(0) });
+	  },
+
+	  'resign': function resign() {
+	    this.state.board.resign();
+	  },
+
+	  'opponent-score': function opponentScore() {
+	    this.state.board.score();
+	  },
+
+	  'opponent-resign': function opponentResign() {
+	    this.state.board.opponentResign();
+	  }
+
+	};
+
+	exports.default = match;
+
+/***/ },
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _history = __webpack_require__(11);
+	var _history = __webpack_require__(14);
 
 	var _history2 = _interopRequireDefault(_history);
 
-	var _stone2 = __webpack_require__(12);
+	var _stone2 = __webpack_require__(15);
 
 	var _stone3 = _interopRequireDefault(_stone2);
 
-	var _socket_api = __webpack_require__(7);
+	var _socket_api = __webpack_require__(8);
 
 	var _socket_api2 = _interopRequireDefault(_socket_api);
 
-	var _user_api = __webpack_require__(8);
+	var _user_api = __webpack_require__(9);
 
 	var _user_api2 = _interopRequireDefault(_user_api);
 
@@ -1444,7 +1676,7 @@
 	module.exports = Board;
 
 /***/ },
-/* 11 */
+/* 14 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1498,7 +1730,7 @@
 	exports.default = History;
 
 /***/ },
-/* 12 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1694,7 +1926,7 @@
 	exports.default = Stone;
 
 /***/ },
-/* 13 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1752,7 +1984,7 @@
 	exports.default = Signup_Login;
 
 /***/ },
-/* 14 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1913,7 +2145,10 @@
 	          _this3.setState({ page: 'MAIN_MENU' });
 	        } }, this.span('Back')));
 	    } else if (this.state.page === 'SHOW_LEARDERBOARDS') {
-	      var list = this.state.leaderboards.map(function (l) {
+	      var leaderboards = this.state.leaderboards.sort(function (x, y) {
+	        return x.MMR < y.MMR;
+	      }); // sort by MMR
+	      var list = leaderboards.map(function (l) {
 	        return _this3.div({ class: 'player ' + (l.userID === _this3.props.playerID ? 'me' : '') }, _this3.p({ class: 'ID' }, 'ID: ', _this3.span(l.userID)), _this3.p({ class: 'MMR' }, l.MMR));
 	      });
 	      return this.div({ class: 'leaderboards' }, this.p({ class: 'title' }, 'Your MMR is ', this.span(this.props.MMR)), this.div({ class: 'list' }, list), this.div({ class: 'btn', click: function click() {
@@ -1944,7 +2179,7 @@
 	exports.default = Menu;
 
 /***/ },
-/* 15 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1961,11 +2196,11 @@
 
 	var _emitter2 = _interopRequireDefault(_emitter);
 
-	var _board = __webpack_require__(16);
+	var _board = __webpack_require__(19);
 
 	var _board2 = _interopRequireDefault(_board);
 
-	var _board_menu = __webpack_require__(17);
+	var _board_menu = __webpack_require__(20);
 
 	var _board_menu2 = _interopRequireDefault(_board_menu);
 
@@ -1988,7 +2223,7 @@
 	exports.default = Match;
 
 /***/ },
-/* 16 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2160,7 +2395,7 @@
 	exports.default = Board;
 
 /***/ },
-/* 17 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2173,7 +2408,7 @@
 
 	var _Simple2 = _interopRequireDefault(_Simple);
 
-	var _chat = __webpack_require__(18);
+	var _chat = __webpack_require__(21);
 
 	var _chat2 = _interopRequireDefault(_chat);
 
@@ -2214,7 +2449,7 @@
 	exports.default = BoardMenu;
 
 /***/ },
-/* 18 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2279,238 +2514,6 @@
 	});
 
 	exports.default = Chat;
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _socket_api = __webpack_require__(7);
-
-	var _socket_api2 = _interopRequireDefault(_socket_api);
-
-	var _user_api = __webpack_require__(8);
-
-	var _user_api2 = _interopRequireDefault(_user_api);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var chat = {
-	  'chat-register-self': function chatRegisterSelf(data, component) {
-	    this.state.chat.component = component;
-	  },
-
-	  'send-message': function sendMessage(_ref, component) {
-	    var message = _ref.message;
-
-	    var playerID = this.state.playerID,
-	        opponentID = this.state.opponentID;
-
-	    _socket_api2.default.sendMessage({ playerID: playerID, opponentID: opponentID, message: message });
-	    var messages = this.state.chat.messages;
-	    messages.push({ id: playerID, message: message, me: true });
-	    component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages });
-	  },
-
-	  'receive-message': function receiveMessage(_ref2) {
-	    var opponentID = _ref2.opponentID;
-	    var message = _ref2.message;
-
-	    var messages = this.state.chat.messages,
-	        playerID = this.state.playerID;
-
-	    messages.push({ id: opponentID, message: message, me: false });
-
-	    if (this.state.chat.component) {
-	      this.state.chat.component.setProps({ playerID: playerID, opponentID: opponentID, messages: messages.slice(0) });
-	    }
-	  }
-	};
-
-	exports.default = chat;
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _socket_api = __webpack_require__(7);
-
-	var _socket_api2 = _interopRequireDefault(_socket_api);
-
-	var _user_api = __webpack_require__(8);
-
-	var _user_api2 = _interopRequireDefault(_user_api);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var menu = {
-	  'request-top-50-players': function requestTop50Players(data, component) {
-	    _user_api2.default.requestTop50Players(function (res) {
-	      if (res && res.length) {
-	        component.setState({ leaderboards: res });
-	      }
-	    });
-	  },
-
-	  'find-private-match': function findPrivateMatch(_ref, component) {
-	    var opponentID = _ref.opponentID;
-	    var size = _ref.size;
-	    var color = _ref.color;
-	    var komi = _ref.komi;
-
-	    _socket_api2.default.inviteMatch({ opponentID: opponentID, size: size, color: color, komi: komi });
-	  },
-
-	  'start-finding-ranked-match': function startFindingRankedMatch(_ref2, component) {
-	    var playerID = _ref2.playerID;
-	    var MMR = _ref2.MMR;
-	    var size = _ref2.size;
-
-	    this.state.menuComponent = component;
-	    _user_api2.default.findRankedMatch({ playerID: playerID, MMR: MMR, size: size });
-	  },
-
-	  'stop-finding-ranked-match': function stopFindingRankedMatch(_ref3, component) {
-	    var playerID = _ref3.playerID;
-
-	    _user_api2.default.stopFindingRankedMatch({ playerID: playerID });
-	  },
-
-	  'start-finding-public-match': function startFindingPublicMatch(_ref4, component) {
-	    var playerID = _ref4.playerID;
-	    var MMR = _ref4.MMR;
-	    var size = _ref4.size;
-
-	    this.state.menuComponent = component;
-	    _user_api2.default.findPublicMatch({ playerID: playerID, MMR: MMR, size: size });
-	  },
-
-	  'stop-finding-public-match': function stopFindingPublicMatch(_ref5, component) {
-	    var playerID = _ref5.playerID;
-
-	    _user_api2.default.stopFindingPublicMatch({ playerID: playerID });
-	  }
-	};
-
-	exports.default = menu;
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _socket_api = __webpack_require__(7);
-
-	var _socket_api2 = _interopRequireDefault(_socket_api);
-
-	var _user_api = __webpack_require__(8);
-
-	var _user_api2 = _interopRequireDefault(_user_api);
-
-	var _board = __webpack_require__(10);
-
-	var _board2 = _interopRequireDefault(_board);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var match = {
-	  'start-match': function startMatch(_ref) {
-	    var opponentID = _ref.opponentID;
-	    var size = _ref.size;
-	    var color = _ref.color;
-	    var komi = _ref.komi;
-	    var ranked = _ref.ranked;
-
-	    this.state.opponentID = opponentID;
-	    this.state.board = new _board2.default({ playerID: this.state.playerID, opponentID: opponentID, size: size, playerColor: color, komi: komi, ranked: ranked });
-
-	    if (this.state.menuComponent) {
-	      // as componentDidUnmount is not implemented in Simple library...
-	      this.state.menuComponent.stopTimer();
-	    }
-
-	    var gameComponent = this.state.gameComponent;
-	    gameComponent.setProps({ page: 'SHOW_MATCH', board: this.state.board });
-	  },
-
-	  'match-register-self': function matchRegisterSelf(data, component) {
-	    this.state.matchComponent = component;
-	  },
-
-	  'board-register-self': function boardRegisterSelf(data, component) {
-	    this.state.boardComponent = component;
-	  },
-
-	  'board-put-stone': function boardPutStone(_ref2, component) {
-	    var row = _ref2.row;
-	    var col = _ref2.col;
-
-	    var board = this.state.board;
-	    if (!board.isMyTurn()) return;
-	    var res = board.addStone(row, col);
-
-	    if (res === true) {
-	      _socket_api2.default.sendMove(this.state.opponentID, row, col);
-	      this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
-	    } else {
-	      component.setState({ 'showIcon': res });
-
-	      setTimeout(function () {
-	        component.setState({ 'showIcon': false });
-	      }, 2000);
-	    }
-	  },
-
-	  'board-receive-move': function boardReceiveMove(_ref3) {
-	    var row = _ref3.row;
-	    var col = _ref3.col;
-
-	    var board = this.state.board;
-	    if (row === -1 || col === -1) {
-	      // pass
-	      board.nextTurn(true);
-	    } else {
-	      board.addStone(row, col);
-	    }
-	    this.state.matchComponent.setProps({ board: board, messages: this.state.chat.messages.slice(0) });
-	  },
-
-	  'pass': function pass() {
-	    this.state.board.pass();
-	    this.state.matchComponent.setProps({ board: this.state.board, messages: this.state.chat.messages.slice(0) });
-	  },
-
-	  'resign': function resign() {
-	    this.state.board.resign();
-	  },
-
-	  'opponent-score': function opponentScore() {
-	    this.state.board.score();
-	  },
-
-	  'opponent-resign': function opponentResign() {
-	    this.state.board.opponentResign();
-	  }
-
-	};
-
-	exports.default = match;
 
 /***/ }
 /******/ ]);
